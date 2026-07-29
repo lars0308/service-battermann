@@ -22,16 +22,28 @@ kann eine Benachrichtigung an deine E-Mail-Adresse eingerichtet werden
 
 ## 2. Admin-Zugang für Vorher/Nachher-Bilder aktivieren
 
-1. Im Netlify-Dashboard der Seite: **Identity** öffnen → **Enable Identity**.
-2. Unter "Registration preferences" **"Invite only"** wählen.
-3. Unter **Services → Git Gateway** auf **Enable Git Gateway** klicken.
-4. Unter "Identity → Invite users" deine eigene E-Mail-Adresse eintragen.
-   Du bekommst eine Einladungsmail.
+Der Admin-Bereich (`/admin/`) meldet sich direkt mit deinem GitHub-Konto an
+(nicht über Netlify Identity — das unterstützt das hier verwendete CMS
+nicht mehr). Dafür einmalig eine GitHub-OAuth-App anlegen und mit Netlify
+verbinden:
+
+1. Auf [github.com/settings/developers](https://github.com/settings/developers)
+   → **"OAuth Apps" → "New OAuth App"**.
+2. Angaben eintragen:
+   - Homepage URL: `https://service-battermann.de`
+   - Authorization callback URL: `https://api.netlify.com/auth/done`
+3. App erstellen, **Client ID** kopieren und über **"Generate a new client
+   secret"** ein **Client Secret** erzeugen (sofort kopieren, wird danach
+   nicht mehr angezeigt).
+4. Im Netlify-Dashboard der Seite: **Site configuration → General →
+   Access control → OAuth** öffnen (teils auch unter "Identity" zu
+   finden) und dort bei **"GitHub"** Client ID und Client Secret eintragen.
 
 ## 3. Bilder & Texte pflegen
 
-1. Link aus der Einladungsmail öffnen, Passwort festlegen.
-2. Danach bist du automatisch unter `/admin/` eingeloggt.
+1. `https://service-battermann.de/admin/` öffnen.
+2. **"Login with GitHub"** klicken und mit deinem GitHub-Konto (`lars0308`)
+   anmelden — dieses Konto hat bereits Schreibzugriff auf das Repository.
 3. Dort kannst du unter "Vorher / Nachher – Projekte":
    - neue Projekte hinzufügen (Titel, kurze Beschreibung, Vorher-Bild,
      Nachher-Bild)
