@@ -365,6 +365,7 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
   display:flex; flex-wrap:wrap; gap:14px; align-items:center; justify-content:center;
   padding:16px 20px;
 }
+.cookie-banner[hidden]{ display:none; }
 .cookie-banner p{ color:var(--on-dark-soft); margin:0; max-width:70ch; }
 .cookie-banner a{ color:var(--accent); }
 .cookie-banner .btn{ padding:9px 20px; flex-shrink:0; }
