@@ -1,0 +1,20 @@
+{
+  "projekte": [
+    {
+      "titel": "Fliesenfugen im Bad erneuert",
+      "beschreibung": "Alte, brüchige Fugen komplett rausgeschnitten und neu verfugt.",
+      "vorher_bild": "/images/IMG_20260612_170922.jpg",
+      "vorher_alt": "Fliesenfugen vor der Erneuerung",
+      "nachher_bild": "/images/vorher-nachher/bad-nachher-2.jpg",
+      "nachher_alt": "Fliesenfugen nach der Erneuerung"
+    },
+    {
+      "titel": "Duscharmatur aus- und wieder eingebaut",
+      "beschreibung": "Armatur ausgebaut, geprüft und fachgerecht wieder montiert.",
+      "vorher_bild": "/images/IMG_20260703_152722.jpg",
+      "vorher_alt": "Dusche ohne Armatur",
+      "nachher_bild": "/images/vorher-nachher/bad-nachher-1.jpg",
+      "nachher_alt": "Dusche mit montierter Armatur"
+    }
+  ]
+}

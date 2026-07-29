@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kontakt | Objekt- &amp; Reparaturservice Battermann</title>
+<meta name="description" content="Kontakt zu Lars Battermann in Lindhorst: Formular, Telefon oder WhatsApp. Kurz schildern, abschicken, fertig – Antwort meist innerhalb von 24 Stunden.">
+<link rel="canonical" href="https://www.service-battermann.de/kontakt.html">
+<link rel="icon" href="/images/logo-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Montserrat:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="bar">
+    <a class="brand" href="/index.html">
+      <img src="/images/logo-icon.png" alt="Logo Objekt- und Reparaturservice Battermann">
+      <span class="txt"><strong>Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
+    </a>
+    <nav class="main-nav">
+      <a href="/index.html">Startseite</a>
+      <a href="/leistungen.html">Leistungen</a>
+      <a href="/ueber-mich.html">Über mich</a>
+      <a href="/einsatzgebiet-faq.html">Einsatzgebiet &amp; FAQ</a>
+      <a href="/kontakt.html" class="active">Kontakt</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="https://wa.me/4915567467763" class="btn btn-primary"><span class="cta-full">WhatsApp: +49 155 674 677 63</span><span class="cta-short">WhatsApp</span></a>
+      <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<section class="hero" style="padding-bottom:70px">
+  <div class="wrap" style="grid-template-columns:1fr">
+    <div style="max-width:70ch">
+      <span class="eyebrow">Kontakt</span>
+      <h1 class="display">Reden wir drüber.</h1>
+      <p class="lead">Kurz schildern, abschicken, fertig. Ich melde mich in der Regel innerhalb von 24 Stunden bei Ihnen.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap split reverse">
+
+    <div class="reveal">
+      <span class="eyebrow">Direkter Draht</span>
+      <h2>Lieber gleich anrufen oder schreiben?</h2>
+      <p>Das Formular ist der kürzeste Weg — muss aber nicht sein. Telefon, WhatsApp und E-Mail funktionieren genauso direkt, ohne Callcenter dazwischen.</p>
+      <div class="cta-row" style="margin-top:24px">
+        <a href="tel:+4915567467763" class="btn btn-ghost">+49 155 / 674 677 63</a>
+        <a href="https://wa.me/4915567467763" class="btn btn-whatsapp">WhatsApp</a>
+      </div>
+      <p style="margin-top:28px"><strong>E-Mail:</strong> <a href="mailto:service.battermann@gmx.de">service.battermann@gmx.de</a><br>
+      <strong>Erreichbarkeit:</strong> Mo–Sa, 09:00–20:00 Uhr</p>
+      <p style="margin-top:20px;font-size:0.9rem">Für Hausverwaltungen und Firmen: gerne auch für die laufende Betreuung mehrerer Objekte — sprechen Sie mich einfach an.</p>
+    </div>
+
+    <div class="reveal">
+      <div class="form-card">
+        <form name="kontakt" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data">
+          <input type="hidden" name="form-name" value="kontakt">
+          <p class="bot-field" style="position:absolute;left:-9999px" aria-hidden="true">
+            <label>Bitte leer lassen: <input name="bot-field"></label>
+          </p>
+
+          <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="Name" required autocomplete="name">
+          </div>
+
+          <div class="field">
+            <label for="ort">Ort des Objekts</label>
+            <input type="text" id="ort" name="Ort des Objekts" placeholder="z. B. Lindhorst" required autocomplete="address-level2">
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="telefon">Telefonnummer</label>
+              <input type="tel" id="telefon" name="Telefon" autocomplete="tel">
+            </div>
+            <div class="field">
+              <label for="email">E-Mail</label>
+              <input type="email" id="email" name="E-Mail" autocomplete="email">
+            </div>
+          </div>
+          <p style="margin:-10px 0 20px"><small>Mindestens eine der beiden Angaben wird zur Rückmeldung benötigt.</small></p>
+
+          <div class="field">
+            <label for="anliegen">Worum geht's?</label>
+            <textarea id="anliegen" name="Anliegen" rows="5" required placeholder="Kurz beschreiben, was los ist."></textarea>
+          </div>
+
+          <div class="field">
+            <label for="fotos">Fotos (optional)</label>
+            <input type="file" id="fotos" name="Fotos" accept="image/*" multiple>
+            <small data-file-label></small>
+          </div>
+
+          <div class="field" style="display:flex;gap:10px;align-items:flex-start">
+            <input type="checkbox" id="dsgvo" name="Datenschutz bestätigt" required style="width:auto;margin-top:5px">
+            <label for="dsgvo" style="font-weight:400;margin:0">Ich habe die <a href="/datenschutz.html">Datenschutzerklärung</a> gelesen und bin mit der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage einverstanden.</label>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">Absenden</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<footer class="site">
+  <div class="wrap">
+    <div>
+      <a class="brand plain" href="/index.html" style="margin-bottom:14px">
+        <img src="/images/logo-icon.png" alt="" style="filter:invert(1)">
+        <span class="txt"><strong style="color:var(--on-dark)">Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
+      </a>
+      <p>Handwerker &amp; Hausmeisterservice für Privatkunden, Hausverwaltungen und Firmen in Lindhorst, Stadthagen, Bückeburg und Umgebung.</p>
+    </div>
+    <div>
+      <h4>Navigation</h4>
+      <a href="/leistungen.html">Leistungen</a>
+      <a href="/ueber-mich.html">Über mich</a>
+      <a href="/einsatzgebiet-faq.html">Einsatzgebiet &amp; FAQ</a>
+      <a href="/kontakt.html">Kontakt</a>
+    </div>
+    <div>
+      <h4>Direkter Kontakt</h4>
+      <a href="tel:+4915567467763">+49 155 / 674 677 63</a>
+      <a href="https://wa.me/4915567467763">WhatsApp schreiben</a>
+      <a href="mailto:service.battermann@gmx.de">service.battermann@gmx.de</a>
+      <a href="#" style="margin:0">Mo–Sa, 09:00–20:00 Uhr</a>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© 2026 Objekt- und Reparaturservice Battermann · Lars Battermann</span>
+    <span><a href="/impressum.html">Impressum</a> · <a href="/datenschutz.html">Datenschutz</a></span>
+  </div>
+</footer>
+
+<div class="cookie-banner" data-cookie-banner hidden>
+  <p>Diese Website verzichtet auf Tracking-Cookies. Optionale Inhalte wie die Anfahrtskarte werden erst nach Ihrer Zustimmung geladen. <a href="/datenschutz.html">Details in der Datenschutzerklärung</a></p>
+  <button data-cookie-accept class="btn btn-primary">Verstanden</button>
+</div>
+
+<script src="/assets/main.js"></script>
+</body>
+</html>
