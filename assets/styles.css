@@ -375,7 +375,7 @@ section.dim{ background:var(--paper-dim); }
    Mobil: kein Pinning (Layoutraum reicht nicht für echtes Split-Screen), stattdessen
    ein durchgehend scroll-gekoppelter (und damit beim Hochscrollen exakt umkehrbarer)
    Reveal in normalem Textfluss — vermeidet abgeschnittene Bilder und leere Flächen. */
-.scrollpin-section{ height:240vh; position:relative; background:var(--paper); }
+.scrollpin-section{ height:200vh; position:relative; background:var(--paper); }
 .scrollpin-sticky{
   position:sticky; top:0; height:100svh; overflow:hidden;
   display:flex; align-items:center;
@@ -395,14 +395,14 @@ section.dim{ background:var(--paper-dim); }
 .scrollpin-words .scrollpin-word{ display:block; }
 
 .scrollpin-portrait{
-  position:absolute; top:0; right:6%; width:47%; height:100%;
+  position:absolute; top:0; right:5%; width:50%; height:100%;
   display:flex; align-items:center; justify-content:center;
   opacity:var(--sp-portrait-o, 0);
   transform:translate3d(0, var(--sp-portrait-y, 50px), 0);
   will-change:transform, opacity;
 }
 .scrollpin-portrait img{
-  width:100%; height:80%; object-fit:cover; aspect-ratio:3/4;
+  width:100%; height:84%; object-fit:cover; aspect-ratio:3/4;
   border-radius:var(--radius); box-shadow:var(--shadow);
 }
 
@@ -421,13 +421,13 @@ section.dim{ background:var(--paper-dim); }
   .scrollpin-sticky{ position:static; height:auto; display:block; }
   .scrollpin-stage{ position:static; height:auto; display:block; }
   .scrollpin-words{
-    position:static; margin:0 auto var(--space-4); transform:none; scale:1;
-    min-height:52svh; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; white-space:normal;
-    font-size:clamp(2.8rem, 14vw, 4.6rem);
+    position:static; margin:0 auto var(--space-3); transform:none; scale:1;
+    min-height:44svh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; white-space:nowrap;
+    font-size:clamp(2.1rem, 13vw, 4.6rem);
   }
   .scrollpin-portrait{
-    position:static; width:100%; max-width:420px; height:auto; margin:0 auto var(--space-4);
+    position:static; width:100%; max-width:480px; height:auto; margin:0 auto var(--space-4);
     opacity:var(--sp-portrait-o, 0);
     transform:translate3d(0, var(--sp-portrait-y, 40px), 0);
   }
@@ -442,13 +442,13 @@ section.dim{ background:var(--paper-dim); }
   .scrollpin-sticky{ position:static; height:auto; display:block; }
   .scrollpin-stage{ position:static; height:auto; display:block; }
   .scrollpin-words{
-    position:static; margin:0 auto var(--space-4); transform:none; scale:1;
-    min-height:52svh; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; white-space:normal;
-    font-size:clamp(2.8rem, 14vw, 4.6rem);
+    position:static; margin:0 auto var(--space-3); transform:none; scale:1;
+    min-height:44svh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; white-space:nowrap;
+    font-size:clamp(2.1rem, 13vw, 4.6rem);
   }
   .scrollpin-portrait{
-    position:static; width:100%; max-width:420px; height:auto; margin:0 auto var(--space-4);
+    position:static; width:100%; max-width:480px; height:auto; margin:0 auto var(--space-4);
     opacity:1; transform:none;
   }
   .scrollpin-portrait img{ height:auto; aspect-ratio:3/4; }
