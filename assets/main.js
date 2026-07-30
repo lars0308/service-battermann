@@ -123,12 +123,12 @@
     });
   });
 
-  // Scroll-Pin-Animation "Ich Bin Lars Battermann"
-  // Desktop: echtes Pinning. Wörter + Portrait bewegen sich in einer gemeinsamen,
-  // synchronen Phase; der Text blendet in einer zweiten, leicht überlappenden
-  // Phase ein — dadurch kein toter Leerlauf zwischen den Bewegungen.
-  // Mobil/Reduced-Motion: kein Pinning, dafür ein durchgehend scroll-gekoppelter
-  // (und damit beim Hochscrollen exakt umkehrbarer) Reveal im normalen Textfluss.
+  // Scroll-Pin-Animation "Ich Bin Lars Battermann": cineastische Komposition.
+  // Ein einziger, gepinnter Mechanismus für Desktop UND Mobile: Die Kopfzeile
+  // driftet sanft nach links/oben und wechselt synchron von dunkel auf hell,
+  // während das Portrait als Vollbild-Hintergrund von unten einfährt. Danach
+  // blendet der Fließtext darunter ein. Reines Funktion-des-Fortschritts-Modell,
+  // daher beim Hochscrollen exakt umkehrbar.
   var scrollpinSection = document.querySelector(".scrollpin-section");
   if (scrollpinSection) {
     var spWords = scrollpinSection.querySelector(".scrollpin-words");
@@ -171,7 +171,46 @@
       if (spText) spText.classList.toggle("is-interactive", textProgress > 0.05);
     };
 
-    var updateScrollpinDesktop = function () {
+    // Kopfzeile wechselt synchron mit der Bildeinblendung von Tinte (dunkel) auf
+    // Creme (hell) — sonst wäre dunkler Text auf dem später dunklen Verlauf/Foto
+    // nicht mehr lesbar.
+    var INK_RGB = [25, 22, 20];
+    var ON_DARK_RGB = [244, 241, 233];
+    var lerpColor = function (t) {
+      var r = Math.round(INK_RGB[0] + (ON_DARK_RGB[0] - INK_RGB[0]) * t);
+      var g = Math.round(INK_RGB[1] + (ON_DARK_RGB[1] - INK_RGB[1]) * t);
+      var b = Math.round(INK_RGB[2] + (ON_DARK_RGB[2] - INK_RGB[2]) * t);
+      return "rgb(" + r + "," + g + "," + b + ")";
+    };
+
+    // Setzt alle Custom Properties für einen gegebenen Fortschritt in beiden Phasen.
+    // Wird sowohl vom Scroll-Handler (kontinuierlich) als auch für den statischen
+    // Reduced-Motion-Endzustand (einmalig mit phaseA=phaseB=1) genutzt — so bleibt
+    // die Kopfzeile auch dort korrekt versetzt/skaliert und überlappt nie den Text.
+    var applyPhases = function (phaseA, phaseB) {
+      var stageRect = spStage ? spStage.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
+      // Zielposition: Kopfzeile nur leicht nach links/oben versetzt — bleibt eine
+      // große, prominente Überschrift statt in eine kleine Ecke zu schrumpfen.
+      var finalScale = 0.65;
+      var naturalWidth = spWords ? spWords.scrollWidth : 0;
+      var naturalHeight = spWords ? spWords.scrollHeight : 0;
+      var finalCenterX = stageRect.width * 0.14 + (naturalWidth * finalScale) / 2;
+      var finalCenterY = stageRect.height * 0.22 + (naturalHeight * finalScale) / 2;
+      var dx = finalCenterX - stageRect.width / 2;
+      var dy = finalCenterY - stageRect.height / 2;
+
+      scrollpinSection.style.setProperty("--sp-word-x", (dx * phaseA).toFixed(1) + "px");
+      scrollpinSection.style.setProperty("--sp-word-y", (dy * phaseA).toFixed(1) + "px");
+      scrollpinSection.style.setProperty("--sp-word-scale", (1 - (1 - finalScale) * phaseA).toFixed(3));
+      if (spWords) spWords.style.color = lerpColor(phaseA);
+      scrollpinSection.style.setProperty("--sp-portrait-o", phaseA.toFixed(3));
+      scrollpinSection.style.setProperty("--sp-portrait-y", (100 * (1 - phaseA)).toFixed(1) + "%");
+      scrollpinSection.style.setProperty("--sp-text-o", phaseB.toFixed(3));
+      scrollpinSection.style.setProperty("--sp-text-y", (16 * (1 - phaseB)).toFixed(1) + "px");
+      setTextInteractive(phaseB);
+    };
+
+    var updateScrollpin = function () {
       spTicking = false;
       var rect = scrollpinSection.getBoundingClientRect();
       var vh = window.innerHeight;
@@ -179,53 +218,14 @@
       var progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
       progress = Math.max(0, Math.min(1, progress));
 
-      // Phase A (Wörter + Portrait, synchron): 0 → 0.55
-      // Phase B (Text, leicht überlappend): 0.42 → 1
+      // Phase A (Wörter driften + Bild fährt ein, synchron): 0 → 0.55
+      // Phase B (Fließtext, leicht überlappend): 0.42 → 1
       var phaseA = easeInOutCubic(Math.max(0, Math.min(1, progress / 0.55)));
       var phaseB = easeInOutCubic(Math.max(0, Math.min(1, (progress - 0.42) / 0.58)));
-
-      var stageRect = spStage ? spStage.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
-      // Zielposition: Wortblock oben links, deutlich verkleinert, damit er das Textpanel darunter nicht überlappt.
-      var finalScale = 0.42;
-      var naturalWidth = spWords ? spWords.scrollWidth : 0;
-      var naturalHeight = spWords ? spWords.scrollHeight : 0;
-      var finalCenterX = stageRect.width * 0.09 + (naturalWidth * finalScale) / 2;
-      var finalCenterY = stageRect.height * 0.2 + (naturalHeight * finalScale) / 2;
-      var dx = finalCenterX - stageRect.width / 2;
-      var dy = finalCenterY - stageRect.height / 2;
-
-      scrollpinSection.style.setProperty("--sp-word-x", (dx * phaseA).toFixed(1) + "px");
-      scrollpinSection.style.setProperty("--sp-word-y", (dy * phaseA).toFixed(1) + "px");
-      scrollpinSection.style.setProperty("--sp-word-scale", (1 - (1 - finalScale) * phaseA).toFixed(3));
-      scrollpinSection.style.setProperty("--sp-portrait-o", phaseA.toFixed(3));
-      scrollpinSection.style.setProperty("--sp-portrait-y", (50 * (1 - phaseA)).toFixed(1) + "px");
-      scrollpinSection.style.setProperty("--sp-text-o", phaseB.toFixed(3));
-      scrollpinSection.style.setProperty("--sp-text-y", (16 * (1 - phaseB)).toFixed(1) + "px");
-      setTextInteractive(phaseB);
-    };
-
-    // Mobil: kein Pinning — Fortschritt richtet sich danach, wie weit die Sektion
-    // von unten in den Viewport gescrollt wurde. Portrait und Text erscheinen
-    // mit minimalem Versatz nahezu gleichzeitig.
-    var updateScrollpinMobile = function () {
-      spTicking = false;
-      var rect = scrollpinSection.getBoundingClientRect();
-      var vh = window.innerHeight;
-      var rawProgress = Math.max(0, Math.min(1, (vh - rect.top) / (vh * 0.75)));
-      var rawTextProgress = Math.max(0, Math.min(1, (rawProgress - 0.12) / 0.88));
-      var progress = easeInOutCubic(rawProgress);
-      var textProgress = easeInOutCubic(rawTextProgress);
-
-      scrollpinSection.style.setProperty("--sp-portrait-o", progress.toFixed(3));
-      scrollpinSection.style.setProperty("--sp-portrait-y", (40 * (1 - progress)).toFixed(1) + "px");
-      scrollpinSection.style.setProperty("--sp-text-o", textProgress.toFixed(3));
-      scrollpinSection.style.setProperty("--sp-text-y", (20 * (1 - textProgress)).toFixed(1) + "px");
-      setTextInteractive(textProgress);
+      applyPhases(phaseA, phaseB);
     };
 
     if (!reduceMotion) {
-      var isDesktopLayout = window.matchMedia("(min-width:900px)").matches;
-      var updateScrollpin = isDesktopLayout ? updateScrollpinDesktop : updateScrollpinMobile;
       updateScrollpin();
       window.addEventListener(
         "scroll",
@@ -242,7 +242,14 @@
         updateScrollpin();
       });
     } else {
-      window.addEventListener("resize", fitScrollpinWords);
+      // Reduced Motion: statischer Endzustand ohne Scroll-Kopplung (Bild/Verlauf
+      // final sichtbar per CSS-Media-Query). Kopfzeile muss trotzdem in ihre
+      // Endposition/-größe versetzt werden, sonst überlappt sie den Fließtext.
+      applyPhases(1, 1);
+      window.addEventListener("resize", function () {
+        fitScrollpinWords();
+        applyPhases(1, 1);
+      });
     }
   }
 
