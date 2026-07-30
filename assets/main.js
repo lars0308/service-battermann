@@ -56,6 +56,43 @@
     }
   }
 
+  // Wasserwaagen-Effekt: Porträt richtet sich beim Scrollen aus der Schräge auf
+  var levelPortrait = document.getElementById("level-portrait");
+  if (levelPortrait) {
+    var levelCta = document.querySelector("[data-level-cta]");
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      levelPortrait.classList.add("is-level");
+      if (levelCta) levelCta.classList.add("is-visible");
+    } else {
+      var levelIo = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (!entry.isIntersecting) return;
+            levelIo.unobserve(entry.target);
+            var el = entry.target;
+            // 1) Wasserwaage schiebt sich an die Oberkante
+            el.classList.add("is-inview");
+            // 2) Libelle wandert in die Mitte
+            window.setTimeout(function () {
+              el.classList.add("is-centered");
+            }, 450);
+            // 3) Bild richtet sich auf 0° aus, sobald die Libelle mittig steht
+            window.setTimeout(function () {
+              el.classList.add("is-level");
+              if (levelCta) levelCta.classList.add("is-visible");
+            }, 450 + 900);
+            // 4) Wasserwaage blendet dezent nach rechts aus
+            window.setTimeout(function () {
+              el.classList.remove("is-inview");
+            }, 450 + 900 + 200);
+          });
+        },
+        { threshold: 0.45 }
+      );
+      levelIo.observe(levelPortrait);
+    }
+  }
+
   // Schwebender WhatsApp-Button: erscheint dezent nach dem Scrollen über den Hero-Bereich
   var fab = document.querySelector(".whatsapp-fab");
   if (fab) {
