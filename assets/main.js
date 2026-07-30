@@ -56,55 +56,121 @@
     }
   }
 
-  // Wasserwaagen-Effekt: Porträt richtet sich beim Scrollen aus der Schräge auf
+  // Wasserwaagen-Effekt: Porträt richtet sich direkt beim Laden aus der Schräge auf (kein Scroll nötig)
   var levelPortrait = document.getElementById("level-portrait");
   if (levelPortrait) {
     var levelCta = document.querySelector("[data-level-cta]");
-    if (reduceMotion || !("IntersectionObserver" in window)) {
+    if (reduceMotion) {
       levelPortrait.classList.add("is-level");
       if (levelCta) levelCta.classList.add("is-visible");
     } else {
-      var levelIo = new IntersectionObserver(
-        function (entries) {
-          entries.forEach(function (entry) {
-            if (!entry.isIntersecting) return;
-            levelIo.unobserve(entry.target);
-            var el = entry.target;
-            // 1) Wasserwaage schiebt sich an die Oberkante
-            el.classList.add("is-inview");
-            // 2) Libelle wandert in die Mitte
-            window.setTimeout(function () {
-              el.classList.add("is-centered");
-            }, 450);
-            // 3) Bild richtet sich auf 0° aus, sobald die Libelle mittig steht
-            window.setTimeout(function () {
-              el.classList.add("is-level");
-              if (levelCta) levelCta.classList.add("is-visible");
-            }, 450 + 900);
-            // 4) Wasserwaage blendet dezent nach rechts aus
-            window.setTimeout(function () {
-              el.classList.remove("is-inview");
-            }, 450 + 900 + 200);
-          });
-        },
-        { threshold: 0.45 }
-      );
-      levelIo.observe(levelPortrait);
+      var runLevelSequence = function () {
+        var el = levelPortrait;
+        // 1) Wasserwaage schiebt sich an die Oberkante
+        el.classList.add("is-inview");
+        // 2) Libelle wandert in die Mitte
+        window.setTimeout(function () {
+          el.classList.add("is-centered");
+        }, 450);
+        // 3) Bild richtet sich auf 0° aus, sobald die Libelle mittig steht ("In Waage!")
+        window.setTimeout(function () {
+          el.classList.add("is-level");
+          if (levelCta) levelCta.classList.add("is-visible");
+        }, 450 + 900);
+        // 4) Wasserwaage blendet dezent nach rechts aus
+        window.setTimeout(function () {
+          el.classList.remove("is-inview");
+        }, 450 + 900 + 200);
+      };
+      // Erst nach dem ersten Paint starten, damit die -3deg-Ausgangslage sichtbar ist
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(runLevelSequence);
+      });
     }
   }
 
-  // Schwebender WhatsApp-Button: erscheint dezent nach dem Scrollen über den Hero-Bereich
-  var fab = document.querySelector(".whatsapp-fab");
-  if (fab) {
+  // Schwebende Scroll-Lampe: wandert vom Hero in den Leistungen-Bereich und schaltet dort das Licht an
+  var lamp = document.getElementById("scroll-lamp");
+  var leistungenSection = document.getElementById("leistungen-list-section");
+  var serviceList = document.getElementById("service-list");
+  if (lamp && leistungenSection) {
+    if (reduceMotion) {
+      leistungenSection.classList.add("is-lit");
+      if (serviceList) serviceList.classList.add("is-lit");
+    } else {
+      var lampLit = false;
+      var lampTicking = false;
+      var heroSection = document.getElementById("hero-split");
+      var updateLamp = function () {
+        lampTicking = false;
+        if (!heroSection) return;
+        // Absolute Seitenposition (unabhängig vom aktuellen Scroll-Stand), damit
+        // der Fortschritt monoton von 0 auf 1 läuft statt mit der Viewport-Bewegung zu kippen.
+        var heroBottomAbs = heroSection.getBoundingClientRect().bottom + window.scrollY;
+        var targetRect = leistungenSection.getBoundingClientRect();
+        var targetTopAbs = targetRect.top + window.scrollY + targetRect.height * 0.15;
+        var travel = targetTopAbs - heroBottomAbs;
+        if (travel <= 0) travel = 1;
+        var progress = (window.scrollY - heroBottomAbs) / travel;
+        progress = Math.max(0, Math.min(1, progress));
+
+        if (progress > 0) {
+          lamp.classList.add("is-active");
+        } else {
+          lamp.classList.remove("is-active");
+        }
+
+        var y = -120 + progress * 216; // wandert von -120px (versteckt) auf 96px (an der Sektion)
+        lamp.style.transform = "translateY(" + y.toFixed(1) + "px)";
+
+        if (progress >= 0.98 && !lampLit) {
+          lampLit = true;
+          lamp.classList.add("is-lit");
+          leistungenSection.classList.add("is-lit");
+          if (serviceList) serviceList.classList.add("is-lit");
+        }
+      };
+      updateLamp();
+      window.addEventListener(
+        "scroll",
+        function () {
+          if (!lampTicking) {
+            window.requestAnimationFrame(updateLamp);
+            lampTicking = true;
+          }
+        },
+        { passive: true }
+      );
+    }
+  } else if (leistungenSection) {
+    // Kein Lampen-Element (z. B. andere Seite) — Liste trotzdem sichtbar machen
+    leistungenSection.classList.add("is-lit");
+    if (serviceList) serviceList.classList.add("is-lit");
+  }
+
+  // Leistungen-Liste: Zeilen per Klick/Tap öffnen (Hover übernimmt das für Maus-Nutzer per CSS)
+  var serviceToggles = document.querySelectorAll(".service-row-toggle");
+  serviceToggles.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var row = btn.closest(".service-row");
+      if (!row) return;
+      var isOpen = row.classList.toggle("is-open");
+      btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+    });
+  });
+
+  // Permanenter Contact-Trigger: erscheint dezent nach dem Scrollen über den Hero-Bereich
+  var fabGroup = document.querySelector(".fab-group");
+  if (fabGroup) {
     var heroEl = document.querySelector(".hero");
     var fabThreshold = heroEl ? heroEl.offsetHeight * 0.6 : 400;
     var fabTicking = false;
     var updateFab = function () {
       fabTicking = false;
       if (window.scrollY > fabThreshold) {
-        fab.classList.add("is-visible");
+        fabGroup.classList.add("is-visible");
       } else {
-        fab.classList.remove("is-visible");
+        fabGroup.classList.remove("is-visible");
       }
     };
     updateFab();

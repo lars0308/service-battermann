@@ -177,18 +177,26 @@ nav.main-nav a.active{ color:var(--link); }
 
 .nav-cta{ display:flex; align-items:center; gap:12px; flex-shrink:0; }
 .nav-toggle{ display:none; background:none; border:0; cursor:pointer; padding:8px; }
+.nav-mobile-cta{ display:none; }
 .nav-toggle span{ display:block; width:22px; height:1.5px; background:var(--ink); margin:5px 0; transition:.2s; }
 
 @media (max-width: 900px){
-  header.site .bar{ gap:16px; }
+  header.site .bar{ gap:16px; justify-content:space-between; }
   nav.main-nav{
-    position:fixed; inset:66px 0 0 0; background:var(--paper);
+    position:fixed; top:66px; right:0; left:0; height:calc(100vh - 66px); background:var(--paper);
     flex-direction:column; align-items:flex-start; gap:0;
     padding:24px; transform:translateX(100%); transition:transform .25s ease;
     overflow-y:auto;
   }
   nav.main-nav.open{ transform:translateX(0); }
   nav.main-nav a{ padding:16px 0; width:100%; border-bottom:1px solid var(--line); font-size:1.05rem; }
+  nav.main-nav a.nav-mobile-cta{
+    display:flex; justify-content:center; margin-top:12px; width:100%;
+    color:var(--on-dark); border-bottom:0; padding:15px 26px;
+  }
+  nav.main-nav a.nav-mobile-cta:hover{ color:var(--accent-ink); }
+  .nav-cta{ gap:0; }
+  .nav-cta .btn-sharp{ display:none; }
   .nav-toggle{ display:block; }
   .brand .txt strong{ font-size:0.84rem; }
 }
@@ -197,38 +205,52 @@ nav.main-nav a.active{ color:var(--link); }
   .brand .txt span{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:0.92rem; color:var(--ink); }
 }
 
-/* ---------- Floating WhatsApp Action Button ---------- */
-.whatsapp-fab{
+/* ---------- Permanenter Contact-Trigger (WhatsApp + Anfrage) ---------- */
+.fab-group{
   position:fixed !important;
   bottom:20px !important; right:20px !important;
-  width:60px !important; height:60px !important;
   z-index:9999 !important;
+  display:flex; align-items:center; gap:12px;
+  opacity:0; transform:translateY(16px); pointer-events:none;
+  transition:opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.fab-group.is-visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
+.fab-group.is-visible{ animation:fab-pulse-scale 5s cubic-bezier(0.16,1,0.3,1) infinite; }
+@keyframes fab-pulse-scale{
+  0%, 88%, 100%{ transform:scale(1); }
+  94%{ transform:scale(1.05); }
+}
+@media (prefers-reduced-motion: reduce){
+  .fab-group.is-visible{ animation:none; }
+}
+.whatsapp-fab{
+  width:56px !important; height:56px !important;
   border-radius:50% !important;
   background:#25D366; color:#0b2a17;
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0; box-sizing:border-box;
   box-shadow:0 8px 22px -6px rgba(11,42,23,0.5);
-  opacity:0; transform:translateY(16px) scale(0.9); pointer-events:none;
-  transition:opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s ease;
+  transition:transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s cubic-bezier(0.16,1,0.3,1);
 }
-.whatsapp-fab.is-visible{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
-.whatsapp-fab:hover{ transform:translateY(-3px) scale(1.06); box-shadow:0 16px 34px -8px rgba(11,42,23,0.6); }
+.whatsapp-fab:hover{ transform:scale(1.08); box-shadow:0 12px 26px -6px rgba(11,42,23,0.6); }
 .whatsapp-fab svg{ width:26px !important; height:26px !important; flex-shrink:0; }
-.whatsapp-fab::before{
-  content:''; position:absolute; inset:0; border-radius:50%;
-  border:2px solid #25D366; opacity:0;
+.fab-cta{
+  display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
+  background:var(--ink); color:var(--on-dark);
+  font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.86rem;
+  padding:16px 20px; border-radius:0; text-decoration:none;
+  box-shadow:0 8px 22px -6px rgba(0,0,0,0.4);
+  transition:transform 0.25s cubic-bezier(0.16,1,0.3,1), background 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s cubic-bezier(0.16,1,0.3,1);
 }
-.whatsapp-fab.is-visible::before{ animation:fab-pulse 4s cubic-bezier(0.16,1,0.3,1) infinite; }
-@keyframes fab-pulse{
-  0%{ opacity:0.6; transform:scale(1); }
-  70%{ opacity:0; transform:scale(1.6); }
-  100%{ opacity:0; transform:scale(1.6); }
-}
-@media (prefers-reduced-motion: reduce){
-  .whatsapp-fab.is-visible::before{ animation:none; }
-}
+.fab-cta:hover{ background:var(--accent); color:var(--accent-ink); transform:scale(1.04); box-shadow:0 12px 26px -6px rgba(0,0,0,0.5); }
 @media (max-width:600px){
-  .whatsapp-fab{ right:16px !important; bottom:16px !important; width:54px !important; height:54px !important; }
+  .fab-group{ right:14px !important; bottom:14px !important; gap:10px; }
+  .whatsapp-fab{ width:50px !important; height:50px !important; }
+  .whatsapp-fab svg{ width:22px !important; height:22px !important; }
+  .fab-cta{ padding:13px 14px; font-size:0.78rem; }
+}
+@media (max-width:400px){
+  .fab-cta span.fab-cta-long{ display:none; }
 }
 
 /* ---------- Sections ---------- */
@@ -286,6 +308,92 @@ section.dim{ background:var(--paper-dim); }
   .hero .wrap{ grid-template-columns:1fr; }
   .hero-figure{ justify-self:start; margin-top:var(--space-4); transform:none; }
   .hero-tag{ left:0; }
+}
+
+/* ---------- Hero Split-Screen (Startseite) ---------- */
+.hero-split-wrap{
+  display:grid; grid-template-columns:1.05fr 0.95fr;
+  gap:var(--space-5); align-items:center;
+}
+.hero-split-h1{
+  font-size:clamp(2.1rem, 4vw, 3.3rem);
+  line-height:1.08;
+  margin-bottom:var(--space-3);
+}
+.hero-split-media{ justify-self:end; width:100%; max-width:420px; }
+.hero-split-media img{ width:100%; aspect-ratio:4/5; object-fit:cover; }
+.hero .level-cta{ color:var(--on-dark); max-width:60ch; }
+.hero .level-cta a{ color:var(--accent); border-color:var(--accent); }
+.hero .level-cta a:hover{ color:var(--on-dark); border-color:var(--on-dark); }
+@media (max-width:900px){
+  .hero-split-wrap{ grid-template-columns:1fr; }
+  .hero-split-media{ justify-self:center; max-width:280px; order:-1; margin-bottom:var(--space-4); }
+}
+
+/* ---------- Schwebende Scroll-Lampe ---------- */
+.lamp{
+  position:fixed; top:0; right:64px; z-index:40;
+  display:flex; flex-direction:column; align-items:center;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.4s ease;
+  transform:translateY(-120px);
+  will-change:transform;
+}
+.lamp.is-active{ opacity:1; }
+.lamp-cord{ width:2px; height:70px; background:var(--line-dark); flex-shrink:0; }
+.lamp-bulb{
+  width:20px; height:24px; border-radius:0 0 50% 50%;
+  background:var(--accent);
+  box-shadow:0 0 0 0 rgba(255,220,140,0);
+  transition:box-shadow 0.5s ease, background 0.5s ease;
+  flex-shrink:0;
+}
+.lamp.is-lit .lamp-bulb{ background:#FFE9B0; box-shadow:0 0 46px 16px rgba(255,220,140,0.5); }
+@media (max-width:900px){ .lamp{ display:none; } }
+@media (prefers-reduced-motion: reduce){ .lamp{ display:none; } }
+
+/* ---------- Leistungen-Liste (Emil-Kowalski-Reveal + Licht-Trigger) ---------- */
+#leistungen-list-section{ position:relative; overflow:hidden; }
+#leistungen-list-section::before{
+  content:''; position:absolute; top:-60px; left:50%; width:700px; height:460px;
+  transform:translateX(-50%);
+  background:radial-gradient(circle, rgba(194,149,63,0.22), transparent 70%);
+  opacity:0; transition:opacity 0.9s ease; pointer-events:none; z-index:0;
+}
+#leistungen-list-section.is-lit::before{ opacity:1; }
+#leistungen-list-section .wrap{ position:relative; z-index:1; }
+
+.service-list{ border-top:1px solid var(--line); margin-top:32px; }
+.service-row{
+  border-bottom:1px solid var(--line);
+  opacity:0; transform:translateY(30px);
+  transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.service-list.is-lit .service-row{ opacity:1; transform:translateY(0); }
+.service-list.is-lit .service-row:nth-child(1){ transition-delay:0.05s; }
+.service-list.is-lit .service-row:nth-child(2){ transition-delay:0.14s; }
+.service-list.is-lit .service-row:nth-child(3){ transition-delay:0.23s; }
+.service-list.is-lit .service-row:nth-child(4){ transition-delay:0.32s; }
+.service-list.is-lit .service-row:nth-child(5){ transition-delay:0.41s; }
+
+.service-row-toggle{
+  all:unset; box-sizing:border-box; display:flex; align-items:center; gap:20px;
+  width:100%; padding:26px 4px; cursor:pointer;
+}
+.service-row-num{ font-family:'Archivo Black',sans-serif; font-size:1.3rem; color:var(--line); flex-shrink:0; width:44px; }
+.service-row-title{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.2rem; flex:1; color:var(--ink); }
+.service-row-icon{
+  font-family:'Archivo Black',sans-serif; font-size:1.4rem; color:var(--accent); flex-shrink:0;
+  transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.service-row:hover .service-row-icon, .service-row.is-open .service-row-icon{ transform:rotate(45deg); }
+.service-row-detail{ max-height:0; overflow:hidden; transition:max-height 0.5s cubic-bezier(0.16,1,0.3,1); padding-left:64px; }
+.service-row:hover .service-row-detail, .service-row.is-open .service-row-detail{ max-height:140px; }
+.service-row-detail p{ padding-bottom:24px; margin:0; max-width:60ch; }
+.service-row-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+@media (max-width:600px){
+  .service-row-detail{ padding-left:0; }
+  .service-row-title{ font-size:1.05rem; }
 }
 
 /* ---------- Asymmetrisches Leistungen-/Feature-Raster ---------- */
