@@ -30,7 +30,7 @@
 }
 
 *, *::before, *::after{ box-sizing:border-box; }
-html{ scroll-behavior:smooth; }
+html{ scroll-behavior:smooth; overflow-x:hidden; }
 a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible{
   outline:2px solid var(--accent); outline-offset:2px;
 }
@@ -107,8 +107,6 @@ a.plain{ color:inherit; text-decoration:none; }
   margin-bottom:var(--space-2);
 }
 section.dark .eyebrow, .hero .eyebrow{ color:var(--accent); }
-section.dark a:not(.btn){ color:var(--accent); }
-section.dark a:not(.btn):hover{ color:var(--on-dark); }
 
 .wrap{ max-width:var(--wrap); margin:0 auto; padding:0 24px; }
 
@@ -370,19 +368,25 @@ section.dim{ background:var(--paper-dim); }
   .hero-slide-dots{ right:16px; bottom:20px; }
 }
 
-/* ---------- Scroll-Pin-Animation "Ich Bin Lars Battermann" ---------- */
-.scrollpin-section{ height:320vh; position:relative; background:var(--paper); }
+/* ---------- Scroll-Pin-Animation "Ich Bin Lars Battermann" ----------
+   Desktop: echtes Pinning, Wörter + Portrait bewegen sich synchron (eine Phase),
+   danach blendet der Text ein (zweite, leicht überlappende Phase) — kein toter
+   Leerlauf zwischen den Bewegungen.
+   Mobil: kein Pinning (Layoutraum reicht nicht für echtes Split-Screen), stattdessen
+   ein durchgehend scroll-gekoppelter (und damit beim Hochscrollen exakt umkehrbarer)
+   Reveal in normalem Textfluss — vermeidet abgeschnittene Bilder und leere Flächen. */
+.scrollpin-section{ height:240vh; position:relative; background:var(--paper); }
 .scrollpin-sticky{
-  position:sticky; top:0; height:100vh; overflow:hidden;
+  position:sticky; top:0; height:100svh; overflow:hidden;
   display:flex; align-items:center;
 }
 .scrollpin-stage{ position:relative; width:100%; height:100%; }
 
 .scrollpin-words{
   position:absolute; top:50%; left:50%;
-  margin:0; z-index:2;
+  margin:0; z-index:2; text-align:center;
   font-family:'Archivo Black', sans-serif; font-weight:400;
-  font-size:clamp(2.6rem, 9vw, 6.5rem); line-height:1.02; letter-spacing:-0.02em;
+  font-size:clamp(3.2rem, 11vw, 8.5rem); line-height:0.98; letter-spacing:-0.02em;
   color:var(--ink); white-space:nowrap;
   transform:translate3d(calc(-50% + var(--sp-word-x, 0px)), calc(-50% + var(--sp-word-y, 0px)), 0) scale(var(--sp-word-scale, 1));
   transform-origin:center;
@@ -391,53 +395,67 @@ section.dim{ background:var(--paper-dim); }
 .scrollpin-words .scrollpin-word{ display:block; }
 
 .scrollpin-portrait{
-  position:absolute; top:0; right:6%; width:36%; height:100%;
+  position:absolute; top:0; right:6%; width:47%; height:100%;
   display:flex; align-items:center; justify-content:center;
   opacity:var(--sp-portrait-o, 0);
-  transform:translate3d(0, var(--sp-portrait-y, 60px), 0);
+  transform:translate3d(0, var(--sp-portrait-y, 50px), 0);
   will-change:transform, opacity;
 }
 .scrollpin-portrait img{
-  width:100%; height:70%; object-fit:cover; border-radius:var(--radius); box-shadow:var(--shadow);
+  width:100%; height:80%; object-fit:cover; aspect-ratio:3/4;
+  border-radius:var(--radius); box-shadow:var(--shadow);
 }
 
 .scrollpin-text{
-  position:absolute; top:68%; left:7%; max-width:36ch;
-  transform:translate3d(0, -50%, 0);
+  position:absolute; top:68%; left:7%; max-width:34ch;
+  transform:translate3d(0, calc(-50% + var(--sp-text-y, 16px)), 0);
   opacity:var(--sp-text-o, 0);
-  transition:opacity 0.3s linear;
+  visibility:hidden;
+  will-change:transform, opacity;
 }
+.scrollpin-text.is-interactive{ visibility:visible; }
 .scrollpin-text h3{ margin-top:0; }
 
 @media (max-width:900px){
-  .scrollpin-section{ height:auto; padding:var(--space-5) 0; }
+  .scrollpin-section{ height:auto; padding:var(--space-4) 0 var(--space-5); }
   .scrollpin-sticky{ position:static; height:auto; display:block; }
-  .scrollpin-stage{ position:static; height:auto; }
+  .scrollpin-stage{ position:static; height:auto; display:block; }
   .scrollpin-words{
-    position:static; transform:none; text-align:left; white-space:normal;
-    margin-bottom:var(--space-4); font-size:clamp(2.4rem, 13vw, 4rem);
+    position:static; margin:0 auto var(--space-4); transform:none; scale:1;
+    min-height:52svh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; white-space:normal;
+    font-size:clamp(2.8rem, 14vw, 4.6rem);
   }
   .scrollpin-portrait{
-    position:static; width:100%; height:auto; opacity:1; transform:none;
-    margin-bottom:var(--space-4);
+    position:static; width:100%; max-width:420px; height:auto; margin:0 auto var(--space-4);
+    opacity:var(--sp-portrait-o, 0);
+    transform:translate3d(0, var(--sp-portrait-y, 40px), 0);
   }
-  .scrollpin-portrait img{ height:auto; aspect-ratio:4/3; }
-  .scrollpin-text{ position:static; max-width:none; transform:none; opacity:1; }
+  .scrollpin-portrait img{ height:auto; aspect-ratio:3/4; }
+  .scrollpin-text{
+    position:static; max-width:48ch; margin:0 auto; text-align:center;
+    transform:translate3d(0, var(--sp-text-y, 20px), 0);
+  }
 }
 @media (prefers-reduced-motion: reduce){
-  .scrollpin-section{ height:auto; padding:var(--space-5) 0; }
+  .scrollpin-section{ height:auto; padding:var(--space-4) 0 var(--space-5); }
   .scrollpin-sticky{ position:static; height:auto; display:block; }
-  .scrollpin-stage{ position:static; height:auto; }
+  .scrollpin-stage{ position:static; height:auto; display:block; }
   .scrollpin-words{
-    position:static; transform:none; text-align:left; white-space:normal;
-    margin-bottom:var(--space-4); font-size:clamp(2.4rem, 13vw, 4rem);
+    position:static; margin:0 auto var(--space-4); transform:none; scale:1;
+    min-height:52svh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; white-space:normal;
+    font-size:clamp(2.8rem, 14vw, 4.6rem);
   }
   .scrollpin-portrait{
-    position:static; width:100%; height:auto; opacity:1; transform:none;
-    margin-bottom:var(--space-4);
+    position:static; width:100%; max-width:420px; height:auto; margin:0 auto var(--space-4);
+    opacity:1; transform:none;
   }
-  .scrollpin-portrait img{ height:auto; aspect-ratio:4/3; }
-  .scrollpin-text{ position:static; max-width:none; transform:none; opacity:1; }
+  .scrollpin-portrait img{ height:auto; aspect-ratio:3/4; }
+  .scrollpin-text{
+    position:static; max-width:48ch; margin:0 auto; text-align:center;
+    opacity:1; transform:none; visibility:visible;
+  }
 }
 
 /* ---------- Leistungen-Liste (Emil-Kowalski-Reveal beim Scrollen) ---------- */
