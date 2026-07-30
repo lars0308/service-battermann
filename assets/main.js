@@ -56,41 +56,14 @@
     }
   }
 
-  // Hero-Slider: Bilder + Headline wechseln synchron, Wasserwaagen-Effekt läuft bei jedem Wechsel
+  // Hero-Slider: Bilder + Headline wechseln synchron (reines Fade/Slide, keine Rotation)
   var heroSlides = Array.prototype.slice.call(document.querySelectorAll(".hero-slide"));
   var heroLines = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-line"));
   var heroDots = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-dot"));
-  var heroSpiritLevel = document.getElementById("hero-spirit-level");
-  var levelCta = document.querySelector("[data-level-cta]");
   if (heroSlides.length && heroLines.length) {
     var HERO_CYCLE_MS = 5200;
     var heroCurrent = 0;
     var heroTimer = null;
-
-    var runSpiritLevel = function (lineEl) {
-      if (!heroSpiritLevel) {
-        lineEl.classList.add("is-level");
-        return;
-      }
-      heroSpiritLevel.classList.remove("is-centered");
-      // 1) Wasserwaage dockt an
-      heroSpiritLevel.classList.add("is-inview");
-      // 2) Libelle wandert in die Mitte
-      window.setTimeout(function () {
-        heroSpiritLevel.classList.add("is-centered");
-      }, 350);
-      // 3) Headline richtet sich auf 0° aus ("In Waage!")
-      window.setTimeout(function () {
-        lineEl.classList.add("is-level");
-        if (levelCta && !levelCta.classList.contains("is-visible")) {
-          levelCta.classList.add("is-visible");
-        }
-      }, 350 + 700);
-      // 4) Wasserwaage blendet nach rechts aus
-      window.setTimeout(function () {
-        heroSpiritLevel.classList.remove("is-inview");
-      }, 350 + 700 + 250);
-    };
 
     var activateHeroSlide = function (index) {
       heroSlides.forEach(function (s, i) { s.classList.toggle("is-active", i === index); });
@@ -98,22 +71,7 @@
         d.classList.toggle("is-active", i === index);
         d.setAttribute("aria-selected", i === index ? "true" : "false");
       });
-      heroLines.forEach(function (l, i) {
-        if (i === index) return;
-        l.classList.remove("is-active", "is-level");
-      });
-      var activeLine = heroLines[index];
-      activeLine.classList.remove("is-level");
-      // Neu einreihen, damit die -3deg-Startposition sichtbar spielt (nicht sofort "is-level")
-      // eslint-disable-next-line no-unused-expressions
-      void activeLine.offsetWidth;
-      activeLine.classList.add("is-active");
-      if (reduceMotion) {
-        activeLine.classList.add("is-level");
-        if (levelCta) levelCta.classList.add("is-visible");
-      } else {
-        window.setTimeout(function () { runSpiritLevel(activeLine); }, 550);
-      }
+      heroLines.forEach(function (l, i) { l.classList.toggle("is-active", i === index); });
       heroCurrent = index;
     };
 
@@ -133,75 +91,8 @@
       });
     });
 
-    if (reduceMotion) {
-      activateHeroSlide(0);
-    } else {
-      window.requestAnimationFrame(function () {
-        window.requestAnimationFrame(function () {
-          activateHeroSlide(0);
-          scheduleNext();
-        });
-      });
-    }
-  }
-
-  // Schwebende Scroll-Lampe: wandert vom Hero in den Leistungen-Bereich und schaltet dort das Licht an
-  var lamp = document.getElementById("scroll-lamp");
-  var leistungenSection = document.getElementById("leistungen-list-section");
-  var serviceList = document.getElementById("service-list");
-  if (lamp && leistungenSection) {
-    if (reduceMotion) {
-      leistungenSection.classList.add("is-lit");
-      if (serviceList) serviceList.classList.add("is-lit");
-    } else {
-      var lampLit = false;
-      var lampTicking = false;
-      var heroSection = document.getElementById("hero-split");
-      var updateLamp = function () {
-        lampTicking = false;
-        if (!heroSection) return;
-        // Absolute Seitenposition (unabhängig vom aktuellen Scroll-Stand), damit
-        // der Fortschritt monoton von 0 auf 1 läuft statt mit der Viewport-Bewegung zu kippen.
-        var heroBottomAbs = heroSection.getBoundingClientRect().bottom + window.scrollY;
-        var targetRect = leistungenSection.getBoundingClientRect();
-        var targetTopAbs = targetRect.top + window.scrollY + targetRect.height * 0.15;
-        var travel = targetTopAbs - heroBottomAbs;
-        if (travel <= 0) travel = 1;
-        var progress = (window.scrollY - heroBottomAbs) / travel;
-        progress = Math.max(0, Math.min(1, progress));
-
-        if (progress > 0) {
-          lamp.classList.add("is-active");
-        } else {
-          lamp.classList.remove("is-active");
-        }
-
-        var y = -120 + progress * 216; // wandert von -120px (versteckt) auf 96px (an der Sektion)
-        lamp.style.transform = "translateY(" + y.toFixed(1) + "px)";
-
-        if (progress >= 0.98 && !lampLit) {
-          lampLit = true;
-          lamp.classList.add("is-lit");
-          leistungenSection.classList.add("is-lit");
-          if (serviceList) serviceList.classList.add("is-lit");
-        }
-      };
-      updateLamp();
-      window.addEventListener(
-        "scroll",
-        function () {
-          if (!lampTicking) {
-            window.requestAnimationFrame(updateLamp);
-            lampTicking = true;
-          }
-        },
-        { passive: true }
-      );
-    }
-  } else if (leistungenSection) {
-    // Kein Lampen-Element (z. B. andere Seite) — Liste trotzdem sichtbar machen
-    leistungenSection.classList.add("is-lit");
-    if (serviceList) serviceList.classList.add("is-lit");
+    activateHeroSlide(0);
+    scheduleNext();
   }
 
   // Leistungen-Liste: Zeilen per Klick/Tap öffnen (Hover übernimmt das für Maus-Nutzer per CSS)
@@ -305,26 +196,39 @@
 
   // Vorher/Nachher-Projekte aus content/vorher-nachher.json laden (per CMS pflegbar)
   var vnContainer = document.querySelector("[data-vn-container]");
-  if (vnContainer) {
+  var vnSlots = document.querySelectorAll("[data-vn-slot]");
+  if (vnContainer || vnSlots.length) {
     fetch("content/vorher-nachher.json", { cache: "no-store" })
       .then(function (res) { return res.ok ? res.json() : { projekte: [] }; })
       .then(function (data) {
         var projekte = data.projekte || [];
-        vnContainer.innerHTML = projekte
-          .map(function (p, i) {
-            return (
-              '<div class="vn-block reveal is-visible">' +
-              '<p style="font-family:\'Montserrat\',sans-serif;font-weight:700;margin-bottom:10px">' +
-              escapeHtml(p.titel || "") +
-              "</p>" +
-              (p.beschreibung ? "<p>" + escapeHtml(p.beschreibung) + "</p>" : "") +
-              '<div class="vn-pair">' +
-              '<figure><img src="' + p.vorher_bild + '" alt="' + escapeHtml(p.vorher_alt || "") + '" loading="lazy"><figcaption>Vorher</figcaption></figure>' +
-              '<figure><img src="' + p.nachher_bild + '" alt="' + escapeHtml(p.nachher_alt || "") + '" loading="lazy"><figcaption>Nachher</figcaption></figure>' +
-              "</div></div>"
-            );
-          })
-          .join("");
+
+        if (vnContainer) {
+          vnContainer.innerHTML = projekte
+            .map(function (p) {
+              return (
+                '<div class="vn-block reveal is-visible">' +
+                '<p style="font-family:\'Montserrat\',sans-serif;font-weight:700;margin-bottom:10px">' +
+                escapeHtml(p.titel || "") +
+                "</p>" +
+                (p.beschreibung ? "<p>" + escapeHtml(p.beschreibung) + "</p>" : "") +
+                '<div class="vn-pair">' +
+                '<figure><img src="' + p.vorher_bild + '" alt="' + escapeHtml(p.vorher_alt || "") + '" loading="lazy"><figcaption>Vorher</figcaption></figure>' +
+                '<figure><img src="' + p.nachher_bild + '" alt="' + escapeHtml(p.nachher_alt || "") + '" loading="lazy"><figcaption>Nachher</figcaption></figure>' +
+                "</div></div>"
+              );
+            })
+            .join("");
+        }
+
+        vnSlots.forEach(function (slot) {
+          var kategorie = slot.getAttribute("data-vn-slot");
+          var match = projekte.filter(function (p) { return p.kategorie === kategorie; })[0];
+          if (!match) return; // keine passenden Fotos vorhanden — Slot bleibt leer (via :empty ausgeblendet)
+          slot.innerHTML =
+            '<figure><img src="' + match.vorher_bild + '" alt="' + escapeHtml(match.vorher_alt || "") + '" loading="lazy"><figcaption>Vorher</figcaption></figure>' +
+            '<figure><img src="' + match.nachher_bild + '" alt="' + escapeHtml(match.nachher_alt || "") + '" loading="lazy"><figcaption>Nachher</figcaption></figure>';
+        });
       })
       .catch(function () {});
   }
