@@ -70,7 +70,7 @@
   // Vorher/Nachher-Projekte aus content/vorher-nachher.json laden (per CMS pflegbar)
   var vnContainer = document.querySelector("[data-vn-container]");
   if (vnContainer) {
-    fetch("/content/vorher-nachher.json", { cache: "no-store" })
+    fetch("content/vorher-nachher.json", { cache: "no-store" })
       .then(function (res) { return res.ok ? res.json() : { projekte: [] }; })
       .then(function (data) {
         var projekte = data.projekte || [];
