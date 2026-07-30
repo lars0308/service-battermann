@@ -123,13 +123,26 @@
     });
   });
 
-  // Scroll-Pin-Animation "Ich Bin Lars Battermann": Wörter → Bild → Text, per Scroll-Fortschritt gesteuert
+  // Scroll-Pin-Animation "Ich Bin Lars Battermann"
+  // Desktop: echtes Pinning. Wörter + Portrait bewegen sich in einer gemeinsamen,
+  // synchronen Phase; der Text blendet in einer zweiten, leicht überlappenden
+  // Phase ein — dadurch kein toter Leerlauf zwischen den Bewegungen.
+  // Mobil/Reduced-Motion: kein Pinning, dafür ein durchgehend scroll-gekoppelter
+  // (und damit beim Hochscrollen exakt umkehrbarer) Reveal im normalen Textfluss.
   var scrollpinSection = document.querySelector(".scrollpin-section");
-  if (scrollpinSection && !reduceMotion && window.matchMedia("(min-width:900px)").matches) {
+  if (scrollpinSection) {
     var spWords = scrollpinSection.querySelector(".scrollpin-words");
     var spStage = scrollpinSection.querySelector(".scrollpin-stage");
+    var spText = scrollpinSection.querySelector(".scrollpin-text");
     var spTicking = false;
-    var updateScrollpin = function () {
+
+    // Der Link im Textpanel darf per Tab nur erreichbar sein, wenn er auch sichtbar ist
+    // (sonst würde ein Tastaturfokus auf einem unsichtbaren Element landen).
+    var setTextInteractive = function (textProgress) {
+      if (spText) spText.classList.toggle("is-interactive", textProgress > 0.05);
+    };
+
+    var updateScrollpinDesktop = function () {
       spTicking = false;
       var rect = scrollpinSection.getBoundingClientRect();
       var vh = window.innerHeight;
@@ -137,38 +150,65 @@
       var progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
       progress = Math.max(0, Math.min(1, progress));
 
-      var phase1 = Math.max(0, Math.min(1, progress / 0.33));
-      var phase2 = Math.max(0, Math.min(1, (progress - 0.33) / 0.33));
-      var phase3 = Math.max(0, Math.min(1, (progress - 0.66) / 0.34));
+      // Phase A (Wörter + Portrait, synchron): 0 → 0.55
+      // Phase B (Text, leicht überlappend): 0.42 → 1
+      var phaseA = Math.max(0, Math.min(1, progress / 0.55));
+      var phaseB = Math.max(0, Math.min(1, (progress - 0.42) / 0.58));
 
       var stageRect = spStage ? spStage.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
       // Zielposition: Wortblock oben links, deutlich verkleinert, damit er das Textpanel darunter nicht überlappt.
-      var finalScale = 0.4;
+      var finalScale = 0.42;
       var naturalWidth = spWords ? spWords.scrollWidth : 0;
       var naturalHeight = spWords ? spWords.scrollHeight : 0;
-      var finalCenterX = stageRect.width * 0.08 + (naturalWidth * finalScale) / 2;
+      var finalCenterX = stageRect.width * 0.09 + (naturalWidth * finalScale) / 2;
       var finalCenterY = stageRect.height * 0.2 + (naturalHeight * finalScale) / 2;
       var dx = finalCenterX - stageRect.width / 2;
       var dy = finalCenterY - stageRect.height / 2;
-      scrollpinSection.style.setProperty("--sp-word-x", (dx * phase1).toFixed(1) + "px");
-      scrollpinSection.style.setProperty("--sp-word-y", (dy * phase1).toFixed(1) + "px");
-      scrollpinSection.style.setProperty("--sp-word-scale", (1 - (1 - finalScale) * phase1).toFixed(3));
-      scrollpinSection.style.setProperty("--sp-portrait-o", phase2.toFixed(3));
-      scrollpinSection.style.setProperty("--sp-portrait-y", (60 * (1 - phase2)).toFixed(1) + "px");
-      scrollpinSection.style.setProperty("--sp-text-o", phase3.toFixed(3));
+
+      scrollpinSection.style.setProperty("--sp-word-x", (dx * phaseA).toFixed(1) + "px");
+      scrollpinSection.style.setProperty("--sp-word-y", (dy * phaseA).toFixed(1) + "px");
+      scrollpinSection.style.setProperty("--sp-word-scale", (1 - (1 - finalScale) * phaseA).toFixed(3));
+      scrollpinSection.style.setProperty("--sp-portrait-o", phaseA.toFixed(3));
+      scrollpinSection.style.setProperty("--sp-portrait-y", (50 * (1 - phaseA)).toFixed(1) + "px");
+      scrollpinSection.style.setProperty("--sp-text-o", phaseB.toFixed(3));
+      scrollpinSection.style.setProperty("--sp-text-y", (16 * (1 - phaseB)).toFixed(1) + "px");
+      setTextInteractive(phaseB);
     };
-    updateScrollpin();
-    window.addEventListener(
-      "scroll",
-      function () {
-        if (!spTicking) {
-          window.requestAnimationFrame(updateScrollpin);
-          spTicking = true;
-        }
-      },
-      { passive: true }
-    );
-    window.addEventListener("resize", updateScrollpin);
+
+    // Mobil: kein Pinning — Fortschritt richtet sich danach, wie weit die Sektion
+    // von unten in den Viewport gescrollt wurde. Portrait und Text erscheinen
+    // mit minimalem Versatz nahezu gleichzeitig.
+    var updateScrollpinMobile = function () {
+      spTicking = false;
+      var rect = scrollpinSection.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var progress = (vh - rect.top) / (vh * 0.75);
+      progress = Math.max(0, Math.min(1, progress));
+      var textProgress = Math.max(0, Math.min(1, (progress - 0.12) / 0.88));
+
+      scrollpinSection.style.setProperty("--sp-portrait-o", progress.toFixed(3));
+      scrollpinSection.style.setProperty("--sp-portrait-y", (40 * (1 - progress)).toFixed(1) + "px");
+      scrollpinSection.style.setProperty("--sp-text-o", textProgress.toFixed(3));
+      scrollpinSection.style.setProperty("--sp-text-y", (20 * (1 - textProgress)).toFixed(1) + "px");
+      setTextInteractive(textProgress);
+    };
+
+    if (!reduceMotion) {
+      var isDesktopLayout = window.matchMedia("(min-width:900px)").matches;
+      var updateScrollpin = isDesktopLayout ? updateScrollpinDesktop : updateScrollpinMobile;
+      updateScrollpin();
+      window.addEventListener(
+        "scroll",
+        function () {
+          if (!spTicking) {
+            window.requestAnimationFrame(updateScrollpin);
+            spTicking = true;
+          }
+        },
+        { passive: true }
+      );
+      window.addEventListener("resize", updateScrollpin);
+    }
   }
 
   // Lightbox: Vollbild-Ansicht für Projektbilder in geöffneten Akkordeon-Bereichen
