@@ -132,9 +132,38 @@
   var scrollpinSection = document.querySelector(".scrollpin-section");
   if (scrollpinSection) {
     var spWords = scrollpinSection.querySelector(".scrollpin-words");
+    var spWordLine3 = scrollpinSection.querySelector(".scrollpin-word-3");
     var spStage = scrollpinSection.querySelector(".scrollpin-stage");
     var spText = scrollpinSection.querySelector(".scrollpin-text");
     var spTicking = false;
+
+    // Weiche Ease-in-out-Kurve statt linearer Scroll-Kopplung — fühlt sich flüssiger an,
+    // bleibt aber eine reine Funktion des Fortschritts (daher exakt umkehrbar).
+    var easeInOutCubic = function (t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    };
+
+    // Garantiert, dass "Lars Battermann" auf jeder Bildschirmbreite in einer Zeile bleibt
+    // (nie umbricht, nie abgeschnitten wird) — misst die tatsächliche Breite und skaliert
+    // die Schriftgröße bei Bedarf nach unten.
+    var fitScrollpinWords = function () {
+      if (!spWords || !spWordLine3) return;
+      spWords.style.fontSize = "";
+      var stageEl = spStage || scrollpinSection;
+      var availableWidth = stageEl.clientWidth - 48;
+      var actualWidth = spWordLine3.scrollWidth;
+      if (availableWidth > 0 && actualWidth > availableWidth) {
+        var currentSize = parseFloat(window.getComputedStyle(spWords).fontSize);
+        var newSize = currentSize * (availableWidth / actualWidth);
+        spWords.style.fontSize = newSize.toFixed(1) + "px";
+      }
+    };
+    fitScrollpinWords();
+    // Erneut messen, sobald die Webfont-Datei (Archivo Black) tatsächlich geladen ist —
+    // vorher basiert die Messung noch auf der schmaleren Fallback-Schrift.
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(fitScrollpinWords);
+    }
 
     // Der Link im Textpanel darf per Tab nur erreichbar sein, wenn er auch sichtbar ist
     // (sonst würde ein Tastaturfokus auf einem unsichtbaren Element landen).
@@ -152,8 +181,8 @@
 
       // Phase A (Wörter + Portrait, synchron): 0 → 0.55
       // Phase B (Text, leicht überlappend): 0.42 → 1
-      var phaseA = Math.max(0, Math.min(1, progress / 0.55));
-      var phaseB = Math.max(0, Math.min(1, (progress - 0.42) / 0.58));
+      var phaseA = easeInOutCubic(Math.max(0, Math.min(1, progress / 0.55)));
+      var phaseB = easeInOutCubic(Math.max(0, Math.min(1, (progress - 0.42) / 0.58)));
 
       var stageRect = spStage ? spStage.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
       // Zielposition: Wortblock oben links, deutlich verkleinert, damit er das Textpanel darunter nicht überlappt.
@@ -182,9 +211,10 @@
       spTicking = false;
       var rect = scrollpinSection.getBoundingClientRect();
       var vh = window.innerHeight;
-      var progress = (vh - rect.top) / (vh * 0.75);
-      progress = Math.max(0, Math.min(1, progress));
-      var textProgress = Math.max(0, Math.min(1, (progress - 0.12) / 0.88));
+      var rawProgress = Math.max(0, Math.min(1, (vh - rect.top) / (vh * 0.75)));
+      var rawTextProgress = Math.max(0, Math.min(1, (rawProgress - 0.12) / 0.88));
+      var progress = easeInOutCubic(rawProgress);
+      var textProgress = easeInOutCubic(rawTextProgress);
 
       scrollpinSection.style.setProperty("--sp-portrait-o", progress.toFixed(3));
       scrollpinSection.style.setProperty("--sp-portrait-y", (40 * (1 - progress)).toFixed(1) + "px");
@@ -207,7 +237,12 @@
         },
         { passive: true }
       );
-      window.addEventListener("resize", updateScrollpin);
+      window.addEventListener("resize", function () {
+        fitScrollpinWords();
+        updateScrollpin();
+      });
+    } else {
+      window.addEventListener("resize", fitScrollpinWords);
     }
   }
 
