@@ -57,15 +57,23 @@
   }
 
   // Hero-Slider: Bilder + Headline wechseln synchron (reines Fade/Slide, keine Rotation)
+  // Der Text der ersten Zeile rotiert über volle Zyklen hinweg (3 Runden, dann von vorn).
   var heroSlides = Array.prototype.slice.call(document.querySelectorAll(".hero-slide"));
   var heroLines = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-line"));
   var heroDots = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-dot"));
+  var heroRoundEl = document.querySelector("[data-hero-round-text]");
+  var HERO_ROUND_TEXTS = ["ist persönlich für Sie da", "kümmert sich selbst darum", "steht für sein Wort"];
   if (heroSlides.length && heroLines.length) {
     var HERO_CYCLE_MS = 5200;
     var heroCurrent = 0;
+    var heroRound = 0;
     var heroTimer = null;
 
     var activateHeroSlide = function (index) {
+      if (index === 0 && heroCurrent === heroSlides.length - 1 && heroRoundEl) {
+        heroRound = (heroRound + 1) % HERO_ROUND_TEXTS.length;
+        heroRoundEl.textContent = HERO_ROUND_TEXTS[heroRound];
+      }
       heroSlides.forEach(function (s, i) { s.classList.toggle("is-active", i === index); });
       heroDots.forEach(function (d, i) {
         d.classList.toggle("is-active", i === index);
@@ -95,16 +103,159 @@
     scheduleNext();
   }
 
-  // Leistungen-Liste: Zeilen per Klick/Tap öffnen (Hover übernimmt das für Maus-Nutzer per CSS)
+  // Leistungen-Akkordeon: Klick öffnet eine Zeile, alle anderen schließen automatisch
   var serviceToggles = document.querySelectorAll(".service-row-toggle");
   serviceToggles.forEach(function (btn) {
     btn.addEventListener("click", function () {
       var row = btn.closest(".service-row");
       if (!row) return;
-      var isOpen = row.classList.toggle("is-open");
-      btn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      var willOpen = !row.classList.contains("is-open");
+      var list = row.closest(".service-list");
+      if (list) {
+        list.querySelectorAll(".service-row.is-open").forEach(function (openRow) {
+          openRow.classList.remove("is-open");
+          var openBtn = openRow.querySelector(".service-row-toggle");
+          if (openBtn) openBtn.setAttribute("aria-expanded", "false");
+        });
+      }
+      row.classList.toggle("is-open", willOpen);
+      btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
     });
   });
+
+  // Scroll-Pin-Animation "Ich Bin Lars Battermann": Wörter → Bild → Text, per Scroll-Fortschritt gesteuert
+  var scrollpinSection = document.querySelector(".scrollpin-section");
+  if (scrollpinSection && !reduceMotion && window.matchMedia("(min-width:900px)").matches) {
+    var spWords = scrollpinSection.querySelector(".scrollpin-words");
+    var spStage = scrollpinSection.querySelector(".scrollpin-stage");
+    var spTicking = false;
+    var updateScrollpin = function () {
+      spTicking = false;
+      var rect = scrollpinSection.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var scrollable = rect.height - vh;
+      var progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
+      progress = Math.max(0, Math.min(1, progress));
+
+      var phase1 = Math.max(0, Math.min(1, progress / 0.33));
+      var phase2 = Math.max(0, Math.min(1, (progress - 0.33) / 0.33));
+      var phase3 = Math.max(0, Math.min(1, (progress - 0.66) / 0.34));
+
+      var stageRect = spStage ? spStage.getBoundingClientRect() : { width: window.innerWidth, height: window.innerHeight };
+      // Zielposition: Wortblock oben links, deutlich verkleinert, damit er das Textpanel darunter nicht überlappt.
+      var finalScale = 0.4;
+      var naturalWidth = spWords ? spWords.scrollWidth : 0;
+      var naturalHeight = spWords ? spWords.scrollHeight : 0;
+      var finalCenterX = stageRect.width * 0.08 + (naturalWidth * finalScale) / 2;
+      var finalCenterY = stageRect.height * 0.2 + (naturalHeight * finalScale) / 2;
+      var dx = finalCenterX - stageRect.width / 2;
+      var dy = finalCenterY - stageRect.height / 2;
+      scrollpinSection.style.setProperty("--sp-word-x", (dx * phase1).toFixed(1) + "px");
+      scrollpinSection.style.setProperty("--sp-word-y", (dy * phase1).toFixed(1) + "px");
+      scrollpinSection.style.setProperty("--sp-word-scale", (1 - (1 - finalScale) * phase1).toFixed(3));
+      scrollpinSection.style.setProperty("--sp-portrait-o", phase2.toFixed(3));
+      scrollpinSection.style.setProperty("--sp-portrait-y", (60 * (1 - phase2)).toFixed(1) + "px");
+      scrollpinSection.style.setProperty("--sp-text-o", phase3.toFixed(3));
+    };
+    updateScrollpin();
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!spTicking) {
+          window.requestAnimationFrame(updateScrollpin);
+          spTicking = true;
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener("resize", updateScrollpin);
+  }
+
+  // Lightbox: Vollbild-Ansicht für Projektbilder in geöffneten Akkordeon-Bereichen
+  var lightboxTriggerSelector = "[data-lightbox-img], .service-row-vn img";
+  var lightboxImgs = Array.prototype.slice.call(document.querySelectorAll(lightboxTriggerSelector));
+  if (lightboxImgs.length) {
+    var lightbox = document.createElement("div");
+    lightbox.className = "lightbox";
+    lightbox.setAttribute("role", "dialog");
+    lightbox.setAttribute("aria-modal", "true");
+    lightbox.setAttribute("aria-label", "Bildansicht");
+    lightbox.innerHTML =
+      '<button type="button" class="lightbox-close" aria-label="Schließen">×</button>' +
+      '<button type="button" class="lightbox-nav lightbox-prev" aria-label="Vorheriges Bild">‹</button>' +
+      '<img class="lightbox-img" alt="">' +
+      '<button type="button" class="lightbox-nav lightbox-next" aria-label="Nächstes Bild">›</button>';
+    document.body.appendChild(lightbox);
+
+    var lbImg = lightbox.querySelector(".lightbox-img");
+    var lbClose = lightbox.querySelector(".lightbox-close");
+    var lbPrev = lightbox.querySelector(".lightbox-prev");
+    var lbNext = lightbox.querySelector(".lightbox-next");
+    var lbGroup = [];
+    var lbIndex = 0;
+    var lbLastFocused = null;
+
+    var refreshLightboxImgs = function () {
+      return Array.prototype.slice.call(document.querySelectorAll(lightboxTriggerSelector));
+    };
+
+    var showLightboxImg = function (index) {
+      if (!lbGroup.length) return;
+      lbIndex = (index + lbGroup.length) % lbGroup.length;
+      var target = lbGroup[lbIndex];
+      lbImg.src = target.currentSrc || target.src;
+      lbImg.alt = target.alt || "";
+      var multi = lbGroup.length > 1;
+      lbPrev.style.display = multi ? "" : "none";
+      lbNext.style.display = multi ? "" : "none";
+    };
+
+    var openLightbox = function (img) {
+      var group = img.closest(".service-row-gallery, .service-row-vn");
+      lbGroup = group ? Array.prototype.slice.call(group.querySelectorAll("img")) : [img];
+      lbLastFocused = document.activeElement;
+      showLightboxImg(lbGroup.indexOf(img));
+      lightbox.classList.add("is-open");
+      lbClose.focus();
+      document.addEventListener("keydown", onLightboxKeydown);
+    };
+
+    var closeLightbox = function () {
+      lightbox.classList.remove("is-open");
+      document.removeEventListener("keydown", onLightboxKeydown);
+      if (lbLastFocused) lbLastFocused.focus();
+    };
+
+    var onLightboxKeydown = function (e) {
+      if (e.key === "Escape") closeLightbox();
+      else if (e.key === "ArrowLeft") showLightboxImg(lbIndex - 1);
+      else if (e.key === "ArrowRight") showLightboxImg(lbIndex + 1);
+    };
+
+    document.addEventListener("click", function (e) {
+      var img = e.target.closest(lightboxTriggerSelector);
+      if (img && refreshLightboxImgs().indexOf(img) !== -1) {
+        openLightbox(img);
+      }
+    });
+    lbClose.addEventListener("click", closeLightbox);
+    lbPrev.addEventListener("click", function () { showLightboxImg(lbIndex - 1); });
+    lbNext.addEventListener("click", function () { showLightboxImg(lbIndex + 1); });
+    lightbox.addEventListener("click", function (e) {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    var lbTouchStartX = null;
+    lightbox.addEventListener("touchstart", function (e) {
+      lbTouchStartX = e.changedTouches[0].clientX;
+    }, { passive: true });
+    lightbox.addEventListener("touchend", function (e) {
+      if (lbTouchStartX === null) return;
+      var dx = e.changedTouches[0].clientX - lbTouchStartX;
+      if (Math.abs(dx) > 40) showLightboxImg(lbIndex + (dx < 0 ? 1 : -1));
+      lbTouchStartX = null;
+    }, { passive: true });
+  }
 
   // Permanenter Contact-Trigger: erscheint dezent nach dem Scrollen über den Hero-Bereich
   var fabGroup = document.querySelector(".fab-group");

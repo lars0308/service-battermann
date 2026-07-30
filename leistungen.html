@@ -49,53 +49,78 @@
 
 <section>
   <div class="wrap">
-    <div class="catalog">
+    <div class="service-list" id="service-list">
 
-      <div class="catalog-item reveal">
-        <span class="catalog-index">01</span>
-        <div class="catalog-thumb">
-          <img src="images/arbeit-garten.jpg" alt="Kantenschnitt und Pflege an einer Einfahrt" loading="lazy">
-        </div>
-        <div class="catalog-body">
-          <h3>Hausmeisterservice &amp; Objektbetreuung</h3>
+      <div class="service-row reveal">
+        <button class="service-row-toggle" aria-expanded="false" aria-controls="leistung-detail-1">
+          <span class="service-row-num">01</span>
+          <span class="service-row-title"><span class="service-row-verb">Pflegt</span> Hausmeisterservice &amp; Objektbetreuung</span>
+          <span class="service-row-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="service-row-detail" id="leistung-detail-1">
           <p>Ein fester Ansprechpartner statt wechselnder Kontakte. Für Hausverwaltungen und Firmen übernehme ich die laufende Betreuung mehrerer Objekte: regelmäßige Kontrollgänge, Kleinreparaturen auf Zuruf, verlässliche Terminabsprachen und Abrechnung auch per E-Rechnung.</p>
+          <div class="service-row-gallery">
+            <figure><img src="images/fahrzeug-logo.jpg" alt="Firmenfahrzeug im Einsatz für die Objektbetreuung" loading="lazy" data-lightbox-img></figure>
+          </div>
           <p><a href="kontakt.html" class="inline-cta">Rahmenvereinbarung besprechen →</a></p>
         </div>
       </div>
 
-      <div class="catalog-item reveal">
-        <span class="catalog-index">02</span>
-        <div class="catalog-thumb">
-          <img src="images/arbeit-montage.jpg" alt="Ausrichten eines Zaunpfostens mit der Wasserwaage" loading="lazy">
-        </div>
-        <div class="catalog-body">
-          <h3>Haus, Wohnung &amp; Montage</h3>
-          <p>Möbel- und Regalmontage, Bilder und Spiegel aufhängen, Türen und Fenster nachjustieren, Kleinreparaturen aller Art — dazu Rasenpflege, Kantenschnitt, Heckenschnitt sowie das Ausrichten und Befestigen von Zäunen und Torpfosten im Garten.</p>
+      <div class="service-row reveal">
+        <button class="service-row-toggle" aria-expanded="false" aria-controls="leistung-detail-2">
+          <span class="service-row-num">02</span>
+          <span class="service-row-title"><span class="service-row-verb">Montiert</span> Haus, Wohnung &amp; Montage</span>
+          <span class="service-row-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="service-row-detail" id="leistung-detail-2">
+          <p>Möbel- und Regalmontage, Bilder und Spiegel aufhängen, Türen und Fenster nachjustieren, Kleinreparaturen aller Art im Haus.</p>
+          <div class="service-row-gallery">
+            <figure><img src="images/arbeit-montage.jpg" alt="Ausrichten eines Zaunpfostens mit der Wasserwaage" loading="lazy" data-lightbox-img></figure>
+          </div>
           <p><a href="https://wa.me/4915567467763" class="inline-cta">Kurz schildern, was ansteht — per WhatsApp →</a></p>
         </div>
       </div>
 
-      <div class="catalog-item reveal">
-        <span class="catalog-index">03</span>
-        <div class="catalog-thumb">
-          <img src="images/vorher-nachher/bad-nachher-1.jpg" alt="Montierte Duscharmatur im Bad" loading="lazy">
-        </div>
-        <div class="catalog-body">
-          <h3>Bad &amp; Sanitär</h3>
-          <p>Tropfende Armatur, undichte Fuge, kaputte Dichtung: Ich tausche Armaturen, erneuere Fugen im Bad und übernehme kleinere Abdichtungs- und Reparaturarbeiten rund um Waschbecken, Dusche und WC.</p>
-          <p class="legal-note"><strong>Rechtlicher Hinweis:</strong> Auch im Sanitärbereich gilt: Für bestimmte Installationsarbeiten (z. B. an der Trinkwasserinstallation) ist ein zugelassener Meisterbetrieb erforderlich. Ich übernehme ausschließlich meisterfreie Instandsetzungsarbeiten wie Reparaturen, Austausch und Abdichtungen — bei größeren Eingriffen sage ich das offen und verweise an einen Fachbetrieb.</p>
+      <div class="service-row reveal">
+        <button class="service-row-toggle" aria-expanded="false" aria-controls="leistung-detail-3">
+          <span class="service-row-num">03</span>
+          <span class="service-row-title"><span class="service-row-verb">Pflegt</span> Garten &amp; Außenanlagen</span>
+          <span class="service-row-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="service-row-detail" id="leistung-detail-3">
+          <p>Rasenpflege, Kantenschnitt, Heckenschnitt sowie das Ausrichten und Befestigen von Zäunen und Torpfosten im Garten.</p>
+          <div class="service-row-gallery">
+            <figure><img src="images/arbeit-garten.jpg" alt="Kantenschnitt und Pflege an einer Einfahrt" loading="lazy" data-lightbox-img></figure>
+          </div>
+          <p><a href="https://wa.me/4915567467763" class="inline-cta">Kurz schildern, was ansteht — per WhatsApp →</a></p>
         </div>
       </div>
 
-      <div class="catalog-item reveal">
-        <span class="catalog-index">04</span>
-        <div class="catalog-thumb">
-          <img src="images/elektro/elektro-fehlersuche.jpg" alt="Fehlersuche an einer Elektroinstallation" loading="lazy">
+      <div class="service-row reveal">
+        <button class="service-row-toggle" aria-expanded="false" aria-controls="leistung-detail-4">
+          <span class="service-row-num">04</span>
+          <span class="service-row-title"><span class="service-row-verb">Repariert</span> Bad &amp; Sanitär<span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+          <span class="service-row-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="service-row-detail" id="leistung-detail-4">
+          <p>Tropfende Armatur, undichte Fuge, kaputte Dichtung: Ich tausche Armaturen, erneuere Fugen im Bad und übernehme kleinere Abdichtungs- und Reparaturarbeiten rund um Waschbecken, Dusche und WC.</p>
+          <div class="service-row-vn" data-vn-slot="bad"></div>
         </div>
-        <div class="catalog-body">
-          <h3>Elektro-Kleinreparaturen</h3>
+      </div>
+
+      <div class="service-row reveal">
+        <button class="service-row-toggle" aria-expanded="false" aria-controls="leistung-detail-5">
+          <span class="service-row-num">05</span>
+          <span class="service-row-title"><span class="service-row-verb">Repariert</span> Elektro-Kleinreparaturen<span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+          <span class="service-row-icon" aria-hidden="true">+</span>
+        </button>
+        <div class="service-row-detail" id="leistung-detail-5">
           <p>Wenn's blitzt, riecht oder einfach dunkel bleibt: Fehlersuche bei Kurzschlüssen und ausgelösten Sicherungen, Austausch von Lampen, Schaltern und Steckdosen, Montage von Innen- und Außenleuchten.</p>
-          <p class="legal-note"><strong>Rechtlicher Hinweis:</strong> Ich bin gelernter Elektriker, kein Elektro-Meisterbetrieb. Ich übernehme ausschließlich meisterfreie Instandsetzungsarbeiten (z. B. Austausch bestehender Lampen, Schalter und Steckdosen). Arbeiten an der festen Elektroinstallation, die eine Meisterqualifikation nach der Handwerksordnung erfordern, vermittle ich bei Bedarf an einen entsprechenden Fachbetrieb weiter.</p>
+          <div class="service-row-gallery">
+            <figure><img src="images/elektro/elektro-fehlersuche.jpg" alt="Fehlersuche an einer Elektroinstallation" loading="lazy" data-lightbox-img></figure>
+            <figure><img src="images/elektro/elektro-ursache.jpg" alt="Ursache eines Kurzschlusses freigelegt" loading="lazy" data-lightbox-img></figure>
+            <figure><img src="images/elektro/elektro-vorbereitung.jpg" alt="Vorbereitung einer Elektro-Reparatur" loading="lazy" data-lightbox-img></figure>
+          </div>
           <p><a href="https://wa.me/4915567467763" class="inline-cta">Kurz schildern, was los ist — per WhatsApp →</a></p>
         </div>
       </div>
@@ -149,6 +174,7 @@
     <span>© 2026 Objekt- und Reparaturservice Battermann · Lars Battermann</span>
     <span><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span>
   </div>
+  <p class="wrap footer-legal">Ausführung ausschließlich im gesetzlich zulässigen Rahmen für meisterfreie Instandsetzungsarbeiten.</p>
 </footer>
 
 <div class="cookie-banner" data-cookie-banner hidden>
