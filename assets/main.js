@@ -123,6 +123,22 @@
     });
   });
 
+  // Direktlink zu einem Leistungsbereich (z. B. leistungen.html#leistung-garten):
+  // passende Zeile automatisch öffnen und dorthin scrollen, statt geschlossen liegenzulassen.
+  if (window.location.hash) {
+    var targetRow = document.querySelector(".service-list " + window.location.hash);
+    if (targetRow && targetRow.classList.contains("service-row")) {
+      var targetBtn = targetRow.querySelector(".service-row-toggle");
+      if (targetBtn) {
+        targetRow.classList.add("is-open");
+        targetBtn.setAttribute("aria-expanded", "true");
+        window.setTimeout(function () {
+          targetRow.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+        }, 50);
+      }
+    }
+  }
+
   // Scroll-Pin-Animation "Ich Bin Lars Battermann": cineastische Komposition.
   // Ein einziger, gepinnter Mechanismus für Desktop UND Mobile: Die Kopfzeile
   // driftet sanft nach links/oben und wechselt synchron von dunkel auf hell,
@@ -174,7 +190,15 @@
     // Kopfzeile wechselt synchron mit der Bildeinblendung von Tinte (dunkel) auf
     // Creme (hell) — sonst wäre dunkler Text auf dem später dunklen Verlauf/Foto
     // nicht mehr lesbar.
-    var INK_RGB = [25, 22, 20];
+    // Startfarbe live aus --ink auslesen statt hart zu codieren: im automatischen
+    // Dark Mode ist --ink hell (der Seitenhintergrund ist dann ja bereits dunkel),
+    // sonst würde der Text im Startzustand unsichtbar auf dunklem Grund stehen.
+    var hexToRgb = function (hex) {
+      hex = (hex || "").trim().replace("#", "");
+      if (hex.length !== 6) return [25, 22, 20];
+      return [parseInt(hex.substring(0, 2), 16), parseInt(hex.substring(2, 4), 16), parseInt(hex.substring(4, 6), 16)];
+    };
+    var INK_RGB = hexToRgb(getComputedStyle(document.documentElement).getPropertyValue("--ink"));
     var ON_DARK_RGB = [244, 241, 233];
     var lerpColor = function (t) {
       var r = Math.round(INK_RGB[0] + (ON_DARK_RGB[0] - INK_RGB[0]) * t);
@@ -224,6 +248,21 @@
       var phaseB = easeInOutCubic(Math.max(0, Math.min(1, (progress - 0.42) / 0.58)));
       applyPhases(phaseA, phaseB);
     };
+
+    // Wenn das Betriebssystem live zwischen Hell/Dunkel wechselt, während die Seite
+    // offen ist, --ink-Startfarbe neu einlesen und den aktuellen Zustand neu zeichnen.
+    var refreshInkColor = function () {
+      INK_RGB = hexToRgb(getComputedStyle(document.documentElement).getPropertyValue("--ink"));
+      if (reduceMotion) {
+        applyPhases(1, 1);
+      } else {
+        updateScrollpin();
+      }
+    };
+    if (window.matchMedia) {
+      var colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      if (colorSchemeQuery.addEventListener) colorSchemeQuery.addEventListener("change", refreshInkColor);
+    }
 
     if (!reduceMotion) {
       updateScrollpin();
