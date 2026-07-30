@@ -55,6 +55,34 @@ Die Startseite lädt die Projektliste aus `content/vorher-nachher.json` und
 zeigt jeden Eintrag automatisch im Vorher/Nachher-Bereich an — ohne dass
 jemand Code anfassen muss.
 
+## 4. Echte Google-Bewertungen auf der Startseite anzeigen (optional)
+
+Die Startseite kann echte 5-Sterne-Bewertungen direkt von Google Maps
+anzeigen (`assets/js/google-reviews.js`). **Ohne Einrichtung passiert
+nichts Kaputtes** — es bleibt einfach beim bestehenden Link "Bewertungen
+auf Google ansehen". Erst wenn du die zwei Werte unten einträgst, werden
+zusätzlich bis zu drei 5-Sterne-Bewertungen als Textkarten eingeblendet.
+
+1. In der [Google Cloud Console](https://console.cloud.google.com/) ein
+   Projekt anlegen (oder ein bestehendes nutzen) und **Billing aktivieren**
+   — Google verlangt ein hinterlegtes Zahlungsmittel, auch wenn die Nutzung
+   im Rahmen bleibt, die Places-Details-Abfrage kostet pro Aufruf.
+2. **"Maps JavaScript API"** aktivieren (API & Dienste → Bibliothek).
+3. Einen **API-Key** erstellen (API & Dienste → Anmeldedaten) und **zwingend
+   per HTTP-Referrer einschränken** auf `https://service-battermann.de/*`
+   (und ggf. die Netlify-Vorschau-Domain) — sonst kann jeder deinen Key
+   aus dem Seitenquelltext kopieren und auf deine Kosten nutzen.
+4. Deine **Place ID** herausfinden: [Place ID Finder von
+   Google](https://developers.google.com/maps/documentation/places/web-service/place-id)
+   — einfach den Firmennamen eingeben.
+5. In `index.html` das Element mit `data-google-reviews` suchen und
+   `data-api-key` sowie `data-place-id` mit deinen Werten befüllen.
+
+Hinweis: Google erlaubt laut Nutzungsbedingungen keine dauerhafte
+Zwischenspeicherung von Bewertungstexten — das Skript speichert deshalb
+nichts (kein localStorage/Cache), sondern fragt bei jedem Seitenaufruf neu
+ab, und zeigt die Google-Zuschreibung ("Bewertungen von Google") mit an.
+
 ## Warum kein WordPress?
 
 Der ursprüngliche Wunsch war "bevorzugt WordPress". Für eine reine

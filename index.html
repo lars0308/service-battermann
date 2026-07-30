@@ -7,8 +7,8 @@
 <meta name="description" content="Handwerker, Hausmeisterservice und Elektriker in Lindhorst, Stadthagen &amp; Umgebung. Direkt erreichbar, zuverlässig, faire Preise. Jetzt Kontakt aufnehmen.">
 <link rel="canonical" href="https://www.service-battermann.de/">
 <link rel="icon" href="images/logo-icon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=5">
-<link rel="stylesheet" href="assets/styles.css?v=5">
+<link rel="stylesheet" href="assets/fonts.css?v=6">
+<link rel="stylesheet" href="assets/styles.css?v=6">
 </head>
 <body>
 
@@ -37,19 +37,23 @@
 
 <main id="main">
 
-<section class="hero" id="hero-split">
-  <div class="wrap hero-split-wrap">
-    <div class="hero-split-text">
-      <span class="eyebrow">Hausmeisterservice · Objektbetreuung · Allround-Handwerk</span>
-      <h1 class="display hero-split-h1">Lars Battermann. Ihr Allround-Handwerker für Haus &amp; Garten in Lindhorst, Stadthagen und Umgebung.</h1>
-      <div class="cta-row">
-        <a href="https://wa.me/4915567467763" class="btn btn-whatsapp">Foto schicken per WhatsApp</a>
-        <a href="kontakt.html" class="btn btn-ghost-dark">Anliegen schildern →</a>
-      </div>
-    </div>
-    <div class="split-media level-portrait hero-split-media" id="level-portrait">
-      <img src="images/portrait-lars.jpg" alt="Lars Battermann, Inhaber von Objekt- und Reparaturservice Battermann">
-      <div class="spirit-level" aria-hidden="true">
+<section class="hero hero-slider" id="hero-split">
+  <div class="hero-slides" aria-hidden="true">
+    <div class="hero-slide is-active" style="background-image:url('images/arbeit-garten.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('images/arbeit-montage.jpg')"></div>
+    <div class="hero-slide" style="background-image:url('images/elektro/elektro-fehlersuche.jpg')"></div>
+  </div>
+  <div class="hero-scrim" aria-hidden="true"></div>
+
+  <div class="wrap hero-slider-content">
+    <span class="eyebrow">Hausmeisterservice · Objektbetreuung · Allround-Handwerk</span>
+    <div class="hero-slide-heading-wrap">
+      <h1 class="display hero-slide-h1" id="hero-slide-heading">
+        <span class="hero-slide-line is-active" data-slide-index="0">Lars Battermann:<br><span class="hero-slide-verb">Pflegt Objekte</span></span>
+        <span class="hero-slide-line" data-slide-index="1">Lars Battermann:<br><span class="hero-slide-verb">Montiert Möbel</span></span>
+        <span class="hero-slide-line" data-slide-index="2">Lars Battermann:<br><span class="hero-slide-verb">Repariert Schäden</span></span>
+      </h1>
+      <div class="spirit-level hero-spirit-level" id="hero-spirit-level" aria-hidden="true">
         <div class="spirit-level-bar">
           <span class="spirit-level-tick spirit-level-tick-l"></span>
           <span class="spirit-level-bubble"></span>
@@ -57,19 +61,37 @@
         </div>
       </div>
     </div>
-  </div>
-  <div class="wrap">
+    <div class="cta-row">
+      <a href="https://wa.me/4915567467763" class="btn btn-whatsapp">Foto schicken per WhatsApp</a>
+      <a href="kontakt.html" class="btn btn-ghost-dark">Anliegen schildern →</a>
+    </div>
     <p class="level-cta" data-level-cta>Ich verlasse keine Baustelle schief. <a href="kontakt.html">Jetzt Projekt anfragen →</a></p>
   </div>
+
+  <div class="hero-slide-dots" role="tablist" aria-label="Bildauswahl">
+    <button class="hero-slide-dot is-active" type="button" data-slide-index="0" role="tab" aria-selected="true" aria-label="Bild 1: Objektpflege"></button>
+    <button class="hero-slide-dot" type="button" data-slide-index="1" role="tab" aria-selected="false" aria-label="Bild 2: Montage"></button>
+    <button class="hero-slide-dot" type="button" data-slide-index="2" role="tab" aria-selected="false" aria-label="Bild 3: Reparatur"></button>
+  </div>
+
+  <div class="lamp" id="scroll-lamp" aria-hidden="true">
+    <span class="lamp-cable"></span>
+    <span class="lamp-socket"></span>
+    <span class="lamp-bulb">
+      <svg class="lamp-filament" viewBox="0 0 20 26" aria-hidden="true">
+        <path d="M6 4 L6 20 M14 4 L14 20 M6 8 L14 12 L6 16" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+    <span class="lamp-cone" aria-hidden="true"></span>
+  </div>
+</section>
+
+<section class="trust-strip-section dark">
   <div class="wrap trust-strip">
     <div class="item">Sie erreichen mich direkt — ich nehme selbst ab, kein Callcenter dazwischen.</div>
     <div class="item">Rückmeldung in der Regel innerhalb von 24 Stunden, oft am selben Tag.</div>
     <div class="item">Auch kleine Aufträge sind willkommen — nichts ist zu klein für einen Anruf.</div>
     <div class="item">Rechnung auf Wunsch, damit Kosten steuerlich geltend gemacht werden können.</div>
-  </div>
-  <div class="lamp" id="scroll-lamp" aria-hidden="true">
-    <span class="lamp-cord"></span>
-    <span class="lamp-bulb"></span>
   </div>
 </section>
 
@@ -182,18 +204,14 @@
 </section>
 
 <section>
-  <div class="wrap split reverse">
-    <div class="split-media reveal" style="display:flex;align-items:center;justify-content:center;background:var(--paper-dim);border-radius:var(--radius);padding:var(--space-4);aspect-ratio:4/3">
-      <svg width="72" height="72" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 2C6.48 2 2 6.48 2 12c0 5.52 4.48 10 10 10s10-4.48 10-10c0-.68-.07-1.35-.2-2H12v4h5.65c-.8 2.3-2.98 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.5 0 2.86.55 3.92 1.46l2.84-2.84C16.98 3.06 14.62 2 12 2z" fill="var(--accent)"/>
-      </svg>
-    </div>
-    <div class="reveal">
-      <span class="eyebrow">Bewertungen</span>
-      <h2>Lieber selbst nachlesen als uns glauben?</h2>
-      <p>Echte Bewertungen von Kunden finden Sie direkt auf Google — aktuell und ungefiltert, statt nachträglich auf dieser Seite zusammengestellt.</p>
-      <a href="https://maps.app.goo.gl/KuG2odMZ7Mn76uig9" class="btn btn-ghost" target="_blank" rel="noopener">Bewertungen auf Google ansehen →</a>
-    </div>
+  <div class="wrap">
+    <span class="eyebrow reveal">Bewertungen</span>
+    <h2 class="reveal">Lieber selbst nachlesen als uns glauben?</h2>
+    <p class="reveal" style="max-width:60ch">Echte Bewertungen von Kunden finden Sie direkt auf Google — aktuell und ungefiltert, statt nachträglich auf dieser Seite zusammengestellt.</p>
+
+    <div data-google-reviews data-api-key="" data-place-id="" style="margin-top:28px"></div>
+
+    <p class="reveal" style="margin-top:20px"><a href="https://maps.app.goo.gl/KuG2odMZ7Mn76uig9" class="btn btn-ghost" target="_blank" rel="noopener">Bewertungen auf Google ansehen →</a></p>
   </div>
 </section>
 
@@ -265,6 +283,7 @@
   </a>
 </div>
 
-<script src="assets/main.js?v=5"></script>
+<script src="assets/main.js?v=6"></script>
+<script src="assets/js/google-reviews.js?v=6" defer></script>
 </body>
 </html>

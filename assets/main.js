@@ -56,35 +56,91 @@
     }
   }
 
-  // Wasserwaagen-Effekt: Porträt richtet sich direkt beim Laden aus der Schräge auf (kein Scroll nötig)
-  var levelPortrait = document.getElementById("level-portrait");
-  if (levelPortrait) {
-    var levelCta = document.querySelector("[data-level-cta]");
+  // Hero-Slider: Bilder + Headline wechseln synchron, Wasserwaagen-Effekt läuft bei jedem Wechsel
+  var heroSlides = Array.prototype.slice.call(document.querySelectorAll(".hero-slide"));
+  var heroLines = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-line"));
+  var heroDots = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-dot"));
+  var heroSpiritLevel = document.getElementById("hero-spirit-level");
+  var levelCta = document.querySelector("[data-level-cta]");
+  if (heroSlides.length && heroLines.length) {
+    var HERO_CYCLE_MS = 5200;
+    var heroCurrent = 0;
+    var heroTimer = null;
+
+    var runSpiritLevel = function (lineEl) {
+      if (!heroSpiritLevel) {
+        lineEl.classList.add("is-level");
+        return;
+      }
+      heroSpiritLevel.classList.remove("is-centered");
+      // 1) Wasserwaage dockt an
+      heroSpiritLevel.classList.add("is-inview");
+      // 2) Libelle wandert in die Mitte
+      window.setTimeout(function () {
+        heroSpiritLevel.classList.add("is-centered");
+      }, 350);
+      // 3) Headline richtet sich auf 0° aus ("In Waage!")
+      window.setTimeout(function () {
+        lineEl.classList.add("is-level");
+        if (levelCta && !levelCta.classList.contains("is-visible")) {
+          levelCta.classList.add("is-visible");
+        }
+      }, 350 + 700);
+      // 4) Wasserwaage blendet nach rechts aus
+      window.setTimeout(function () {
+        heroSpiritLevel.classList.remove("is-inview");
+      }, 350 + 700 + 250);
+    };
+
+    var activateHeroSlide = function (index) {
+      heroSlides.forEach(function (s, i) { s.classList.toggle("is-active", i === index); });
+      heroDots.forEach(function (d, i) {
+        d.classList.toggle("is-active", i === index);
+        d.setAttribute("aria-selected", i === index ? "true" : "false");
+      });
+      heroLines.forEach(function (l, i) {
+        if (i === index) return;
+        l.classList.remove("is-active", "is-level");
+      });
+      var activeLine = heroLines[index];
+      activeLine.classList.remove("is-level");
+      // Neu einreihen, damit die -3deg-Startposition sichtbar spielt (nicht sofort "is-level")
+      // eslint-disable-next-line no-unused-expressions
+      void activeLine.offsetWidth;
+      activeLine.classList.add("is-active");
+      if (reduceMotion) {
+        activeLine.classList.add("is-level");
+        if (levelCta) levelCta.classList.add("is-visible");
+      } else {
+        window.setTimeout(function () { runSpiritLevel(activeLine); }, 550);
+      }
+      heroCurrent = index;
+    };
+
+    var scheduleNext = function () {
+      if (reduceMotion) return;
+      heroTimer = window.setTimeout(function () {
+        activateHeroSlide((heroCurrent + 1) % heroSlides.length);
+        scheduleNext();
+      }, HERO_CYCLE_MS);
+    };
+
+    heroDots.forEach(function (dot, i) {
+      dot.addEventListener("click", function () {
+        if (heroTimer) window.clearTimeout(heroTimer);
+        activateHeroSlide(i);
+        scheduleNext();
+      });
+    });
+
     if (reduceMotion) {
-      levelPortrait.classList.add("is-level");
-      if (levelCta) levelCta.classList.add("is-visible");
+      activateHeroSlide(0);
     } else {
-      var runLevelSequence = function () {
-        var el = levelPortrait;
-        // 1) Wasserwaage schiebt sich an die Oberkante
-        el.classList.add("is-inview");
-        // 2) Libelle wandert in die Mitte
-        window.setTimeout(function () {
-          el.classList.add("is-centered");
-        }, 450);
-        // 3) Bild richtet sich auf 0° aus, sobald die Libelle mittig steht ("In Waage!")
-        window.setTimeout(function () {
-          el.classList.add("is-level");
-          if (levelCta) levelCta.classList.add("is-visible");
-        }, 450 + 900);
-        // 4) Wasserwaage blendet dezent nach rechts aus
-        window.setTimeout(function () {
-          el.classList.remove("is-inview");
-        }, 450 + 900 + 200);
-      };
-      // Erst nach dem ersten Paint starten, damit die -3deg-Ausgangslage sichtbar ist
       window.requestAnimationFrame(function () {
-        window.requestAnimationFrame(runLevelSequence);
+        window.requestAnimationFrame(function () {
+          activateHeroSlide(0);
+          scheduleNext();
+        });
       });
     }
   }
