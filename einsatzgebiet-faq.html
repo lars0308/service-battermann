@@ -12,25 +12,29 @@
 </head>
 <body>
 
+<a class="visually-hidden" href="#main">Zum Inhalt springen</a>
+
 <header class="site">
   <div class="bar">
     <a class="brand" href="index.html">
       <img src="images/logo-icon.png" alt="Logo Objekt- und Reparaturservice Battermann">
       <span class="txt"><strong>Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
     </a>
-    <nav class="main-nav">
+    <nav class="main-nav" id="main-nav" aria-label="Hauptnavigation">
       <a href="index.html">Startseite</a>
       <a href="leistungen.html">Leistungen</a>
       <a href="ueber-mich.html">Über mich</a>
-      <a href="einsatzgebiet-faq.html" class="active">Einsatzgebiet &amp; FAQ</a>
+      <a href="einsatzgebiet-faq.html" class="active" aria-current="page">Einsatzgebiet &amp; FAQ</a>
       <a href="kontakt.html">Kontakt</a>
     </nav>
     <div class="nav-cta">
       <a href="https://wa.me/4915567467763" class="btn btn-primary"><span class="cta-full">WhatsApp: +49 155 674 677 63</span><span class="cta-short">WhatsApp</span></a>
-      <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
+
+<main id="main">
 
 <section class="hero" style="padding-bottom:70px">
   <div class="wrap" style="grid-template-columns:1fr">
@@ -109,6 +113,8 @@
   </div>
 </section>
 
+</main>
+
 <footer class="site">
   <div class="wrap">
     <div>
@@ -130,7 +136,7 @@
       <a href="tel:+4915567467763">+49 155 / 674 677 63</a>
       <a href="https://wa.me/4915567467763">WhatsApp schreiben</a>
       <a href="mailto:service.battermann@gmx.de">service.battermann@gmx.de</a>
-      <a href="#" style="margin:0">Mo–Sa, 09:00–20:00 Uhr</a>
+      <span style="display:block;color:var(--on-dark-soft)">Mo–Sa, 09:00–20:00 Uhr</span>
     </div>
   </div>
   <div class="wrap footer-bottom">

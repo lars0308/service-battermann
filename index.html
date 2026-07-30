@@ -12,14 +12,16 @@
 </head>
 <body>
 
+<a class="visually-hidden" href="#main">Zum Inhalt springen</a>
+
 <header class="site">
   <div class="bar">
     <a class="brand" href="index.html">
       <img src="images/logo-icon.png" alt="Logo Objekt- und Reparaturservice Battermann">
       <span class="txt"><strong>Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
     </a>
-    <nav class="main-nav">
-      <a href="index.html" class="active">Startseite</a>
+    <nav class="main-nav" id="main-nav" aria-label="Hauptnavigation">
+      <a href="index.html" class="active" aria-current="page">Startseite</a>
       <a href="leistungen.html">Leistungen</a>
       <a href="ueber-mich.html">Über mich</a>
       <a href="einsatzgebiet-faq.html">Einsatzgebiet &amp; FAQ</a>
@@ -27,17 +29,19 @@
     </nav>
     <div class="nav-cta">
       <a href="https://wa.me/4915567467763" class="btn btn-primary"><span class="cta-full">WhatsApp: +49 155 674 677 63</span><span class="cta-short">WhatsApp</span></a>
-      <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
 
+<main id="main">
+
 <section class="hero">
   <div class="wrap">
     <div>
-      <span class="eyebrow">Elektro · Hausmeisterservice · Allround-Handwerk</span>
+      <span class="eyebrow">Hausmeisterservice · Objektbetreuung · Allround-Handwerk</span>
       <h1 class="display">Ein Anruf.<br>Ein Handwerker.<br>Keine Warteschleife.</h1>
-      <p class="lead">Ich bin Lars Battermann, gelernter Elektriker aus Lindhorst, und übernehme Reparaturen, Objektbetreuung und handwerkliche Arbeiten rund um Haus, Hof und Garten — für Privatleute genauso wie für Hausverwaltungen.</p>
+      <p class="lead">Ich bin Lars Battermann und übernehme Hausmeisterservice, Objektbetreuung und handwerkliche Arbeiten rund um Haus, Hof und Garten — für Privatleute genauso wie für Hausverwaltungen. Als gelernter Elektriker bringe ich zusätzlich das Fachwissen für kleinere Elektroarbeiten mit.</p>
       <div class="cta-row">
         <a href="https://wa.me/4915567467763" class="btn btn-whatsapp">Foto schicken per WhatsApp</a>
         <a href="kontakt.html" class="btn btn-ghost-dark">Anliegen schildern →</a>
@@ -45,7 +49,7 @@
     </div>
     <div class="hero-figure">
       <img src="images/portrait-lars.jpg" alt="Lars Battermann, Inhaber von Objekt- und Reparaturservice Battermann" width="340">
-      <div class="hero-tag">Lars Battermann<br>Elektriker &amp; Allrounder</div>
+      <div class="hero-tag">Lars Battermann<br>Hausmeisterservice &amp; Allrounder</div>
     </div>
   </div>
   <div class="wrap trust-strip">
@@ -64,13 +68,13 @@
     <div class="offset-grid" style="margin-top:40px">
       <div class="card lg reveal">
         <span class="num">01</span>
-        <h3>Elektro</h3>
-        <p>Fehlersuche bei Kurzschlüssen, Leuchten- und Schaltermontage, kleinere Installationsarbeiten im gesetzlich zulässigen Rahmen.</p>
+        <h3>Hausmeisterservice &amp; Objektbetreuung</h3>
+        <p>Fester Ansprechpartner für mehrere Objekte, verlässliche Terminabsprache, Abrechnung auch per E-Rechnung.</p>
       </div>
       <div class="card sm reveal">
         <span class="num">02</span>
-        <h3>Bad &amp; Sanitär</h3>
-        <p>Armaturen tauschen, Fugen erneuern, kleine Reparaturen im Bad.</p>
+        <h3>Haus, Wohnung &amp; Montage</h3>
+        <p>Möbel- und Regalmontage, Reparaturen, Kleinaufträge, die sonst liegen bleiben.</p>
       </div>
       <div class="card sm reveal">
         <span class="num">03</span>
@@ -79,13 +83,13 @@
       </div>
       <div class="card lg reveal">
         <span class="num">04</span>
-        <h3>Haus, Wohnung &amp; Montage</h3>
-        <p>Möbel- und Regalmontage, Reparaturen, Kleinaufträge, die sonst liegen bleiben.</p>
+        <h3>Bad &amp; Sanitär</h3>
+        <p>Armaturen tauschen, Fugen erneuern, kleine Reparaturen im Bad.</p>
       </div>
-      <div class="card lg reveal">
+      <div class="card sm reveal">
         <span class="num">05</span>
-        <h3>Hausmeisterservice für Verwaltungen</h3>
-        <p>Fester Ansprechpartner für mehrere Objekte, verlässliche Terminabsprache, Abrechnung auch per E-Rechnung.</p>
+        <h3>Elektro-Kleinreparaturen</h3>
+        <p>Lampen, Schalter und Steckdosen tauschen, Fehlersuche bei Kurzschlüssen.</p>
       </div>
       <div class="card sm reveal" style="display:flex;align-items:center;justify-content:center;text-align:center">
         <div>
@@ -94,6 +98,7 @@
         </div>
       </div>
     </div>
+    <p class="reveal" style="margin-top:28px;font-size:0.88rem;max-width:70ch">Hinweis: Elektro- und Sanitärarbeiten führe ich ausschließlich im gesetzlich zulässigen Rahmen für meisterfreie Instandsetzungsarbeiten aus (z. B. Lampen-, Schalter- oder Armaturentausch). Details dazu auf der <a href="leistungen.html">Leistungen</a>-Seite.</p>
   </div>
 </section>
 
@@ -103,9 +108,9 @@
       <img src="images/portrait-lars.jpg" alt="Lars Battermann bei der Arbeit" loading="lazy">
     </div>
     <div class="reveal">
-      <span class="eyebrow">28 Jahre, gelernter Elektriker</span>
+      <span class="eyebrow">28 Jahre, handwerklicher Allrounder</span>
       <h2>Hinter Battermann steckt kein Betrieb mit zehn Vans — sondern einer, der anpackt.</h2>
-      <p>Ich habe Elektriker gelernt und mir seitdem so ziemlich alles rund ums Haus selbst beigebracht, was Kunden im Alltag wirklich brauchen. Kein Auftrag ist mir zu klein, keine Baustelle zu unordentlich, um sie am Ende sauber zu hinterlassen.</p>
+      <p>Gelernt habe ich Elektriker, seitdem habe ich mir so ziemlich alles rund ums Haus selbst beigebracht, was Kunden im Alltag wirklich brauchen — von der Objektbetreuung bis zum Gartenzaun. Kein Auftrag ist mir zu klein, keine Baustelle zu unordentlich, um sie am Ende sauber zu hinterlassen.</p>
       <p><a href="ueber-mich.html" class="inline-cta">Mehr über mich und meine Arbeitsweise →</a></p>
     </div>
   </div>
@@ -181,6 +186,8 @@
   </div>
 </section>
 
+</main>
+
 <footer class="site">
   <div class="wrap">
     <div>
@@ -202,7 +209,7 @@
       <a href="tel:+4915567467763">+49 155 / 674 677 63</a>
       <a href="https://wa.me/4915567467763">WhatsApp schreiben</a>
       <a href="mailto:service.battermann@gmx.de">service.battermann@gmx.de</a>
-      <a href="#" style="margin:0">Mo–Sa, 09:00–20:00 Uhr</a>
+      <span style="display:block;color:var(--on-dark-soft)">Mo–Sa, 09:00–20:00 Uhr</span>
     </div>
   </div>
   <div class="wrap footer-bottom">

@@ -13,13 +13,15 @@
 </head>
 <body>
 
+<a class="visually-hidden" href="#main">Zum Inhalt springen</a>
+
 <header class="site">
   <div class="bar">
     <a class="brand" href="index.html">
       <img src="images/logo-icon.png" alt="Logo Objekt- und Reparaturservice Battermann">
       <span class="txt"><strong>Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
     </a>
-    <nav class="main-nav">
+    <nav class="main-nav" id="main-nav" aria-label="Hauptnavigation">
       <a href="index.html">Startseite</a>
       <a href="leistungen.html">Leistungen</a>
       <a href="ueber-mich.html">Über mich</a>
@@ -28,10 +30,12 @@
     </nav>
     <div class="nav-cta">
       <a href="https://wa.me/4915567467763" class="btn btn-primary"><span class="cta-full">WhatsApp: +49 155 674 677 63</span><span class="cta-short">WhatsApp</span></a>
-      <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false"><span></span><span></span><span></span></button>
+      <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span></button>
     </div>
   </div>
 </header>
+
+<main id="main">
 
 <section style="padding-top:70px">
   <div class="wrap center-narrow">
@@ -64,7 +68,7 @@
 
     <h2>5. Kontaktaufnahme</h2>
     <h3>Kontaktformular</h3>
-    <p>Das Kontaktformular auf dieser Website wird über die Formularfunktion unseres Hosters Netlify ("Netlify Forms") bereitgestellt. Die von Ihnen eingegebenen Daten (Name, Ort des Objekts, Telefonnummer und/oder E-Mail-Adresse, Beschreibung Ihres Anliegens sowie optional hochgeladene Fotos) werden dabei an Netlify übermittelt und uns zur Bearbeitung Ihrer Anfrage zugestellt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahme). Die Angabe erfolgt erst nach Ihrer ausdrücklichen Bestätigung im Formular.</p>
+    <p>Das Kontaktformular auf dieser Website wird über die Formularfunktion unseres Hosters Netlify ("Netlify Forms") bereitgestellt. Die von Ihnen eingegebenen Daten (Name, Ort des Objekts, Kontaktweg, Beschreibung Ihres Anliegens sowie optional hochgeladene Fotos) werden dabei an Netlify übermittelt und uns zur Bearbeitung Ihrer Anfrage zugestellt. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (vorvertragliche Maßnahme). Die Angabe erfolgt erst nach Ihrer ausdrücklichen Bestätigung im Formular.</p>
     <h3>Telefon, E-Mail, WhatsApp</h3>
     <p>Wenn Sie uns per Telefon, E-Mail oder WhatsApp kontaktieren, verwenden wir die uns dabei mitgeteilten Daten ausschließlich zur Bearbeitung Ihres Anliegens. Der WhatsApp-Button verlinkt zum Messenger-Dienst WhatsApp (WhatsApp Ireland Limited, Teil von Meta Platforms, Inc.); für die Nutzung von WhatsApp gelten dessen eigene Datenschutzbestimmungen.</p>
 
@@ -95,6 +99,8 @@
     <p style="margin-top:40px"><a href="index.html" class="inline-cta">← Zurück zur Startseite</a></p>
   </div>
 </section>
+
+</main>
 
 <footer class="site">
   <div class="wrap footer-bottom" style="border-top:0;margin-top:0">
