@@ -15,7 +15,7 @@
     });
   }
 
-  // Dezentes Fade-in-up beim Scrollen (20px, 0.6s) — respektiert prefers-reduced-motion
+  // Flüssiges Fade-in-up beim Scrollen (40px, 0.8s) — respektiert prefers-reduced-motion
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var revealEls = document.querySelectorAll(".reveal");
   if (reduceMotion || !("IntersectionObserver" in window)) {
@@ -33,6 +33,83 @@
       { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
     );
     revealEls.forEach(function (el) { io.observe(el); });
+  }
+
+  // Großformatige Typografie-Sektion: Zeilen fahren einzeln hoch
+  var typeHero = document.querySelector(".type-hero");
+  if (typeHero) {
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      typeHero.classList.add("is-visible");
+    } else {
+      var typeIo = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              typeIo.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.3 }
+      );
+      typeIo.observe(typeHero);
+    }
+  }
+
+  // Schwebender WhatsApp-Button: erscheint dezent nach dem Scrollen über den Hero-Bereich
+  var fab = document.querySelector(".whatsapp-fab");
+  if (fab) {
+    var heroEl = document.querySelector(".hero");
+    var fabThreshold = heroEl ? heroEl.offsetHeight * 0.6 : 400;
+    var fabTicking = false;
+    var updateFab = function () {
+      fabTicking = false;
+      if (window.scrollY > fabThreshold) {
+        fab.classList.add("is-visible");
+      } else {
+        fab.classList.remove("is-visible");
+      }
+    };
+    updateFab();
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!fabTicking) {
+          window.requestAnimationFrame(updateFab);
+          fabTicking = true;
+        }
+      },
+      { passive: true }
+    );
+  }
+
+  // Dezenter Scroll-Parallax auf großen Split-Bildern — respektiert prefers-reduced-motion
+  if (!reduceMotion) {
+    var parallaxEls = Array.prototype.slice.call(document.querySelectorAll(".split-media[data-parallax]"));
+    if (parallaxEls.length) {
+      var parallaxTicking = false;
+      var updateParallax = function () {
+        parallaxTicking = false;
+        var vh = window.innerHeight;
+        parallaxEls.forEach(function (el) {
+          var rect = el.getBoundingClientRect();
+          var progress = (rect.top + rect.height / 2 - vh / 2) / vh; // -0.5..0.5 etwa
+          var shift = Math.max(-1, Math.min(1, progress)) * -24; // max 24px Verschiebung
+          el.style.setProperty("--parallax-y", shift.toFixed(1) + "px");
+        });
+      };
+      updateParallax();
+      window.addEventListener(
+        "scroll",
+        function () {
+          if (!parallaxTicking) {
+            window.requestAnimationFrame(updateParallax);
+            parallaxTicking = true;
+          }
+        },
+        { passive: true }
+      );
+    }
   }
 
   // Google Maps: erst nach aktiver Einwilligung laden (siehe Datenschutzerklärung)
