@@ -365,7 +365,12 @@ section.dim{ background:var(--paper-dim); }
   position:absolute; inset:0; z-index:1;
   background:linear-gradient(0deg, rgba(12,13,15,0.94) 0%, rgba(12,13,15,0.62) 45%, rgba(12,13,15,0.08) 78%, rgba(12,13,15,0) 100%);
 }
-.hero-slider .hero-slider-content{ display:block; position:relative; z-index:2; padding-bottom:calc(var(--space-5) + 10px); }
+.hero-slider .hero-slider-content{
+  display:block; position:relative; z-index:2;
+  padding-bottom:calc(var(--space-5) + 10px);
+  max-width:none; margin:0;
+  padding-left:clamp(24px, 5vw, 72px); padding-right:24px;
+}
 .hero-slide-heading-wrap{ position:relative; margin-bottom:var(--space-3); }
 .hero-slide-h1{ position:relative; margin:0; display:grid; }
 .hero-slide-line{
