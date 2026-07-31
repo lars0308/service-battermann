@@ -366,7 +366,7 @@ section.dim{ background:var(--paper-dim); }
 .hero-slides{ position:absolute; inset:0; z-index:0; }
 .hero-slide{
   position:absolute; inset:0;
-  background-size:cover; background-position:center;
+  background-size:cover; background-position:center 30%;
   opacity:0;
   transition:opacity 1.4s cubic-bezier(0.16,1,0.3,1);
 }
@@ -427,8 +427,13 @@ section.dim{ background:var(--paper-dim); }
 .about-card{
   order:1;
   position:relative; display:block; overflow:hidden;
-  border-radius:var(--radius); box-shadow:var(--shadow); text-decoration:none;
+  border-radius:12px; box-shadow:0 20px 40px rgba(0,0,0,0.12); text-decoration:none;
+  transform:translateY(-5px);
 }
+/* .reveal.is-visible setzt transform sonst auf translateY(0) zurück und würde
+   den Schwebe-Effekt im Ruhezustand wieder aufheben — hier gezielt mit
+   höherer Spezifität die Endposition auf den leichten Schwebe-Versatz legen. */
+.about-card.reveal.is-visible{ transform:translateY(-5px); }
 .about-card img{
   width:100%; aspect-ratio:4/5; object-fit:cover; object-position:center 20%; display:block;
   transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
@@ -479,7 +484,7 @@ section.dim{ background:var(--paper-dim); }
   .about-layout{ grid-template-columns:1fr; gap:28px; }
   .about-content{ order:1; }
   .about-card{ order:2; }
-  .about-card img{ aspect-ratio:16/11; }
+  .about-card img{ aspect-ratio:16/11; object-position:center top; }
   .about-lead{ margin:12px 0 22px; }
 }
 
