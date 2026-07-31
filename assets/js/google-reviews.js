@@ -26,6 +26,19 @@
     });
   }
 
+  var STAR_FULL =
+    '<svg viewBox="0 0 20 20" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M10 1.5l2.59 5.25 5.79.84-4.19 4.08.99 5.77L10 14.7l-5.18 2.74.99-5.77L1.62 7.59l5.79-.84L10 1.5z"/></svg>';
+
+  function renderStars(rating) {
+    var count = Math.max(0, Math.min(5, Math.round(rating || 0)));
+    var out = "";
+    for (var i = 0; i < count; i++) out += STAR_FULL;
+    return (
+      '<span class="review-card-stars" aria-hidden="true">' + out + '</span>' +
+      '<span class="visually-hidden">' + count + ' von 5 Sternen</span>'
+    );
+  }
+
   function renderReviews(reviews) {
     var fiveStar = reviews
       .filter(function (r) { return r.rating >= MIN_RATING; })
@@ -37,10 +50,14 @@
       .map(function (r) {
         var text = r.text ? escapeHtml(r.text) : "";
         var author = escapeHtml(r.author_name || "Google-Nutzer");
+        var when = escapeHtml(r.relative_time_description || "");
         return (
           '<figure class="review-card reveal is-visible">' +
+          renderStars(r.rating) +
           '<blockquote>„' + text + '“</blockquote>' +
-          '<figcaption>' + author + '</figcaption>' +
+          '<figcaption><span class="review-card-author">' + author + '</span>' +
+          (when ? '<span class="review-card-date">' + when + '</span>' : "") +
+          '</figcaption>' +
           "</figure>"
         );
       })

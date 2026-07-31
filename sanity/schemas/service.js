@@ -5,6 +5,12 @@ export default {
   type: "document",
   fields: [
     { name: "order", title: "Reihenfolge (01–05)", type: "number" },
+    {
+      name: "anchorId",
+      title: "Anker-ID",
+      type: "slug",
+      description: "Muss mit der Sprungmarke übereinstimmen, auf die die Startseiten-Karte verlinkt (z. B. „leistung-garten“ für #leistung-garten)."
+    },
     { name: "verb", title: "Verb (z. B. „Pflegt“)", type: "string" },
     { name: "title", title: "Titel", type: "string" },
     {
@@ -15,8 +21,15 @@ export default {
     },
     { name: "description", title: "Kurzbeschreibung", type: "text" },
     {
+      name: "cardImage",
+      title: "Kartenbild (Startseite)",
+      type: "image",
+      options: { hotspot: true },
+      description: "Einzelnes Bild für die Bild-Karte auf der Startseite (dunkles Overlay wird per CSS gelegt)."
+    },
+    {
       name: "gallery",
-      title: "Echte Projektbilder",
+      title: "Echte Projektbilder (Detailseite)",
       type: "array",
       of: [{ type: "image", options: { hotspot: true } }]
     },

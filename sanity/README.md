@@ -30,3 +30,18 @@ Die Feldnamen sind absichtlich so gewählt, dass sie sich später leicht auf ech
 4. Erst danach entscheiden, ob/wie die Website die Inhalte serverseitig (Build-Step) oder weiterhin statisch aus Sanity bezieht — ohne die oben genannten SEO-/Performance-Nachteile eines reinen Client-Fetches.
 
 Bis dahin bleibt **Sveltia CMS** (Git-basiert, sofort einsatzbereit, kein zusätzlicher Account nötig) die aktive Content-Pflege für die Vorher/Nachher-Galerien.
+
+## Content-Map: HTML-Element ↔ Schema-Feld
+
+Damit eine spätere Migration ein reines Abbilden ist statt eine Neuinterpretation, hier die genaue Zuordnung zwischen dem heutigen statischen HTML und den Schema-Feldern oben.
+
+| Schema | Feld | Fundstelle im HTML |
+| --- | --- | --- |
+| `heroSlide` | `image`, `prefix`, `verb`, `roundTexts` | `index.html`, `.hero-slides` / `.hero-slide-line[data-slide-index]`; rotierende Texte in `assets/main.js` als `HERO_ROUND_TEXTS` |
+| `trustPoint` | `text` | `index.html`, `.trust-strip .item` (4 Einträge) |
+| `service` | `anchorId`, `verb`, `title`, `requiresLegalNote`, `description`, `cardImage`, `gallery` | `index.html` `.leistung-cards` (Kartenbild + Titel) und `leistungen.html` `#service-list .service-row` (Beschreibung + Galerie); `anchorId` = `id` des jeweiligen `.service-row` |
+| `vorherNachherProjekt` | 1:1 | `content/vorher-nachher.json` (bereits aktiv über Sveltia gepflegt) |
+| `siteSettings` | `companyName`, `ownerName`, `logoIcon/Full`, `serviceAreaTowns`, `serviceAreaRadiusKm`, `legalNotice` | Header-`.brand`, `einsatzgebiet-faq.html` `.badge-list`, Footer `.footer-legal` (identisch auf allen 7 Seiten) |
+| `contactInfo` | `phone`, `phoneHref`, `whatsapp`, `email`, `openingHours` | Footer `.footer` „Direkter Kontakt“, `.fab-group`, Hero-CTAs (identisch auf allen 7 Seiten) |
+
+Bewusst nicht modelliert: die einzelnen FAQ-Einträge auf `einsatzgebiet-faq.html` und die Rechtstexte auf `impressum.html`/`datenschutz.html` — diese ändern sich praktisch nie und würden im CMS nur zusätzlichen Pflegeaufwand ohne echten Nutzen erzeugen.
