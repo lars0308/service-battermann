@@ -14,11 +14,29 @@ keine Programmierkenntnisse; ein kleiner Admin-Bereich reicht.
    stellen und deployen.
 4. Unter "Domain settings" die Domain `service-battermann.de` hinterlegen.
 
-Sobald ein Deploy läuft, funktioniert das Kontaktformular auf `/kontakt.html`
-automatisch über **Netlify Forms** — Einsendungen landen im
-Netlify-Dashboard unter "Forms" inklusive hochgeladener Fotos, zusätzlich
-kann eine Benachrichtigung an deine E-Mail-Adresse eingerichtet werden
-(Site settings → Forms → Form notifications).
+Das Kontaktformular auf `/kontakt.html` läuft **nicht** über Netlify Forms,
+sondern über den externen Dienst Static Forms — Einrichtung siehe Abschnitt
+1a unten.
+
+## 1a. Kontaktformular über Static Forms freischalten
+
+Das Formular auf `/kontakt.html` sendet seine Daten an Static Forms
+(staticforms.dev). **Ohne API-Key passiert nichts Kaputtes** — das Formular
+zeigt einfach eine Fehlermeldung des Dienstes, statt Anfragen zuzustellen,
+bis der Key eingetragen ist.
+
+1. Auf [staticforms.dev](https://www.staticforms.dev) ein Konto anlegen.
+2. Ein neues Formular für `service-battermann.de` anlegen und den
+   angezeigten **API-Key** kopieren.
+3. In `kontakt.html` das Feld `<input type="hidden" name="apiKey" value="">`
+   suchen und deinen Key zwischen die Anführungszeichen eintragen.
+4. **Wichtig für den Foto-Upload:** Der kostenlose Tarif von Static Forms
+   unterstützt keine Datei-Anhänge. Der "Foto anhängen"-Button im Formular
+   funktioniert nur zuverlässig mit einem Pro- oder Agency-Tarif. Ohne
+   Bezahltarif kommen Textnachrichten trotzdem an, angehängte Fotos werden
+   aber nicht mitgeschickt.
+5. Benachrichtigungen (E-Mail bei neuer Anfrage) richtest du im
+   Static-Forms-Dashboard unter den Formular-Einstellungen ein.
 
 ## 2. Admin-Zugang für Vorher/Nachher-Bilder aktivieren
 

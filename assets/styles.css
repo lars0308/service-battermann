@@ -367,7 +367,9 @@ section.dim{ background:var(--paper-dim); }
 .hero-slide{
   position:absolute; inset:0;
   background-size:cover; background-position:center 30%;
+  image-rendering:-webkit-optimize-contrast;
   opacity:0;
+  will-change:opacity;
   transition:opacity 1.4s cubic-bezier(0.16,1,0.3,1);
 }
 .hero-slide.is-active{ opacity:1; }
@@ -436,7 +438,9 @@ section.dim{ background:var(--paper-dim); }
 .about-card.reveal.is-visible{ transform:translateY(-5px); }
 .about-card img{
   width:100%; aspect-ratio:4/5; object-fit:cover; object-position:center 20%; display:block;
+  image-rendering:-webkit-optimize-contrast;
   transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);
+  will-change:transform;
 }
 .about-card-overlay{
   position:absolute; inset:auto 0 0 0; z-index:1; padding:22px 24px;
@@ -511,7 +515,9 @@ section.dim{ background:var(--paper-dim); }
 }
 .leistung-card img{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  image-rendering:-webkit-optimize-contrast;
   transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  will-change:transform;
 }
 .leistung-card:hover img{ transform:scale(1.06); }
 .leistung-card-scrim{
