@@ -67,6 +67,12 @@
       "skillPath": "skills/reviewing-a11y/SKILL.md",
       "computedHash": "e98e47aca472b1541f3d0c90ff54ff49d2a6a90cbf1fa216fbf956fe776e5f7b"
     },
+    "sanity-best-practices": {
+      "source": "sanity-io/agent-toolkit",
+      "sourceType": "github",
+      "skillPath": "skills/sanity-best-practices/SKILL.md",
+      "computedHash": "0d771d6e44b0812c28c9d8beeb9ab19bd6da15a0913df4e611ccea1baa23b6a8"
+    },
     "shadcn-ui": {
       "source": "capraidev/shadcn-claude-skill",
       "sourceType": "github",
