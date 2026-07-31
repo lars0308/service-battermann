@@ -65,10 +65,11 @@
 
     <div class="reveal">
       <div class="form-card">
-        <form name="kontakt" method="POST" data-netlify="true" netlify-honeypot="bot-field" enctype="multipart/form-data" aria-label="Kontaktformular">
-          <input type="hidden" name="form-name" value="kontakt">
+        <form name="kontakt" method="POST" action="https://api.staticforms.dev/submit" enctype="multipart/form-data" aria-label="Kontaktformular">
+          <input type="hidden" name="apiKey" value="">
+          <input type="hidden" name="subject" value="Neue Anfrage über service-battermann.de">
           <p class="bot-field" style="position:absolute;left:-9999px" aria-hidden="true">
-            <label>Bitte leer lassen: <input name="bot-field"></label>
+            <label>Bitte leer lassen: <input name="honeypot"></label>
           </p>
 
           <div class="field-row">
