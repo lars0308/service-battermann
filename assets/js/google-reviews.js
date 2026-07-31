@@ -18,7 +18,8 @@
   if (!apiKey || !placeId) return; // nicht konfiguriert — statischer Fallback-Link bleibt stehen
 
   var MIN_RATING = 5;
-  var MAX_CARDS = 3;
+  var VISIBLE_CARDS = 3;
+  var ROTATE_MS = 8000;
 
   function escapeHtml(str) {
     return String(str).replace(/[&<>"']/g, function (c) {
@@ -39,35 +40,57 @@
     );
   }
 
+  function buildCardBody(r) {
+    var text = r.text ? escapeHtml(r.text) : "";
+    var author = escapeHtml(r.author_name || "Google-Nutzer");
+    var when = escapeHtml(r.relative_time_description || "");
+    return (
+      renderStars(r.rating) +
+      '<blockquote>„' + text + '“</blockquote>' +
+      '<figcaption><span class="review-card-author">' + author + '</span>' +
+      (when ? '<span class="review-card-date">' + when + '</span>' : "") +
+      '</figcaption>'
+    );
+  }
+
+  // Die Karten selbst bleiben starr im Grid stehen (kein Carousel, keine
+  // horizontale Bewegung) — nur der Inhalt einer Karte blendet alle 8s sanft
+  // zur nächsten Bewertung aus dem Pool über, falls mehr Bewertungen als
+  // sichtbare Karten vorhanden sind.
   function renderReviews(reviews) {
-    var fiveStar = reviews
-      .filter(function (r) { return r.rating >= MIN_RATING; })
-      .slice(0, MAX_CARDS);
+    var pool = reviews.filter(function (r) { return r.rating >= MIN_RATING; });
+    if (!pool.length) return; // keine passenden Bewertungen — Fallback-Link bleibt
 
-    if (!fiveStar.length) return; // keine passenden Bewertungen — Fallback-Link bleibt
-
-    var html = fiveStar
-      .map(function (r) {
-        var text = r.text ? escapeHtml(r.text) : "";
-        var author = escapeHtml(r.author_name || "Google-Nutzer");
-        var when = escapeHtml(r.relative_time_description || "");
-        return (
-          '<figure class="review-card reveal is-visible">' +
-          renderStars(r.rating) +
-          '<blockquote>„' + text + '“</blockquote>' +
-          '<figcaption><span class="review-card-author">' + author + '</span>' +
-          (when ? '<span class="review-card-date">' + when + '</span>' : "") +
-          '</figcaption>' +
-          "</figure>"
-        );
-      })
-      .join("");
+    var visibleCount = Math.min(VISIBLE_CARDS, pool.length);
+    var cardsHtml = "";
+    for (var i = 0; i < visibleCount; i++) {
+      cardsHtml +=
+        '<figure class="review-card reveal is-visible"><div class="review-card-body">' +
+        buildCardBody(pool[i]) +
+        "</div></figure>";
+    }
 
     container.innerHTML =
-      '<div class="review-cards">' + html + "</div>" +
+      '<div class="review-cards">' + cardsHtml + "</div>" +
       '<p class="review-attribution">Bewertungen von <a href="https://www.google.com/maps/place/?q=place_id:' +
       encodeURIComponent(placeId) +
       '" target="_blank" rel="noopener">Google</a></p>';
+
+    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion || pool.length <= visibleCount) return; // nichts zum Rotieren bzw. Bewegung reduziert
+
+    var bodies = Array.prototype.slice.call(container.querySelectorAll(".review-card-body"));
+    var offset = 0;
+    window.setInterval(function () {
+      offset += 1;
+      bodies.forEach(function (body, i) {
+        body.style.opacity = "0";
+        window.setTimeout(function () {
+          body.innerHTML = buildCardBody(pool[(offset + i) % pool.length]);
+          body.style.opacity = "1";
+        }, 1000);
+      });
+    }, ROTATE_MS);
   }
 
   function init() {
