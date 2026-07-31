@@ -365,7 +365,12 @@ section.dim{ background:var(--paper-dim); }
   position:absolute; inset:0; z-index:1;
   background:linear-gradient(0deg, rgba(12,13,15,0.94) 0%, rgba(12,13,15,0.62) 45%, rgba(12,13,15,0.08) 78%, rgba(12,13,15,0) 100%);
 }
-.hero-slider .hero-slider-content{ display:block; position:relative; z-index:2; padding-bottom:calc(var(--space-5) + 10px); }
+.hero-slider .hero-slider-content{
+  display:block; position:relative; z-index:2;
+  padding-bottom:calc(var(--space-5) + 10px);
+  max-width:none; margin:0;
+  padding-left:clamp(24px, 5vw, 72px); padding-right:24px;
+}
 .hero-slide-heading-wrap{ position:relative; margin-bottom:var(--space-3); }
 .hero-slide-h1{ position:relative; margin:0; display:grid; }
 .hero-slide-line{
@@ -399,81 +404,6 @@ section.dim{ background:var(--paper-dim); }
   .hero-slider{ height:calc(100svh - 66px); min-height:520px; }
   .hero-slide-dots{ right:16px; bottom:20px; }
   .hero-slider .hero-slider-content{ padding-bottom:calc(var(--space-4) + 34px); }
-}
-
-/* ---------- Scroll-Pin-Animation "Ich Bin Lars Battermann" ----------
-   Cineastische Komposition statt Split-Screen: Das Portrait ist ein
-   Vollbild-Hintergrund (nicht mehr eine eingefügte Bildkarte), der von unten
-   einfährt; ein linksseitiger dunkler Verlauf hält Text jederzeit lesbar.
-   Die Kopfzeile driftet dabei nur leicht nach links/oben und wechselt synchron
-   von dunkel auf hell, statt in eine kleine Ecke zu schrumpfen.
-   Ein einziger, gepinnter Mechanismus gilt für Desktop UND Mobile — die neue
-   Vollbild-Komposition braucht keine unterschiedlichen Spaltenbreiten mehr. */
-.scrollpin-section{ height:210vh; position:relative; background:var(--paper); }
-.scrollpin-sticky{
-  position:sticky; top:0; height:100svh; overflow:hidden;
-  display:flex; align-items:center;
-}
-.scrollpin-stage{ position:relative; width:100%; height:100%; overflow:hidden; }
-
-.scrollpin-portrait{
-  position:absolute; inset:0; z-index:0;
-  opacity:var(--sp-portrait-o, 0);
-  transform:translate3d(0, var(--sp-portrait-y, 100%), 0) scale(1.06);
-  will-change:transform, opacity;
-}
-.scrollpin-portrait img{
-  position:absolute; inset:0;
-  width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block;
-}
-
-/* Liegt als Kind von .scrollpin-portrait vor, damit Bild und Verlauf exakt
-   dieselbe Bewegung/Einblendung teilen — sonst würde der Verlauf schon über dem
-   leeren Hintergrund sichtbar, bevor das Bild überhaupt eingefahren ist. */
-.scrollpin-scrim{
-  position:absolute; inset:0; z-index:1;
-  background:linear-gradient(100deg,
-    rgba(15,14,12,0.9) 0%, rgba(15,14,12,0.8) 32%,
-    rgba(15,14,12,0.4) 58%, rgba(15,14,12,0) 78%);
-}
-
-.scrollpin-words{
-  position:absolute; top:50%; left:50%;
-  margin:0; z-index:2; text-align:center;
-  font-family:'Archivo Black', sans-serif; font-weight:400;
-  font-size:clamp(3.2rem, 11vw, 8.5rem); line-height:0.98; letter-spacing:-0.02em;
-  color:var(--ink); white-space:nowrap;
-  transform:translate3d(calc(-50% + var(--sp-word-x, 0px)), calc(-50% + var(--sp-word-y, 0px)), 0) scale(var(--sp-word-scale, 1));
-  transform-origin:center;
-  will-change:transform, color;
-}
-.scrollpin-words .scrollpin-word{ display:block; }
-
-.scrollpin-text{
-  position:absolute; z-index:2; left:7%; bottom:7%; width:min(36ch, 82%);
-  transform:translate3d(0, var(--sp-text-y, 16px), 0);
-  opacity:var(--sp-text-o, 0);
-  visibility:hidden;
-  will-change:transform, opacity;
-}
-.scrollpin-text.is-interactive{ visibility:visible; }
-.scrollpin-text h3{ margin-top:0; color:var(--on-dark); }
-.scrollpin-text p{ color:rgba(244,241,233,0.82); }
-.scrollpin-text .eyebrow{ color:var(--accent); }
-.scrollpin-text .inline-cta{ color:var(--accent); border-color:var(--accent); }
-.scrollpin-text .inline-cta:hover{ color:var(--on-dark); border-color:var(--on-dark); }
-
-@media (max-width:900px){
-  .scrollpin-section{ height:230vh; }
-  .scrollpin-words{ font-size:clamp(2.4rem, 13vw, 4.6rem); }
-  .scrollpin-text{ left:6%; bottom:5%; width:min(38ch, 88%); }
-}
-@media (prefers-reduced-motion: reduce){
-  .scrollpin-section{ height:100svh; }
-  .scrollpin-sticky{ position:static; height:100svh; }
-  .scrollpin-portrait{ opacity:1; transform:scale(1.06); }
-  .scrollpin-words{ color:var(--on-dark); }
-  .scrollpin-text{ opacity:1; transform:none; visibility:visible; }
 }
 
 /* ---------- Leistungen-Liste (Emil-Kowalski-Reveal beim Scrollen) ---------- */
