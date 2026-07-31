@@ -150,6 +150,7 @@
     var spWords = scrollpinSection.querySelector(".scrollpin-words");
     var spWordLine3 = scrollpinSection.querySelector(".scrollpin-word-3");
     var spStage = scrollpinSection.querySelector(".scrollpin-stage");
+    var spSticky = scrollpinSection.querySelector(".scrollpin-sticky");
     var spText = scrollpinSection.querySelector(".scrollpin-text");
     var spTicking = false;
 
@@ -237,15 +238,20 @@
     var updateScrollpin = function () {
       spTicking = false;
       var rect = scrollpinSection.getBoundingClientRect();
-      var vh = window.innerHeight;
+      // Höhe des gepinnten Bereichs selbst (an 100svh gebunden) statt window.innerHeight
+      // verwenden: Auf Mobilgeräten ändert sich window.innerHeight laufend, während die
+      // Adressleiste beim Scrollen ein-/ausblendet — das lief bei den beiden Scrollrichtungen
+      // unterschiedlich schnell und führte zu einem hakeligen Bild-Einrasten beim Runterscrollen.
+      // Die tatsächlich gerenderte Höhe von .scrollpin-sticky bleibt stabil.
+      var vh = spSticky ? spSticky.getBoundingClientRect().height : window.innerHeight;
       var scrollable = rect.height - vh;
       var progress = scrollable > 0 ? (-rect.top) / scrollable : 0;
       progress = Math.max(0, Math.min(1, progress));
 
       // Phase A (Wörter driften + Bild fährt ein, synchron): 0 → 0.55
-      // Phase B (Fließtext, leicht überlappend): 0.42 → 1
+      // Phase B (Fließtext, etwas früher einsetzend, leicht überlappend): 0.34 → 1
       var phaseA = easeInOutCubic(Math.max(0, Math.min(1, progress / 0.55)));
-      var phaseB = easeInOutCubic(Math.max(0, Math.min(1, (progress - 0.42) / 0.58)));
+      var phaseB = easeInOutCubic(Math.max(0, Math.min(1, (progress - 0.34) / 0.66)));
       applyPhases(phaseA, phaseB);
     };
 

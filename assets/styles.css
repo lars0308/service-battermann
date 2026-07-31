@@ -91,6 +91,7 @@ h1,h2,h3,h4{
   color:var(--ink);
   margin:0 0 var(--space-2);
   letter-spacing:-0.01em;
+  text-wrap:balance;
 }
 
 h1,h2,h3{
@@ -108,9 +109,10 @@ h4{
   font-weight:400;
   text-transform:none;
   letter-spacing:-0.01em;
+  text-wrap:balance;
 }
 
-p{ margin:0 0 var(--space-2); color:var(--ink-soft); max-width:60ch; }
+p{ margin:0 0 var(--space-2); color:var(--ink-soft); max-width:60ch; text-wrap:pretty; }
 ul{ padding-left:22px; }
 li{ color:var(--ink-soft); margin-bottom:8px; max-width:60ch; }
 h2{ font-size:1.35rem; margin-top:var(--space-4); }
@@ -234,11 +236,13 @@ nav.main-nav a.active{ color:var(--link); }
   .nav-cta{ gap:0; }
   .nav-cta .btn-sharp{ display:none; }
   .nav-toggle{ display:block; }
-  .brand .txt strong{ font-size:0.84rem; }
+  .brand .txt strong{ font-size:clamp(0.64rem, 2.7vw, 0.84rem); white-space:nowrap; }
+  .brand .txt span{ font-size:clamp(0.58rem, 2.2vw, 0.72rem); }
 }
-@media (max-width: 460px){
-  .brand .txt strong{ display:none; }
-  .brand .txt span{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:0.92rem; color:var(--ink); }
+@media (max-width: 380px){
+  header.site .bar{ gap:10px; }
+  .brand{ gap:8px; }
+  .brand img{ width:30px; height:30px; }
 }
 
 /* ---------- Permanenter Contact-Trigger (WhatsApp + Anfrage) ---------- */
@@ -285,8 +289,10 @@ nav.main-nav a.active{ color:var(--link); }
   .whatsapp-fab svg{ width:22px !important; height:22px !important; }
   .fab-cta{ padding:13px 14px; font-size:0.78rem; }
 }
+.fab-cta-short{ display:none; }
 @media (max-width:400px){
-  .fab-cta span.fab-cta-long{ display:none; }
+  .fab-cta-long{ display:none; }
+  .fab-cta-short{ display:inline; }
 }
 
 /* ---------- Sections ---------- */
@@ -418,7 +424,7 @@ section.dim{ background:var(--paper-dim); }
 }
 .scrollpin-portrait img{
   position:absolute; inset:0;
-  width:100%; height:100%; object-fit:cover; object-position:center 22%; display:block;
+  width:100%; height:100%; object-fit:cover; object-position:center 30%; display:block;
 }
 
 /* Liegt als Kind von .scrollpin-portrait vor, damit Bild und Verlauf exakt
@@ -703,19 +709,27 @@ section.dim{ background:var(--paper-dim); }
   .type-hero .type-line span{ transform:none; transition:none; }
 }
 
-/* ---------- Live Google-Bewertungen (rahmenlose Textkarten) ---------- */
+/* ---------- Live Google-Bewertungen (Karten) ---------- */
 .review-cards{ display:grid; grid-template-columns:repeat(3, 1fr); gap:var(--space-4); }
-.review-card{ margin:0; }
+.review-card{
+  margin:0; background:var(--paper); border:1px solid var(--line);
+  border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:22px 22px 18px;
+}
+.review-card-stars{ display:flex; gap:2px; color:var(--accent); margin-bottom:12px; }
 .review-card blockquote{
-  margin:0 0 14px; font-style:italic; color:var(--ink);
-  font-size:1.02rem; line-height:1.55;
+  margin:0 0 16px; font-style:italic; color:var(--ink);
+  font-size:0.98rem; line-height:1.55;
 }
 .review-card figcaption{
-  font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.85rem; color:var(--ink-soft);
+  display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  padding-top:14px; border-top:1px solid var(--line);
 }
+.review-card-author{ font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.85rem; color:var(--ink); }
+.review-card-date{ font-size:0.76rem; color:var(--ink-soft); white-space:nowrap; }
 .review-attribution{ margin-top:var(--space-3); font-size:0.82rem; color:var(--ink-soft); }
 .review-attribution a{ color:var(--link); }
-@media (max-width:900px){ .review-cards{ grid-template-columns:1fr; gap:var(--space-3); } }
+@media (max-width:900px){ .review-cards{ grid-template-columns:1fr; gap:12px; } }
 
 /* ---------- Vorher/Nachher ---------- */
 .vn-pair{ display:grid; grid-template-columns:1fr 1fr; gap:2px; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); }
