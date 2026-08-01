@@ -22,7 +22,10 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # @sanity/cli verlangt inzwischen Node >=22.12 (erster Testlauf ist
+          # mit Node 20 fehlgeschlagen: "ERROR: Node.js version >=22.12
+          # required. You are running v20.20.2").
+          node-version: 22
 
       - name: Abhängigkeiten installieren
         run: npm install
@@ -33,7 +36,7 @@ jobs:
           # Muss als Repository-Secret "SANITY_AUTH_TOKEN" hinterlegt sein
           # (GitHub: Repo -> Settings -> Secrets and variables -> Actions).
           # Token erzeugen unter sanity.io/manage -> Projekt 9bz9h1mi -> API
-          # -> Tokens -> "Add API token", Rolle "Administrator" (Studio-
-          # Deploys brauchen Admin-Rechte, ein reiner "Editor"/"Viewer"-Token
-          # reicht dafür nicht aus).
+          # -> Tokens -> "Add API token", Rolle "Deploy Studio (Token only)"
+          # (Sanitys aktuelle Token-Rollen-Bezeichnung für genau diesen
+          # Zweck — ein reiner "Editor"/"Viewer"-Token reicht nicht aus).
           SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}

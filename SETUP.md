@@ -20,10 +20,10 @@ Handy aus arbeitest und kein Terminal öffnen willst.
 
 1. Auf [sanity.io/manage](https://www.sanity.io/manage) → Projekt `9bz9h1mi`
    → **API** → **Tokens** → **"Add API token"**.
-2. Namen vergeben (z. B. "GitHub Actions Deploy"), Rolle **"Administrator"**
-   wählen (Studio-Deploys brauchen Admin-Rechte — ein Editor/Viewer-Token
-   reicht nicht). Token erzeugen und **sofort kopieren** (wird nur einmal
-   angezeigt).
+2. Namen vergeben (z. B. "GitHub Actions Deploy"), Rolle
+   **"Deploy Studio (Token only)"** wählen (genau für diesen Zweck gedacht
+   — ein Editor/Viewer-Token reicht nicht). Token erzeugen und **sofort
+   kopieren** (wird nur einmal angezeigt).
 3. Im GitHub-Repository (am Handy geht das über die GitHub-App oder den
    Browser): **Settings** → **Secrets and variables** → **Actions** →
    **"New repository secret"**.
@@ -38,8 +38,8 @@ Download, kein `npm install` mehr nötig.
 **Falls der automatische Deploy fehlschlägt** (z. B. Token abgelaufen oder
 falsch kopiert): Der Actions-Tab zeigt eine rote Fehlermeldung mit Details.
 Häufigster Grund: der Token wurde falsch/unvollständig eingefügt oder hat
-nicht die Rolle "Administrator" — einfach einen neuen Token erzeugen und
-das Secret überschreiben (gleicher Name, neuer Wert).
+nicht die Rolle "Deploy Studio (Token only)" — einfach einen neuen Token
+erzeugen und das Secret überschreiben (gleicher Name, neuer Wert).
 
 ## 1. Hosting über Netlify
 
