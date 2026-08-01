@@ -659,14 +659,24 @@ section.dim{ background:var(--paper-dim); }
 }
 
 /* Hover/Tap-Fokus auf einer Kachel (unabhängig vom Kit-Fokus-Impuls-Autolauf,
-   siehe main.js) — dramatischer Fokus-Effekt: aktive Kachel wächst massiv nach
-   vorn, der Rest tritt stark zurück (abgedunkelt + weichgezeichnet). */
-.leistung-cards.is-hovering .leistung-card{
-  opacity:0.2; filter:blur(4px);
-  transition:transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease, filter 0.4s ease;
+   siehe main.js). Der dramatische Fokus-Effekt (massives Wachstum + Blur der
+   Nachbarn) gilt NUR auf breiten Hover-Bildschirmen, wo die Mosaik-Spalten
+   nebeneinander Platz zum Wachsen haben. Im schmalen Einspalten-Layout auf
+   Mobil/Touch würde eine Kachel beim Skalieren in ihre gestapelten Nachbarn
+   hineinlaufen und abgeschnitten wirken — dort bleibt es bei einer sanften
+   Abdunklung ohne Skalierung. */
+@media (hover:hover) and (pointer:fine) and (min-width:1100px){
+  .leistung-cards.is-hovering .leistung-card{
+    opacity:0.2; filter:blur(4px);
+    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease, filter 0.4s ease;
+  }
+  .leistung-cards.is-hovering .leistung-card.is-hover-active{
+    opacity:1; filter:none; transform:translateX(-8px) scale(1.22); z-index:40;
+  }
 }
-.leistung-cards.is-hovering .leistung-card.is-hover-active{
-  opacity:1; filter:none; transform:translateX(-8px) scale(1.22); z-index:40;
+@media (max-width:1099px), (hover:none), (pointer:coarse){
+  .leistung-cards.is-hovering .leistung-card{ opacity:0.5; transition:opacity 0.4s ease; }
+  .leistung-cards.is-hovering .leistung-card.is-hover-active{ opacity:1; }
 }
 .leistung-card-1{ grid-column:1 / 4; grid-row:1 / 3; }
 .leistung-card-2{ grid-column:4 / 7; grid-row:1 / 2; }
