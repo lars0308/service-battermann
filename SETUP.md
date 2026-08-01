@@ -28,8 +28,11 @@ bis der Key eingetragen ist.
 1. Auf [staticforms.dev](https://www.staticforms.dev) ein Konto anlegen.
 2. Ein neues Formular für `service-battermann.de` anlegen und den
    angezeigten **API-Key** kopieren.
-3. In `kontakt.html` das Feld `<input type="hidden" name="apiKey" value="">`
-   suchen und deinen Key zwischen die Anführungszeichen eintragen.
+3. In `kontakt.html` das Feld `<input type="hidden" name="accessKey" value="">`
+   suchen und deinen Key zwischen die Anführungszeichen eintragen (dasselbe
+   nochmal im direkt darunterstehenden `apiKey`-Feld — beide Felder tragen
+   sicherheitshalber denselben Wert, falls sich der von Static Forms
+   erwartete Feldname mal ändert).
 4. **Wichtig für den Foto-Upload:** Der kostenlose Tarif von Static Forms
    unterstützt keine Datei-Anhänge. Der "Foto anhängen"-Button im Formular
    funktioniert nur zuverlässig mit einem Pro- oder Agency-Tarif. Ohne

@@ -26,7 +26,7 @@
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
     '"megaMenu":*[_type=="megaMenuLink"]|order(section asc, order asc){section,order,title,description,url},' +
-    '"infoBanner":*[_type=="infoBanner"][0]{text,active,expiresAt},' +
+    '"infoBanner":*[_type=="infoBanner"][0]{text,active,expiresAt,zielLink},' +
     '"vorherNachher":*[_type=="vorherNachherProjekt"]{titel,beschreibung,kategorie,"vorherUrl":vorherBild.asset->url' + IMG_SUFFIX + ',vorherAlt,"nachherUrl":nachherBild.asset->url' + IMG_SUFFIX + ',nachherAlt},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
     '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,staticFormsApiKey,kitCardIntervalMs,kitActiveScale,kitInactiveOpacity,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
@@ -197,9 +197,32 @@
     var el = document.querySelector(".info-banner");
     if (!el || !banner || !banner.active || !banner.text) return;
     if (banner.expiresAt && new Date(banner.expiresAt).getTime() <= Date.now()) return;
-    el.textContent = banner.text;
-    el.hidden = false;
-    el.classList.add("is-visible");
+
+    // Ist ein Ziel-Link gepflegt, wird der ganze Banner klickbar: statt ein <div>
+    // per JS irgendwie "klickbar" zu simulieren (schlecht für Tastatur/Screenreader),
+    // ersetzen wir es sauber durch ein echtes <a> mit denselben Klassen/Attributen —
+    // ein <div> kann nicht nachträglich zu einem <a> "umgewandelt" werden.
+    var target = el;
+    if (banner.zielLink) {
+      var link = document.createElement("a");
+      link.className = el.className;
+      link.href = banner.zielLink;
+      el.replaceWith(link);
+      target = link;
+    }
+
+    var textNode = document.createTextNode(banner.text);
+    target.textContent = "";
+    target.appendChild(textNode);
+    if (banner.zielLink) {
+      var arrow = document.createElement("span");
+      arrow.className = "info-banner-arrow";
+      arrow.textContent = "→";
+      arrow.setAttribute("aria-hidden", "true");
+      target.appendChild(arrow);
+    }
+    target.hidden = false;
+    target.classList.add("is-visible");
     document.body.classList.add("has-info-banner");
   }
 

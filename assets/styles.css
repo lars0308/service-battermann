@@ -57,8 +57,17 @@
    Menü ist per position:fixed + translateX(100%) einen vollen Viewport breit
    ausserhalb sichtbar positioniert, was die scrollbare Breite der Seite
    vergrößert. touch-action:pan-y unterbindet zusätzlich das horizontale
-   Wischen selbst, unabhängig davon. */
-html{ scroll-behavior:smooth; overflow-x:hidden; touch-action:pan-y; }
+   Wischen selbst, unabhängig davon.
+   WICHTIG: overflow-x:clip statt overflow-x:hidden — hidden koppelt sich
+   laut CSS-Spec mit overflow-y (setzt es implizit auf "auto", sobald nur
+   eine Achse ungleich visible ist) und macht html/body damit zu einem
+   eigenen Scroll-Container. Das bricht position:sticky im .nav-wrapper
+   zuverlässig: der Browser scrollt dann relativ zum (nie bewegten)
+   Body-Container statt zum echten Viewport, wodurch Header+Banner beim
+   Scrollen einfach mit wegscrollen statt oben kleben zu bleiben (per
+   Playwright reproduziert). clip erzeugt keinen Scroll-Container und
+   umgeht das Problem komplett, bei identischer horizontaler Kappwirkung. */
+html{ scroll-behavior:smooth; overflow-x:clip; touch-action:pan-y; }
 a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible{
   outline:2px solid var(--accent); outline-offset:2px;
 }
@@ -81,7 +90,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, 
 
 body{
   margin:0;
-  overflow-x:hidden;
+  overflow-x:clip;
   touch-action:pan-y;
   background:var(--paper);
   color:var(--ink);
@@ -182,24 +191,40 @@ section.dark .eyebrow, .hero .eyebrow{ color:var(--accent); }
 }
 .btn-sharp:hover{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); transform:translateY(-2px); }
 
+/* ---------- Navigations-Wrapper (Info-Banner + Header) ----------
+   Banner und Header liegen als normale Flow-Geschwister IN diesem einen
+   Wrapper, der als Ganzes sticky ist — statt (wie früher) den Banner
+   position:fixed zu setzen und den Header separat mit einem eigenen
+   sticky-top-Versatz + Body-padding-top zu koordinieren. Diese Zwei-Wege-
+   Koordination brach in Chromium zuverlässig: sobald html UND body beide
+   overflow-x:hidden gesetzt haben (hier der Fall, siehe oben), verdoppelt
+   der Browser bei position:sticky-Elementen den top-Versatz zur Body-
+   padding-top (reproduziert: Header landete bei 80px statt 40px, macht
+   genau die gemeldete Lücke zwischen Banner und Header). Ein gemeinsamer
+   sticky-Wrapper mit normalem Innen-Flow umgeht das Problem strukturell,
+   statt die beiden Versätze von Hand im Gleichschritt zu halten. */
+.nav-wrapper{ position:sticky; top:0; z-index:60; }
+
 /* ---------- Info-Banner (optional, per Sanity gesteuert) ---------- */
 .info-banner{
   display:none;
-  position:fixed; top:0; left:0; right:0; z-index:70;
   height:40px; padding:0 16px;
   align-items:center; justify-content:center; gap:8px;
-  background:var(--chip-dark); color:var(--on-dark);
-  font-family:'Plus Jakarta Sans',sans-serif; font-size:0.85rem; text-align:center;
+  background:var(--ink); color:var(--on-dark);
+  font-family:'Montserrat',sans-serif; font-weight:600; font-size:0.85rem;
+  letter-spacing:0.01em; text-align:center;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  border-bottom:1px solid rgba(255,255,255,0.08);
+  border-bottom:1px solid var(--accent);
+  text-decoration:none;
+  transition:background 0.2s ease;
 }
 .info-banner.is-visible{ display:flex; }
-body.has-info-banner{ padding-top:40px; }
-body.has-info-banner header.site{ top:40px; }
+a.info-banner.is-visible:hover, a.info-banner.is-visible:focus-visible{ background:#000; }
+.info-banner-arrow{ color:var(--accent); font-family:'Archivo Black',sans-serif; flex-shrink:0; }
 
 /* ---------- Header ---------- */
 header.site{
-  position:sticky; top:0; z-index:50;
+  z-index:50;
   background:var(--header-bg);
   backdrop-filter:blur(14px);
   border-bottom:1px solid var(--line);

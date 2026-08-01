@@ -26,6 +26,15 @@ export const infoBanner = defineType({
       type: 'datetime',
       description: 'Optional. Leer lassen für kein automatisches Ablaufdatum — dann läuft der Banner, bis du ihn manuell wieder ausschaltest.',
     }),
+    defineField({
+      name: 'zielLink',
+      title: 'Ziel-Link (optional)',
+      type: 'url',
+      description:
+        'Optional. Trägst du hier etwas ein (z. B. "kontakt.html" oder "https://service-battermann.de/kontakt.html#kontakt-formular"), wird der ganze Banner klickbar und führt Besucher direkt dorthin. Leer lassen für einen reinen Hinweistext ohne Link.',
+      validation: (rule) =>
+        rule.uri({allowRelative: true, scheme: ['http', 'https']}),
+    }),
   ],
   preview: {
     select: {title: 'text', active: 'active'},
