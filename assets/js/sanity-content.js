@@ -33,8 +33,23 @@
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
+  //
+  // READ_TOKEN: Platzhalter für einen Sanity-"Viewer"-Token (nur Lesen, KEINE
+  // Schreibrechte) — nötig für perspective=previewDrafts, damit auch unveröffentlichte
+  // Entwürfe sofort im Frontend erscheinen. Erzeugen unter sanity.io/manage → Projekt
+  // "9bz9h1mi" → API → Tokens → "Add API token" mit Rolle "Viewer", dann hier
+  // einsetzen. ACHTUNG (Sicherheitshinweis): Dies ist eine reine Static-Site ohne
+  // Backend — jeder Token, der hier steht, ist über "Seitenquelltext anzeigen" für
+  // jeden Website-Besucher sichtbar und ausles-/kopierbar. Ein "Viewer"-Token kann
+  // damit NICHTS verändern, erlaubt aber jedem, auch unveröffentlichte Entwürfe zu
+  // lesen. Ist das nicht gewünscht, READ_TOKEN leer lassen — die Seite fällt dann
+  // automatisch auf die öffentliche "published"-Perspektive zurück (kein Draft-Preview,
+  // aber weiterhin ohne CDN-Cache dank useCdn:false-Äquivalent oben).
+  var READ_TOKEN = "";
+  var PERSPECTIVE = READ_TOKEN ? "previewDrafts" : "published";
   var ENDPOINT =
-    "https://" + PROJECT_ID + ".api.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + encodeURIComponent(QUERY);
+    "https://" + PROJECT_ID + ".api.sanity.io/v2024-01-01/data/query/" + DATASET +
+    "?perspective=" + PERSPECTIVE + "&query=" + encodeURIComponent(QUERY);
 
   // Mobil ein schlankeres, Desktop ein größeres Bild ziehen, statt überall
   // dieselbe (auf großen Screens zu kleine, auf kleinen Screens unnötig
@@ -322,7 +337,11 @@
       }, 5000)
     : null;
 
-  fetch(ENDPOINT, { signal: controller ? controller.signal : undefined, cache: "no-store" })
+  var fetchOptions = { signal: controller ? controller.signal : undefined, cache: "no-store" };
+  if (READ_TOKEN) {
+    fetchOptions.headers = { Authorization: "Bearer " + READ_TOKEN };
+  }
+  fetch(ENDPOINT, fetchOptions)
     .then(function (res) {
       return res.ok ? res.json() : Promise.reject(new Error("Sanity-Antwort: HTTP " + res.status));
     })

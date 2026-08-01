@@ -617,15 +617,15 @@ section.dim{ background:var(--paper-dim); }
 /* Schwebendes Glasfenster: zeigt beim Hover/Tap einer Kachel die Kurzfassung, direkt
    neben der vergrößerten Kachel positioniert — JS berechnet left/top/height so, dass
    die Höhe exakt der (skalierten) Ziel-Höhe der aktiven Kachel entspricht ("aus einem
-   Guss"). Dunkles Frosted-Glass bewusst statt eines fast-weißen 2%-Tons: der Bereich
-   liegt auf hellem Papier-Hintergrund, die Nachbarkacheln werden auf opacity:0.1
-   abgedunkelt (siehe unten) — ein fast-transparentes weißes Glas würde dort mit
-   weißer Schrift praktisch unlesbar verschwimmen. Radius identisch zu .leistung-card
-   (var(--radius)) für den "aus einem Guss"-Look. */
+   Guss"). Helles Frosted-Glass (rgba(255,255,255,0.03)) statt des früheren dunklen
+   Tons: passt zum hellen "reines Weiß"-Shadcn-Look. Da der Bereich auf hellem
+   Papier-Hintergrund liegt, ist die Schrift im Panel dunkel (nicht weiß) gehalten —
+   weiße Schrift auf fast-transparentem hellem Glas über hellem Papier wäre unlesbar.
+   Radius identisch zu .leistung-card (var(--radius)) für den "aus einem Guss"-Look. */
 .leistung-glass-panel{
   position:absolute; width:300px;
-  background:rgba(15,15,15,0.78);
-  -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px);
+  background:rgba(255,255,255,0.03);
+  -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
   border:1px solid rgba(255,255,255,0.08);
   border-radius:var(--radius);
   padding:40px 34px;
@@ -633,8 +633,15 @@ section.dim{ background:var(--paper-dim); }
      Kachel) immer exakt eingehalten wird — ohne das würde ein längerer, zweizeiliger
      Titel (z. B. bei Kachel 1) die Box trotz gesetzter Höhe nach unten aufdrücken. */
   overflow:hidden;
-  box-shadow:-24px 12px 48px -20px rgba(0,0,0,0.55);
-  z-index:35;
+  box-shadow:-24px 12px 48px -20px rgba(0,0,0,0.35);
+  /* Muss UNTER dem z-index der aktiven Kachel bleiben (siehe .is-hover-active
+     unten, z-index:100): steht das Glasfenster höher, ragt es während seiner
+     Einschwing-Animation kurzzeitig über die noch wachsende aktive Kachel und
+     "klaut" ihr an dem Punkt die Maus (echter Occlusion-Bug, per Playwright-Test
+     reproduziert: die Kachel verliert :hover, der Loop springt zurück, Endlos-
+     Geflacker). Trotzdem klar über den abgedunkelten Nachbarkacheln (kein
+     z-index, also 0), damit es sich wie gewünscht über sie legt. */
+  z-index:90;
   opacity:0; visibility:hidden; pointer-events:none; transform:translateX(-12px);
   transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1),
     left 0.6s cubic-bezier(0.16,1,0.3,1), top 0.6s cubic-bezier(0.16,1,0.3,1),
@@ -652,11 +659,11 @@ section.dim{ background:var(--paper-dim); }
 }
 .leistung-glass-title{
   font-family:'Archivo Black',sans-serif; font-weight:400; font-size:1.15rem; line-height:1.25;
-  color:#ffffff; margin:0 0 10px; transition:opacity 0.25s ease;
+  color:var(--ink); margin:0 0 10px; transition:opacity 0.25s ease;
 }
 .leistung-glass-desc{
   font-family:'Plus Jakarta Sans',sans-serif; font-size:0.9rem; line-height:1.5;
-  color:rgba(244,241,233,0.72); margin:0; transition:opacity 0.25s ease;
+  color:var(--ink-soft); margin:0; transition:opacity 0.25s ease;
 }
 .leistung-glass-panel.is-updating .leistung-glass-title,
 .leistung-glass-panel.is-updating .leistung-glass-desc{ opacity:0; }
@@ -681,11 +688,11 @@ section.dim{ background:var(--paper-dim); }
    Abdunklung ohne Skalierung. */
 @media (hover:hover) and (pointer:fine) and (min-width:1100px){
   .leistung-cards.is-hovering .leistung-card{
-    opacity:0.1; filter:blur(8px);
+    opacity:0.15; filter:blur(6px);
     transition:transform 0.6s cubic-bezier(0.16,1,0.3,1), opacity 0.5s ease, filter 0.5s ease;
   }
   .leistung-cards.is-hovering .leistung-card.is-hover-active{
-    opacity:1; filter:none; transform:translateX(-8px) scale(1.22); z-index:40;
+    opacity:1; filter:none; transform:translateX(-8px) scale(1.22); z-index:100;
   }
 }
 @media (max-width:1099px), (hover:none), (pointer:coarse){

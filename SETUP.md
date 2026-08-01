@@ -143,6 +143,25 @@ einfach der bisherige Text stehen; es kann dadurch nichts kaputtgehen.
 Bild-URLs aus Sanity werden automatisch mit `?auto=format&q=90` abgerufen
 (schärferes, modernes Bildformat direkt vom Sanity-Bild-CDN).
 
+**Optional: Auch unveröffentlichte Entwürfe live anzeigen (Draft-Preview).**
+Standardmäßig zeigt die Seite nur veröffentlichte ("published") Inhalte —
+ein Entwurf im Studio, der noch nicht auf "Veröffentlichen" geklickt wurde,
+erscheint nicht auf der Website. Willst du stattdessen auch unfertige
+Entwürfe sofort sehen können, ohne vorher zu veröffentlichen:
+
+1. In `sanity.io/manage` → Projekt `9bz9h1mi` → API → Tokens → "Add API
+   token" → Rolle **"Viewer"** (nur Lesen) wählen, Token erzeugen.
+2. Den Token in `assets/js/sanity-content.js` bei der Konstante
+   `READ_TOKEN` eintragen (Kommentar direkt daneben erklärt es nochmal).
+3. **Sicherheitshinweis:** Diese Seite ist eine reine, statische Website
+   ohne eigenen Server — jeder eingetragene Token liegt damit offen im
+   öffentlich ausgelieferten JavaScript und ist für jeden Besucher über
+   "Seitenquelltext anzeigen" einsehbar. Ein "Viewer"-Token kann nichts
+   verändern oder löschen, erlaubt aber jedem, auch deine unveröffentlichten
+   Entwürfe zu lesen. Für die meisten Fälle reicht die Standardeinstellung
+   (nur veröffentlichte Inhalte) völlig aus — nur aktivieren, wenn dir das
+   bewusst ist und du es wirklich willst.
+
 **Was bewusst NICHT an Sanity angebunden ist:** Impressum und
 Datenschutzerklärung bleiben aus rechtlichen Gründen fest im Code —
 Änderungen dort sollten bewusst und nachvollziehbar per Commit passieren,
