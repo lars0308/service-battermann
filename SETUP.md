@@ -116,15 +116,31 @@ separates, kostenloses CMS-Tool.
      Hintergrundbild selbst.
    - **Vorteil** (4 Stück): die vier kurzen Textpunkte direkt unter dem
      Hero-Bild.
-   - **Leistungsbereich** (5 Stück): Titel und Kartenbild der fünf
-     Leistungs-Kacheln auf der Startseite.
+   - **Leistungsbereich** (5 Stück): Titel, Kurzbeschreibung (Text im
+     Akkordeon auf `leistungen.html`) und Kartenbild der fünf
+     Leistungs-Kacheln.
+   - **FAQ-Eintrag** (7 Stück): Frage und Antwort auf `einsatzgebiet-faq.html`.
    - **Kontaktdaten**: Telefonnummer, WhatsApp-Link, E-Mail, Erreichbarkeit
-     — wirkt sich auf den Footer aller Seiten aus.
-   - **Website-Einstellungen → Rechtlicher Footer-Hinweis**: der
-     Sternchen-Text im Footer aller Seiten.
+     — wirkt sich auf Footer, Mega-Menü und den "Direkt anrufen"-Button im
+     Hero auf allen Seiten aus.
+   - **Website-Einstellungen**:
+     - Logo (Icon) — wird in Header und Footer auf allen Seiten ersetzt.
+     - Die 4 Navigations-Reiter-Texte ("Leistungen", "Über mich", …).
+     - Hero-Unterzeile (die kleine Zeile über der Hero-Überschrift).
+     - Hero-Wechselgeschwindigkeit in Millisekunden (wie lange ein
+       Hero-Bild stehen bleibt).
+     - Rechtlicher Footer-Hinweis (der Sternchen-Text im Footer aller Seiten).
+     - Static Forms API-Key — siehe Hinweis unten.
 3. Nach dem Speichern in Sanity ist die Änderung **beim nächsten Laden der
    Seite sofort sichtbar** — kein Netlify-Rebuild nötig, anders als beim
    Vorher/Nachher-Bereich (Abschnitt 3).
+
+**Static-Forms-Key jetzt auch über Sanity pflegbar:** Trägst du den Key
+unter Website-Einstellungen ein, überschreibt er automatisch das leere
+Feld in `kontakt.html` beim Laden der Seite — der manuelle Weg aus
+Abschnitt 1a (direkt im Code eintragen) funktioniert weiterhin genauso,
+falls du Sanity dafür nicht nutzen willst. Trägst du an beiden Stellen
+etwas ein, gewinnt der Sanity-Wert.
 
 **Wie das technisch funktioniert, kurz erklärt:** Die Seite lädt weiterhin
 zuerst ganz normal als statisches HTML (wichtig für Google & schnelles
@@ -133,13 +149,17 @@ erstes Laden). Erst danach fragt ein kleines Skript
 nur die Textstellen/Bilder, die sich geändert haben — ohne sichtbares
 Aufblitzen. Ist Sanity gerade nicht erreichbar oder ein Feld leer, bleibt
 einfach der bisherige Text stehen; es kann dadurch nichts kaputtgehen.
+Bild-URLs aus Sanity werden automatisch mit `?auto=format&q=90` abgerufen
+(schärferes, modernes Bildformat direkt vom Sanity-Bild-CDN).
 
 **Was noch NICHT an Sanity angebunden ist** (bewusst nicht, um den Umbau
-nicht ausufern zu lassen): die Detailtexte/Bildergalerien auf
-`leistungen.html`, die Überschriften der Bewertungs-/Einsatzgebiet-Bereiche,
-und der Vorher/Nachher-Bereich (der bleibt wie bisher über den
-GitHub-Admin unter Abschnitt 2/3 gepflegt — zwei CMS für dieselben Bilder
-wäre nur verwirrend). Wenn du das später ausweiten willst, sag Bescheid.
+nicht ausufern zu lassen): Impressum und Datenschutzerklärung (bleiben aus
+rechtlichen Gründen fest im Code — Änderungen dort sollten ohnehin bewusst
+und nachvollziehbar per Commit passieren, nicht "mal eben" im CMS), die
+Überschriften/Fließtexte der Bewertungs- und Einsatzgebiet-Bereiche, und
+der Vorher/Nachher-Bereich (bleibt wie bisher über den GitHub-Admin unter
+Abschnitt 2/3 gepflegt — zwei CMS für dieselben Bilder wäre nur
+verwirrend). Wenn du das später ausweiten willst, sag Bescheid.
 
 ## Warum kein WordPress?
 

@@ -17,12 +17,16 @@
 
   var PROJECT_ID = "9bz9h1mi";
   var DATASET = "production";
+  // Bild-URLs bekommen direkt in der Query den Schärfe-/Format-Parameter mit
+  // (Sanitys Bild-CDN versteht dieselben URL-Parameter wie andere Bild-CDNs).
+  var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
-    '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,"imageUrl":image.asset->url},' +
+    '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,"imageUrl":image.asset->url' + IMG_SUFFIX + '},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
-    '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,"cardImageUrl":cardImage.asset->url},' +
+    '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,"cardImageUrl":cardImage.asset->url' + IMG_SUFFIX + '},' +
+    '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice}}';
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,staticFormsApiKey,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   var ENDPOINT =
     "https://" + PROJECT_ID + ".apicdn.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + encodeURIComponent(QUERY);
 
@@ -41,15 +45,34 @@
     });
     (data.services || []).forEach(function (doc, i) {
       if (doc.title) map["services." + i + ".title"] = doc.title;
+      if (doc.description) map["services." + i + ".description"] = doc.description;
       if (doc.cardImageUrl) map["services." + i + ".cardImageUrl"] = doc.cardImageUrl;
+    });
+    (data.faq || []).forEach(function (doc, i) {
+      if (doc.question) map["faq." + i + ".question"] = doc.question;
+      if (doc.answer) map["faq." + i + ".answer"] = doc.answer;
     });
     if (data.contact) {
       ["phone", "phoneHref", "whatsapp", "email", "openingHours"].forEach(function (key) {
         if (data.contact[key]) map["contact." + key] = data.contact[key];
       });
     }
-    if (data.settings && data.settings.legalNotice) {
-      map["settings.legalNotice"] = data.settings.legalNotice;
+    if (data.settings) {
+      [
+        "legalNotice",
+        "navLeistungen",
+        "navUeberMich",
+        "navEinsatzgebiet",
+        "navKontakt",
+        "heroEyebrow",
+        "staticFormsApiKey",
+        "logoIconUrl",
+      ].forEach(function (key) {
+        if (data.settings[key]) map["settings." + key] = data.settings[key];
+      });
+      if (typeof data.settings.heroAutoplayMs === "number" && data.settings.heroAutoplayMs >= 2000) {
+        map["settings.heroAutoplayMs"] = data.settings.heroAutoplayMs;
+      }
     }
     return map;
   }
@@ -76,8 +99,8 @@
     fields.forEach(function (el) {
       var field = el.getAttribute("data-sanity-field");
 
-      // Sonderfall: rotierende Texte der ersten Hero-Zeile sind kein einzelner
-      // Wert, sondern eine Liste, die main.js selbst weiterdreht (siehe dort).
+      // Sonderfälle: Werte, die main.js selbst weiterverarbeitet statt sie
+      // direkt ins DOM zu schreiben (siehe dort).
       if (field === "hero.0.roundTexts") {
         if (map[field]) window.__heroRoundTexts = map[field];
         return;
@@ -87,14 +110,18 @@
       if (!value) return; // kein Sanity-Wert -> statischer HTML-Inhalt bleibt stehen
 
       var attr = el.getAttribute("data-sanity-attr");
-      if (attr === "href") {
-        var prefix = el.getAttribute("data-sanity-prefix") || "";
-        el.setAttribute("href", prefix + value);
-      } else if (attr === "src") {
-        patchImageSmooth(el, value);
-      } else {
+      if (!attr) {
         el.textContent = value;
+        return;
       }
+      if (attr === "src") {
+        patchImageSmooth(el, value);
+        return;
+      }
+      // Generisch für href/value/oder jedes andere Attribut: optionaler Prefix
+      // (z. B. "tel:", "mailto:") wird vorangestellt, sonst 1:1 übernommen.
+      var prefix = el.getAttribute("data-sanity-prefix") || "";
+      el.setAttribute(attr, prefix + value);
     });
   }
 
@@ -140,6 +167,11 @@
       var map = buildFieldMap(data);
       applyPatches(map);
       patchHeroBackgrounds(map);
+      // Reine Verhaltens-Einstellung ohne eigenes DOM-Element zum Anhängen —
+      // direkt anwenden, statt auf ein [data-sanity-field] zu warten, das es nicht gibt.
+      if (map["settings.heroAutoplayMs"]) {
+        window.__heroAutoplayMs = map["settings.heroAutoplayMs"];
+      }
     })
     .catch(function (err) {
       if (timeoutId) window.clearTimeout(timeoutId);

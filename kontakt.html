@@ -7,8 +7,8 @@
 <meta name="description" content="Kontakt zu Lars Battermann in Lindhorst: Formular, Telefon oder WhatsApp. Kurz schildern, abschicken, fertig – Antwort meist innerhalb von 24 Stunden.">
 <link rel="canonical" href="https://www.service-battermann.de/kontakt.html">
 <link rel="icon" href="images/logo-icon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=8">
-<link rel="stylesheet" href="assets/styles.css?v=8">
+<link rel="stylesheet" href="assets/fonts.css?v=9">
+<link rel="stylesheet" href="assets/styles.css?v=9">
 </head>
 <body>
 
@@ -17,15 +17,85 @@
 <header class="site">
   <div class="bar">
     <a class="brand" href="index.html">
-      <img src="images/logo-icon.png" alt="Logo Objekt- und Reparaturservice Battermann">
+      <img src="images/logo-icon.png" alt="Logo Objekt- und Reparaturservice Battermann" data-sanity-field="settings.logoIconUrl" data-sanity-attr="src">
       <span class="txt"><strong>Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
     </a>
     <nav class="main-nav" id="main-nav" aria-label="Hauptnavigation">
       <a href="index.html">Startseite</a>
-      <a href="leistungen.html">Leistungen</a>
-      <a href="ueber-mich.html">Über mich</a>
-      <a href="einsatzgebiet-faq.html">Einsatzgebiet &amp; FAQ</a>
-      <a href="kontakt.html" class="active" aria-current="page">Kontakt</a>
+      <div class="nav-item has-mega">
+        <a href="leistungen.html" data-sanity-field="settings.navLeistungen">Leistungen</a>
+        <div class="mega-panel">
+          <div class="mega-panel-inner">
+            <a class="mega-col" href="leistungen.html#leistung-hausmeister">
+              <span class="mega-col-num">01</span>
+              <span class="mega-col-title">Hausmeisterservice &amp; Objektbetreuung</span>
+              <span class="mega-col-desc">Fester Ansprechpartner, Kontrolle, Instandhaltung.</span>
+            </a>
+            <a class="mega-col" href="leistungen.html#leistung-montage">
+              <span class="mega-col-num">02</span>
+              <span class="mega-col-title">Haus, Wohnung &amp; Montage</span>
+              <span class="mega-col-desc">Möbelmontage, Reparaturen, Kleinaufträge.</span>
+            </a>
+            <a class="mega-col" href="leistungen.html#leistung-garten">
+              <span class="mega-col-num">03</span>
+              <span class="mega-col-title">Garten &amp; Außenanlagen</span>
+              <span class="mega-col-desc">Heckenschnitt, Rasenpflege, Aufräumarbeiten.</span>
+            </a>
+            <a class="mega-col" href="leistungen.html#leistung-bad">
+              <span class="mega-col-num">04</span>
+              <span class="mega-col-title">Bad &amp; Sanitär<span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+              <span class="mega-col-desc">Armaturen, Fugen, kleine Reparaturen.</span>
+            </a>
+            <a class="mega-col" href="leistungen.html#leistung-elektro">
+              <span class="mega-col-num">05</span>
+              <span class="mega-col-title">Elektro-Kleinreparaturen<span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+              <span class="mega-col-desc">Lampen, Schalter, Steckdosen, Fehlersuche.</span>
+            </a>
+            <a class="mega-col mega-col-all" href="leistungen.html">Alle Leistungen im Detail →</a>
+          </div>
+        </div>
+      </div>
+      <a href="ueber-mich.html" data-sanity-field="settings.navUeberMich">Über mich</a>
+      <div class="nav-item has-mega">
+        <a href="einsatzgebiet-faq.html" data-sanity-field="settings.navEinsatzgebiet">Einsatzgebiet &amp; FAQ</a>
+        <div class="mega-panel">
+          <div class="mega-panel-inner">
+            <a class="mega-col" href="einsatzgebiet-faq.html#faq-antwort">
+              <span class="mega-col-title">Wie schnell bekomme ich eine Antwort?</span>
+              <span class="mega-col-desc">In der Regel innerhalb von 24 Stunden.</span>
+            </a>
+            <a class="mega-col" href="einsatzgebiet-faq.html#faq-kosten">
+              <span class="mega-col-title">Was kostet ein erstes Gespräch?</span>
+              <span class="mega-col-desc">Nichts — unverbindlich und kostenlos.</span>
+            </a>
+            <a class="mega-col" href="einsatzgebiet-faq.html#faq-klein">
+              <span class="mega-col-title">Auch kleine Aufträge?</span>
+              <span class="mega-col-desc">Ausdrücklich ja, ohne Mindestauftragswert.</span>
+            </a>
+            <a class="mega-col mega-col-all" href="einsatzgebiet-faq.html">Gebiet &amp; alle Fragen ansehen →</a>
+          </div>
+        </div>
+      </div>
+      <div class="nav-item has-mega">
+        <a href="kontakt.html" class="active" aria-current="page" data-sanity-field="settings.navKontakt">Kontakt</a>
+        <div class="mega-panel">
+          <div class="mega-panel-inner">
+            <a class="mega-col" href="tel:+4915567467763">
+              <span class="mega-col-title">Anrufen</span>
+              <span class="mega-col-desc" data-sanity-field="contact.phone">+49 155 / 674 677 63</span>
+            </a>
+            <a class="mega-col" href="https://wa.me/4915567467763" data-sanity-field="contact.whatsapp" data-sanity-attr="href">
+              <span class="mega-col-title">WhatsApp schreiben</span>
+              <span class="mega-col-desc">Foto schicken, kurz schildern.</span>
+            </a>
+            <a class="mega-col" href="mailto:service.battermann@gmx.de" data-sanity-field="contact.email" data-sanity-attr="href" data-sanity-prefix="mailto:">
+              <span class="mega-col-title">E-Mail</span>
+              <span class="mega-col-desc" data-sanity-field="contact.email">service.battermann@gmx.de</span>
+            </a>
+            <a class="mega-col mega-col-all" href="kontakt.html">Zum Kontaktformular →</a>
+          </div>
+        </div>
+      </div>
       <a href="kontakt.html" class="btn btn-sharp nav-mobile-cta">Anfrage stellen</a>
     </nav>
     <div class="nav-cta">
@@ -66,7 +136,7 @@
     <div class="reveal">
       <div class="form-card">
         <form name="kontakt" method="POST" action="https://api.staticforms.dev/submit" enctype="multipart/form-data" aria-label="Kontaktformular">
-          <input type="hidden" name="apiKey" value="">
+          <input type="hidden" name="apiKey" value="" data-sanity-field="settings.staticFormsApiKey" data-sanity-attr="value">
           <input type="hidden" name="subject" value="Neue Anfrage über service-battermann.de">
           <p class="bot-field" style="position:absolute;left:-9999px" aria-hidden="true">
             <label>Bitte leer lassen: <input name="honeypot"></label>
@@ -121,7 +191,7 @@
   <div class="wrap">
     <div>
       <a class="brand plain" href="index.html" style="margin-bottom:14px">
-        <img src="images/logo-icon.png" alt="" class="logo-on-dark">
+        <img src="images/logo-icon.png" alt="" class="logo-on-dark" data-sanity-field="settings.logoIconUrl" data-sanity-attr="src">
         <span class="txt"><strong style="color:var(--on-dark)">Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
       </a>
       <p>Handwerker &amp; Hausmeisterservice für Privatkunden, Hausverwaltungen und Firmen in Lindhorst, Stadthagen, Bückeburg und Umgebung.</p>
@@ -160,7 +230,7 @@
   </a>
 </div>
 
-<script src="assets/main.js?v=8"></script>
-<script src="assets/js/sanity-content.js?v=8"></script>
+<script src="assets/main.js?v=9"></script>
+<script src="assets/js/sanity-content.js?v=9"></script>
 </body>
 </html>

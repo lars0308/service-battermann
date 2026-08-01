@@ -65,8 +65,9 @@
   // Als window-Property statt lokaler Konstante, damit sanity-content.js die Liste
   // live ersetzen kann (Lars pflegt die 3 Textvarianten in Sanity statt im Code).
   window.__heroRoundTexts = ["ist persönlich für Sie da", "kümmert sich selbst darum", "steht für sein Wort"];
+  // Gleiches Prinzip für die Wechselgeschwindigkeit (Sanity: Website-Einstellungen → Hero).
+  window.__heroAutoplayMs = 5200;
   if (heroSlides.length && heroLines.length) {
-    var HERO_CYCLE_MS = 5200;
     var heroCurrent = 0;
     var heroRound = 0;
     var heroTimer = null;
@@ -91,7 +92,7 @@
       heroTimer = window.setTimeout(function () {
         activateHeroSlide((heroCurrent + 1) % heroSlides.length);
         scheduleNext();
-      }, HERO_CYCLE_MS);
+      }, window.__heroAutoplayMs);
     };
 
     heroDots.forEach(function (dot, i) {
@@ -139,6 +140,16 @@
           targetRow.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
         }, 50);
       }
+    }
+
+    // Gleiches Prinzip für Direktlinks aus dem Mega-Menü auf einzelne FAQ-Einträge
+    // (z. B. einsatzgebiet-faq.html#faq-kosten): passendes <details> öffnen.
+    var targetFaq = document.querySelector(".faq-item" + window.location.hash);
+    if (targetFaq && targetFaq.tagName === "DETAILS") {
+      targetFaq.setAttribute("open", "");
+      window.setTimeout(function () {
+        targetFaq.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      }, 50);
     }
   }
 
