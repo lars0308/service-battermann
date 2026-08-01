@@ -5,6 +5,42 @@ schnell, kostenlos hostbar und ohne Server, um den du dich kümmern müsstest.
 Für das Nachpflegen von Vorher/Nachher-Bildern brauchst du kein WordPress und
 keine Programmierkenntnisse; ein kleiner Admin-Bereich reicht.
 
+## 0. Sanity Studio automatisch deployen (einmalige Einrichtung)
+
+Änderungen am Studio selbst — neue Felder, neue Inhaltstypen, Struktur-
+Anpassungen — sind **Code-Änderungen** und müssen deployed werden, damit sie
+im Studio unter `service-battermann.sanity.studio` erscheinen. Bisher
+musstest du dafür manuell `npm run deploy` in `studio-website` ausführen.
+
+Mit dieser einmaligen Einrichtung übernimmt das GitHub automatisch, sobald
+Code im `studio-website`-Ordner gepusht wird — praktisch, wenn du viel vom
+Handy aus arbeitest und kein Terminal öffnen willst.
+
+**Einmalig einzurichten (dauert ~5 Minuten):**
+
+1. Auf [sanity.io/manage](https://www.sanity.io/manage) → Projekt `9bz9h1mi`
+   → **API** → **Tokens** → **"Add API token"**.
+2. Namen vergeben (z. B. "GitHub Actions Deploy"), Rolle **"Administrator"**
+   wählen (Studio-Deploys brauchen Admin-Rechte — ein Editor/Viewer-Token
+   reicht nicht). Token erzeugen und **sofort kopieren** (wird nur einmal
+   angezeigt).
+3. Im GitHub-Repository (am Handy geht das über die GitHub-App oder den
+   Browser): **Settings** → **Secrets and variables** → **Actions** →
+   **"New repository secret"**.
+4. Name: `SANITY_AUTH_TOKEN`, Value: der eben kopierte Token. Speichern.
+
+**Ab jetzt läuft es automatisch:** Jedes Mal, wenn sich etwas im Ordner
+`studio-website` ändert und auf `main` landet, deployed GitHub Actions das
+Studio von selbst — sichtbar unter **Actions**-Tab des Repos (grüner Haken
+= erfolgreich deployed, meist unter 2 Minuten). Kein Terminal, kein ZIP-
+Download, kein `npm install` mehr nötig.
+
+**Falls der automatische Deploy fehlschlägt** (z. B. Token abgelaufen oder
+falsch kopiert): Der Actions-Tab zeigt eine rote Fehlermeldung mit Details.
+Häufigster Grund: der Token wurde falsch/unvollständig eingefügt oder hat
+nicht die Rolle "Administrator" — einfach einen neuen Token erzeugen und
+das Secret überschreiben (gleicher Name, neuer Wert).
+
 ## 1. Hosting über Netlify
 
 1. Auf [netlify.com](https://netlify.com) anmelden (kostenloses Konto reicht).

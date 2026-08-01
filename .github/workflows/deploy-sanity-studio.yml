@@ -1,0 +1,39 @@
+name: Sanity Studio automatisch deployen
+
+# Läuft nur, wenn sich tatsächlich etwas im Studio-Ordner ändert (Schema,
+# Struktur, Konfiguration) — reine Website-Änderungen (HTML/CSS/JS außerhalb
+# von studio-website/) lösen KEINEN Studio-Deploy aus, die sind schon durch
+# den normalen Hosting-Deploy (Netlify) abgedeckt.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'studio-website/**'
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: studio-website
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Abhängigkeiten installieren
+        run: npm install
+
+      - name: Studio deployen
+        run: npm run deploy
+        env:
+          # Muss als Repository-Secret "SANITY_AUTH_TOKEN" hinterlegt sein
+          # (GitHub: Repo -> Settings -> Secrets and variables -> Actions).
+          # Token erzeugen unter sanity.io/manage -> Projekt 9bz9h1mi -> API
+          # -> Tokens -> "Add API token", Rolle "Administrator" (Studio-
+          # Deploys brauchen Admin-Rechte, ein reiner "Editor"/"Viewer"-Token
+          # reicht dafür nicht aus).
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
