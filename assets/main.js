@@ -71,6 +71,7 @@
   // Loop wieder von vorn.
   var kitContainer = document.querySelector(".leistung-cards");
   var kitCards = Array.prototype.slice.call(document.querySelectorAll(".leistung-cards .leistung-card"));
+  var glassSplit = document.querySelector(".leistung-split");
   var glassPanel = document.querySelector("[data-leistung-glass]");
   var glassTitle = document.querySelector("[data-leistung-glass-title]");
   var glassDesc = document.querySelector("[data-leistung-glass-desc]");
@@ -133,6 +134,27 @@
       runPulseCycle();
     };
 
+    // Positioniert das Glasfenster direkt rechts neben der gehoverten Kachel (statt
+    // einer festen Sidebar) — nur auf breiten Hover-Bildschirmen relevant, auf
+    // schmalen/Touch-Geräten überschreibt eine CSS-Regel mit !important die hier
+    // gesetzten inline-Werte und lässt das Fenster stattdessen im Fluss stehen.
+    var positionGlassPanel = function (card) {
+      if (!glassPanel || !glassSplit) return;
+      var containerRect = glassSplit.getBoundingClientRect();
+      var cardRect = card.getBoundingClientRect();
+      var panelWidth = glassPanel.offsetWidth || 300;
+      var panelHeight = glassPanel.offsetHeight || 200;
+      var left = cardRect.right - containerRect.left + 16;
+      var maxLeft = containerRect.width - panelWidth;
+      if (left > maxLeft) left = Math.max(0, maxLeft);
+      var top = cardRect.top - containerRect.top + cardRect.height / 2 - panelHeight / 2;
+      if (top < 0) top = 0;
+      var maxTop = glassSplit.offsetHeight - panelHeight;
+      if (maxTop > 0 && top > maxTop) top = maxTop;
+      glassPanel.style.left = left + "px";
+      glassPanel.style.top = top + "px";
+    };
+
     var showCardInGlass = function (card) {
       if (!glassPanel || !glassTitle || !glassDesc) return;
       var titleEl = card.querySelector(".leistung-card-title");
@@ -150,10 +172,13 @@
       kitCards.forEach(function (c) { c.classList.remove("is-hover-active"); });
       card.classList.add("is-hover-active");
       kitContainer.classList.add("is-hovering");
+      positionGlassPanel(card);
+      glassPanel.classList.add("is-floating-visible");
     };
     var resetGlass = function () {
       kitContainer.classList.remove("is-hovering");
       kitCards.forEach(function (c) { c.classList.remove("is-hover-active"); });
+      if (glassPanel) glassPanel.classList.remove("is-floating-visible");
     };
 
     kitCards.forEach(function (card) {
