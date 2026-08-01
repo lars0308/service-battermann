@@ -562,8 +562,8 @@ section.dim{ background:var(--paper-dim); }
   border-radius:var(--radius); overflow:hidden; padding:18px 20px;
   text-decoration:none; color:var(--on-dark);
   box-shadow:var(--shadow);
-  transition:transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.5s cubic-bezier(0.16,1,0.3,1),
-    box-shadow 0.5s cubic-bezier(0.16,1,0.3,1);
+  transition:transform 0.8s cubic-bezier(0.16,1,0.3,1), opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+    box-shadow 0.8s cubic-bezier(0.16,1,0.3,1);
 }
 .leistung-card img{
   position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
@@ -574,11 +574,13 @@ section.dim{ background:var(--paper-dim); }
 .leistung-card:hover img{ transform:scale(1.06); }
 
 /* "Kit-Fokus-Impuls": einmaliger, sequenzieller Hervorhebungs-Impuls beim Erreichen der
-   Sektion (siehe assets/main.js) — dezent, kein Loop, respektiert prefers-reduced-motion. */
-.leistung-cards.is-sequencing .leistung-card{ opacity:0.82; }
+   Sektion (siehe assets/main.js) — dezent, kein Loop, respektiert prefers-reduced-motion.
+   Skalierung/Abdunklung als CSS-Variable mit Fallback, damit sanity-content.js sie live
+   per style.setProperty() überschreiben kann (Website-Einstellungen → Kit-Animationssteuerung). */
+.leistung-cards.is-sequencing .leistung-card{ opacity:var(--kit-inactive-opacity, 0.5); }
 .leistung-cards.is-sequencing .leistung-card.is-focus-active{
-  opacity:1; transform:scale(1.03); z-index:1;
-  box-shadow:0 20px 36px -22px rgba(15,14,12,0.6);
+  opacity:1; transform:scale(var(--kit-active-scale, 1.05)); z-index:1;
+  box-shadow:0 24px 40px -22px rgba(15,14,12,0.65);
 }
 .leistung-card-scrim{
   position:absolute; inset:0;

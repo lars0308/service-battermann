@@ -11,6 +11,7 @@ export const siteSettings = defineType({
     {name: 'nav', title: 'Navigation'},
     {name: 'hero', title: 'Hero'},
     {name: 'forms', title: 'Formular'},
+    {name: 'kit', title: 'Kit-Animationssteuerung'},
   ],
   fields: [
     defineField({name: 'companyName', title: 'Firmenname', type: 'string', group: 'general'}),
@@ -96,6 +97,34 @@ export const siteSettings = defineType({
       description:
         'Ohne diesen Key nimmt das Kontaktformular auf kontakt.html keine Anfragen entgegen. Key von staticforms.dev, siehe SETUP.md.',
       group: 'forms',
+    }),
+    defineField({
+      name: 'kitCardIntervalMs',
+      title: 'Kit-Fokus-Impuls: Zeit pro Kachel (Millisekunden)',
+      type: 'number',
+      description:
+        'Steuert den automatischen Hervorhebungs-Impuls der 5 Leistungskacheln auf der Startseite. Standard: 3000.',
+      initialValue: 3000,
+      validation: (rule) => rule.min(500).max(8000),
+      group: 'kit',
+    }),
+    defineField({
+      name: 'kitActiveScale',
+      title: 'Kit-Fokus-Impuls: Skalierung der aktiven Kachel',
+      type: 'number',
+      description: 'Standard: 1.05 (5% größer).',
+      initialValue: 1.05,
+      validation: (rule) => rule.min(1).max(1.15),
+      group: 'kit',
+    }),
+    defineField({
+      name: 'kitInactiveOpacity',
+      title: 'Kit-Fokus-Impuls: Abdunklung der inaktiven Kacheln',
+      type: 'number',
+      description: 'Standard: 0.5. Kleinerer Wert = stärker abgedunkelt.',
+      initialValue: 0.5,
+      validation: (rule) => rule.min(0.2).max(1),
+      group: 'kit',
     }),
   ],
   preview: {

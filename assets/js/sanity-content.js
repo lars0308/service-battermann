@@ -27,7 +27,7 @@
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
     '"vorherNachher":*[_type=="vorherNachherProjekt"]{titel,beschreibung,kategorie,"vorherUrl":vorherBild.asset->url' + IMG_SUFFIX + ',vorherAlt,"nachherUrl":nachherBild.asset->url' + IMG_SUFFIX + ',nachherAlt},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,staticFormsApiKey,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,staticFormsApiKey,kitCardIntervalMs,kitActiveScale,kitInactiveOpacity,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -123,8 +123,34 @@
       if (typeof data.settings.heroAutoplayMs === "number" && data.settings.heroAutoplayMs >= 2000) {
         map["settings.heroAutoplayMs"] = data.settings.heroAutoplayMs;
       }
+      if (typeof data.settings.kitCardIntervalMs === "number" && data.settings.kitCardIntervalMs >= 500) {
+        map["settings.kitCardIntervalMs"] = data.settings.kitCardIntervalMs;
+      }
+      if (typeof data.settings.kitActiveScale === "number" && data.settings.kitActiveScale >= 1) {
+        map["settings.kitActiveScale"] = data.settings.kitActiveScale;
+      }
+      if (typeof data.settings.kitInactiveOpacity === "number" && data.settings.kitInactiveOpacity > 0) {
+        map["settings.kitInactiveOpacity"] = data.settings.kitInactiveOpacity;
+      }
     }
     return map;
+  }
+
+  // Kit-Fokus-Impuls-Parameter: Zeit-Wert direkt am main.js-Timing-Global setzen (gleiches
+  // Prinzip wie heroAutoplayMs), Skalierung/Abdunklung als CSS-Custom-Properties übergeben,
+  // da main.js sie nicht selbst berechnet, sondern nur die CSS-Klassen umschaltet.
+  function applyKitAnimationSettings(map) {
+    if (map["settings.kitCardIntervalMs"]) {
+      window.__kitCardIntervalMs = map["settings.kitCardIntervalMs"];
+    }
+    var kitContainer = document.querySelector(".leistung-cards");
+    if (!kitContainer) return;
+    if (map["settings.kitActiveScale"]) {
+      kitContainer.style.setProperty("--kit-active-scale", map["settings.kitActiveScale"]);
+    }
+    if (map["settings.kitInactiveOpacity"]) {
+      kitContainer.style.setProperty("--kit-inactive-opacity", map["settings.kitInactiveOpacity"]);
+    }
   }
 
   // Sanity ist die Quelle der Wahrheit für Vorher/Nachher-Projekte; die statische
@@ -275,6 +301,7 @@
       applyPatches(map);
       patchHeroBackgrounds(map);
       applyCardFocalPoints(map);
+      applyKitAnimationSettings(map);
       applyCallButtonToggle(map);
       applyVorherNachher(data);
       if (data.settings && data.settings.logoIconUrl) {

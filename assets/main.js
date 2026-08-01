@@ -40,6 +40,9 @@
   // durch den Nutzer bricht die Sequenz sofort ab und macht dem normalen Hover-Zustand Platz.
   var kitContainer = document.querySelector(".leistung-cards");
   var kitCards = Array.prototype.slice.call(document.querySelectorAll(".leistung-cards .leistung-card"));
+  // Als window-Property statt lokaler Konstante, damit sanity-content.js sie live
+  // ersetzen kann (Lars pflegt Tempo/Skalierung/Abdunklung in Sanity statt im Code).
+  window.__kitCardIntervalMs = 3000;
   if (kitContainer && kitCards.length && !reduceMotion && "IntersectionObserver" in window) {
     var kitTimers = [];
     var kitRunning = false;
@@ -55,6 +58,7 @@
     var runKitImpuls = function () {
       if (kitRunning) return;
       kitRunning = true;
+      var stepMs = window.__kitCardIntervalMs;
       kitContainer.classList.add("is-sequencing");
       kitCards.forEach(function (card, i) {
         kitTimers.push(
@@ -62,9 +66,9 @@
             kitCards.forEach(function (c) { c.classList.remove("is-focus-active"); });
             card.classList.add("is-focus-active");
             if (i === kitCards.length - 1) {
-              kitTimers.push(window.setTimeout(stopKitImpuls, 550));
+              kitTimers.push(window.setTimeout(stopKitImpuls, stepMs));
             }
-          }, i * 400)
+          }, i * stepMs)
         );
       });
     };
