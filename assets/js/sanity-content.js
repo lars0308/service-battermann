@@ -23,7 +23,7 @@
   var QUERY =
     '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,showCallButton,"imageBaseUrl":image.asset->url,"imageHotspot":image.hotspot},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
-    '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot},' +
+    '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
     '"megaMenu":*[_type=="megaMenuLink"]|order(section asc, order asc){section,order,title,description,url},' +
     '"infoBanner":*[_type=="infoBanner"][0]{text,active,expiresAt,zielLink},' +
@@ -117,7 +117,10 @@
       if (!doc) return;
       var i = orderNum - 1;
       if (doc.title) map["services." + i + ".title"] = doc.title;
+      if (doc.verb) map["services." + i + ".verb"] = doc.verb;
       if (doc.description) map["services." + i + ".description"] = doc.description;
+      if (doc.ctaLabel) map["services." + i + ".ctaLabel"] = doc.ctaLabel;
+      if (doc.ctaUrl) map["services." + i + ".ctaUrl"] = doc.ctaUrl;
       if (doc.cardImageBaseUrl) map["services." + i + ".cardImageUrl"] = doc.cardImageBaseUrl + "?auto=format&q=90";
       // Sanitys Hotspot ist bereits ein relativer 0-1-Wert im Bild — deckt sich exakt mit
       // der CSS object-position-Syntax. So bleibt der gewählte Bildausschnitt bei jeder
@@ -333,6 +336,43 @@
     });
   }
 
+  // Bildergalerie je Leistungsbereich (leistungen.html) — nur ersetzen, wenn
+  // Lars im Studio tatsächlich eigene Galeriebilder gepflegt hat; sonst bleiben
+  // die statischen HTML-Bilder als Fallback stehen (gleiches Prinzip wie
+  // überall sonst: kein Sanity-Wert -> nichts ändert sich). data-lightbox-img
+  // auf den neuen <img>s reicht aus, damit die bestehende Lightbox (main.js,
+  // event delegation auf document) sie automatisch mit aufnimmt.
+  function applyServiceGalleries(data) {
+    var servicesByOrder = {};
+    (data.services || []).forEach(function (doc) {
+      if (typeof doc.order === "number" && doc.order >= 1 && doc.order <= 5 && !servicesByOrder[doc.order]) {
+        servicesByOrder[doc.order] = doc;
+      }
+    });
+    [1, 2, 3, 4, 5].forEach(function (orderNum) {
+      var doc = servicesByOrder[orderNum];
+      if (!doc || !Array.isArray(doc.gallery) || !doc.gallery.length) return;
+      var i = orderNum - 1;
+      var container = document.querySelector('[data-service-gallery="' + i + '"]');
+      if (!container) return;
+      container.innerHTML = "";
+      doc.gallery.forEach(function (img) {
+        if (!img || !img.url) return;
+        var figure = document.createElement("figure");
+        var el = document.createElement("img");
+        el.src = img.url + "?auto=format&q=90";
+        el.alt = "";
+        el.loading = "lazy";
+        el.setAttribute("data-lightbox-img", "");
+        if (img.hotspot && typeof img.hotspot.x === "number" && typeof img.hotspot.y === "number") {
+          el.style.objectPosition = (img.hotspot.x * 100).toFixed(2) + "% " + (img.hotspot.y * 100).toFixed(2) + "%";
+        }
+        figure.appendChild(el);
+        container.appendChild(figure);
+      });
+    });
+  }
+
   // Hero-Hintergrundbilder: Bild wird VOR dem Einsetzen im Hintergrund vorgeladen,
   // damit nie eine leere/graue Fläche aufblitzt, während das neue Bild lädt.
   //
@@ -400,6 +440,7 @@
       applyPatches(map);
       patchHeroBackgrounds(map);
       applyCardFocalPoints(map);
+      applyServiceGalleries(data);
       applyKitAnimationSettings(map);
       applyCallButtonToggle(map);
       applyVorherNachher(data);

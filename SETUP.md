@@ -134,9 +134,12 @@ separates, kostenloses CMS-Tool.
      Hintergrundbild selbst.
    - **Vorteil** (4 Stück): die vier kurzen Textpunkte direkt unter dem
      Hero-Bild.
-   - **Leistungsbereich** (5 Stück): Titel, Kurzbeschreibung (Text im
-     Akkordeon auf `leistungen.html`) und Kartenbild der fünf
-     Leistungs-Kacheln.
+   - **Leistungsbereich** (5 Stück): steuert BEIDE Seiten aus einem
+     Dokument — Titel, Verb, Kurzbeschreibung, CTA-Text/-Link und die
+     echten Projektbilder (Galerie) im Akkordeon auf `leistungen.html`,
+     außerdem Titel und Kartenbild der fünf Leistungs-Kacheln auf der
+     Startseite. So pflegst du jeden Bereich nur an einer Stelle statt
+     doppelt für beide Seiten.
    - **FAQ-Eintrag** (7 Stück): Frage und Antwort auf `einsatzgebiet-faq.html`.
    - **Kontaktdaten**: Telefonnummer, WhatsApp-Link, E-Mail, Erreichbarkeit
      — wirkt sich auf Footer, Mega-Menü und den "Direkt anrufen"-Button im
