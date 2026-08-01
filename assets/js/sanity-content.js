@@ -28,8 +28,11 @@
     '"vorherNachher":*[_type=="vorherNachherProjekt"]{titel,beschreibung,kategorie,"vorherUrl":vorherBild.asset->url' + IMG_SUFFIX + ',vorherAlt,"nachherUrl":nachherBild.asset->url' + IMG_SUFFIX + ',nachherAlt},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
     '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,staticFormsApiKey,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+  // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
+  // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
+  // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
   var ENDPOINT =
-    "https://" + PROJECT_ID + ".apicdn.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + encodeURIComponent(QUERY);
+    "https://" + PROJECT_ID + ".api.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + encodeURIComponent(QUERY);
 
   // Mobil ein schlankeres, Desktop ein größeres Bild ziehen, statt überall
   // dieselbe (auf großen Screens zu kleine, auf kleinen Screens unnötig
@@ -234,6 +237,9 @@
     .then(function (json) {
       if (timeoutId) window.clearTimeout(timeoutId);
       var data = (json && json.result) || {};
+      if (window.console && console.log) {
+        console.log("[sanity-content] Daten von Sanity empfangen:", data);
+      }
       var map = buildFieldMap(data);
       applyPatches(map);
       patchHeroBackgrounds(map);
@@ -250,8 +256,8 @@
     })
     .catch(function (err) {
       if (timeoutId) window.clearTimeout(timeoutId);
-      if (window.console && console.info) {
-        console.info("[sanity-content] Live-Inhalte nicht geladen, zeige statischen Stand.", err && err.message);
+      if (window.console && console.warn) {
+        console.warn("[sanity-content] Live-Inhalte nicht geladen, zeige statischen Stand. Grund:", err && err.message);
       }
     });
 })();
