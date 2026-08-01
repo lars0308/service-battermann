@@ -45,6 +45,14 @@ export const heroSlide = defineType({
       title: 'Aria-Label für den Auswahlpunkt',
       type: 'string',
     }),
+    defineField({
+      name: 'showCallButton',
+      title: '"Direkt anrufen"-Button zeigen',
+      type: 'boolean',
+      description:
+        'Steuert den grünen Anruf-Button im Hero global (es gibt nur einen Button für den ganzen Slider) — nur das erste Slide-Dokument (Reihenfolge 1) wird hierfür ausgewertet.',
+      initialValue: true,
+    }),
   ],
   preview: {
     select: {title: 'verb', media: 'image', order: 'order'},

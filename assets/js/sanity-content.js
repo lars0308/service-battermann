@@ -21,24 +21,38 @@
   // (Sanitys Bild-CDN versteht dieselben URL-Parameter wie andere Bild-CDNs).
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
-    '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,"imageUrl":image.asset->url' + IMG_SUFFIX + '},' +
+    '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,showCallButton,"imageBaseUrl":image.asset->url},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,"cardImageUrl":cardImage.asset->url' + IMG_SUFFIX + '},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
+    '"vorherNachher":*[_type=="vorherNachherProjekt"]{titel,beschreibung,kategorie,"vorherUrl":vorherBild.asset->url' + IMG_SUFFIX + ',vorherAlt,"nachherUrl":nachherBild.asset->url' + IMG_SUFFIX + ',nachherAlt},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
     '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,staticFormsApiKey,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   var ENDPOINT =
     "https://" + PROJECT_ID + ".apicdn.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + encodeURIComponent(QUERY);
+
+  // Mobil ein schlankeres, Desktop ein größeres Bild ziehen, statt überall
+  // dieselbe (auf großen Screens zu kleine, auf kleinen Screens unnötig
+  // schwere) Variante zu laden. Sanitys Bild-CDN skaliert & schärft serverseitig.
+  var isNarrowViewport = window.matchMedia && window.matchMedia("(max-width:768px)").matches;
+  function responsiveImageUrl(baseUrl) {
+    if (!baseUrl) return baseUrl;
+    var width = isNarrowViewport ? 800 : 1920;
+    return baseUrl + "?w=" + width + "&auto=format&q=90";
+  }
 
   function buildFieldMap(data) {
     var map = {};
     var hero = data.hero || [];
     hero.forEach(function (doc, i) {
       if (doc.verb) map["hero." + i + ".verb"] = doc.verb;
-      if (doc.imageUrl) map["hero." + i + ".imageUrl"] = doc.imageUrl;
+      if (doc.imageBaseUrl) map["hero." + i + ".imageUrl"] = responsiveImageUrl(doc.imageBaseUrl);
     });
     if (hero[0] && Array.isArray(hero[0].roundTexts) && hero[0].roundTexts.length) {
       map["hero.0.roundTexts"] = hero[0].roundTexts;
+    }
+    if (hero[0] && typeof hero[0].showCallButton === "boolean") {
+      map["hero.0.showCallButton"] = hero[0].showCallButton;
     }
     (data.trust || []).forEach(function (doc, i) {
       if (doc.text) map["trust." + i + ".text"] = doc.text;
@@ -75,6 +89,40 @@
       }
     }
     return map;
+  }
+
+  // Sanity ist die Quelle der Wahrheit für Vorher/Nachher-Projekte; die statische
+  // content/vorher-nachher.json (main.js) ist nur der Startzustand/Fallback, falls
+  // das Sanity-Dataset (noch) leer ist oder der Fetch fehlschlägt.
+  function applyVorherNachher(data) {
+    var projekte = data.vorherNachher || [];
+    if (!projekte.length || typeof window.__renderVnProjekte !== "function") return;
+    window.__renderVnProjekte(
+      projekte.map(function (p) {
+        return {
+          titel: p.titel,
+          beschreibung: p.beschreibung,
+          kategorie: p.kategorie,
+          vorher_bild: p.vorherUrl,
+          vorher_alt: p.vorherAlt,
+          nachher_bild: p.nachherUrl,
+          nachher_alt: p.nachherAlt,
+        };
+      })
+    );
+  }
+
+  // Hochgeladenes Logo (settings.logoIconUrl) wird zusätzlich als Favicon injiziert,
+  // damit ein Logo-Wechsel im Studio auch im Browser-Tab sichtbar wird.
+  function applyFavicon(logoUrl) {
+    if (!logoUrl) return;
+    var link = document.querySelector('link[rel="icon"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.setAttribute("rel", "icon");
+      document.head.appendChild(link);
+    }
+    link.setAttribute("href", logoUrl);
   }
 
   // Bild sanft nachladen statt abrupt zu tauschen: erst im Hintergrund vorladen,
@@ -150,6 +198,14 @@
     });
   }
 
+  // Der grüne "Direkt anrufen"-Button ist nicht pro Slide vorhanden (ein Button für
+  // den ganzen Slider) — der Schalter im ersten Hero-Slide-Dokument steuert ihn global.
+  function applyCallButtonToggle(map) {
+    if (map["hero.0.showCallButton"] !== false) return; // Default (kein Feld / true) = sichtbar, unverändert
+    var btn = document.querySelector("[data-hero-call-btn]");
+    if (btn) btn.style.display = "none";
+  }
+
   var controller = "AbortController" in window ? new AbortController() : null;
   var timeoutId = controller
     ? window.setTimeout(function () {
@@ -167,6 +223,11 @@
       var map = buildFieldMap(data);
       applyPatches(map);
       patchHeroBackgrounds(map);
+      applyCallButtonToggle(map);
+      applyVorherNachher(data);
+      if (data.settings && data.settings.logoIconUrl) {
+        applyFavicon(data.settings.logoIconUrl);
+      }
       // Reine Verhaltens-Einstellung ohne eigenes DOM-Element zum Anhängen —
       // direkt anwenden, statt auf ein [data-sanity-field] zu warten, das es nicht gibt.
       if (map["settings.heroAutoplayMs"]) {

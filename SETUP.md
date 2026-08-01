@@ -38,40 +38,19 @@ bis der Key eingetragen ist.
 5. Benachrichtigungen (E-Mail bei neuer Anfrage) richtest du im
    Static-Forms-Dashboard unter den Formular-Einstellungen ein.
 
-## 2. Admin-Zugang für Vorher/Nachher-Bilder aktivieren
+## 2. Vorher/Nachher-Bilder pflegen
 
-Der Admin-Bereich (`/admin/`) meldet sich direkt mit deinem GitHub-Konto an
-(nicht über Netlify Identity — das unterstützt das hier verwendete CMS
-nicht mehr). Dafür einmalig eine GitHub-OAuth-App anlegen und mit Netlify
-verbinden:
+Der frühere GitHub-Admin-Bereich (`/admin/`, Sveltia CMS) wurde entfernt —
+**ausnahmslos alle** Inhalte werden jetzt über Sanity Studio gepflegt
+(siehe Abschnitt 5), auch die Vorher/Nachher-Galerien. Neue Projekte legst
+du dort unter dem Dokumenttyp **"Vorher/Nachher-Projekt"** an (Titel,
+Beschreibung, Kategorie, Vorher-/Nachher-Bild). Änderungen sind sofort
+live, ohne Netlify-Neubau.
 
-1. Auf [github.com/settings/developers](https://github.com/settings/developers)
-   → **"OAuth Apps" → "New OAuth App"**.
-2. Angaben eintragen:
-   - Homepage URL: `https://service-battermann.de`
-   - Authorization callback URL: `https://api.netlify.com/auth/done`
-3. App erstellen, **Client ID** kopieren und über **"Generate a new client
-   secret"** ein **Client Secret** erzeugen (sofort kopieren, wird danach
-   nicht mehr angezeigt).
-4. Im Netlify-Dashboard der Seite: **Site configuration → General →
-   Access control → OAuth** öffnen (teils auch unter "Identity" zu
-   finden) und dort bei **"GitHub"** Client ID und Client Secret eintragen.
-
-## 3. Bilder & Texte pflegen
-
-1. `https://service-battermann.de/admin/` öffnen.
-2. **"Login with GitHub"** klicken und mit deinem GitHub-Konto (`lars0308`)
-   anmelden — dieses Konto hat bereits Schreibzugriff auf das Repository.
-3. Dort kannst du unter "Vorher / Nachher – Projekte":
-   - neue Projekte hinzufügen (Titel, kurze Beschreibung, Vorher-Bild,
-     Nachher-Bild)
-   - bestehende Projekte bearbeiten, neu anordnen oder löschen
-4. Nach dem Speichern baut Netlify die Seite automatisch neu — nach
-   ein bis zwei Minuten ist die Änderung live auf `/index.html` sichtbar.
-
-Die Startseite lädt die Projektliste aus `content/vorher-nachher.json` und
-zeigt jeden Eintrag automatisch im Vorher/Nachher-Bereich an — ohne dass
-jemand Code anfassen muss.
+`content/vorher-nachher.json` bleibt im Repository als stiller Fallback
+bestehen — falls Sanity einmal nicht erreichbar ist oder für eine
+Kategorie noch kein Projekt angelegt wurde, zeigt die Seite ersatzweise
+diese statischen Einträge, statt eine leere Fläche zu zeigen.
 
 ## 4. Echte Google-Bewertungen auf der Startseite anzeigen (optional)
 
@@ -152,14 +131,12 @@ einfach der bisherige Text stehen; es kann dadurch nichts kaputtgehen.
 Bild-URLs aus Sanity werden automatisch mit `?auto=format&q=90` abgerufen
 (schärferes, modernes Bildformat direkt vom Sanity-Bild-CDN).
 
-**Was noch NICHT an Sanity angebunden ist** (bewusst nicht, um den Umbau
-nicht ausufern zu lassen): Impressum und Datenschutzerklärung (bleiben aus
-rechtlichen Gründen fest im Code — Änderungen dort sollten ohnehin bewusst
-und nachvollziehbar per Commit passieren, nicht "mal eben" im CMS), die
-Überschriften/Fließtexte der Bewertungs- und Einsatzgebiet-Bereiche, und
-der Vorher/Nachher-Bereich (bleibt wie bisher über den GitHub-Admin unter
-Abschnitt 2/3 gepflegt — zwei CMS für dieselben Bilder wäre nur
-verwirrend). Wenn du das später ausweiten willst, sag Bescheid.
+**Was bewusst NICHT an Sanity angebunden ist:** Impressum und
+Datenschutzerklärung bleiben aus rechtlichen Gründen fest im Code —
+Änderungen dort sollten bewusst und nachvollziehbar per Commit passieren,
+nicht "mal eben" im CMS. Alles andere (Hero, Vorteile, Leistungen, FAQ,
+Vorher/Nachher, Logo, Navigation, Kontaktdaten, Footer-Rechtstext) ist
+vollständig über Sanity Studio pflegbar.
 
 ## Warum kein WordPress?
 

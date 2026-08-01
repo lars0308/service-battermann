@@ -327,42 +327,44 @@
     });
   }
 
-  // Vorher/Nachher-Projekte aus content/vorher-nachher.json laden (per CMS pflegbar)
+  // Vorher/Nachher-Projekte: zunächst aus content/vorher-nachher.json (statischer
+  // Startzustand), danach von sanity-content.js überschrieben, sobald echte
+  // Sanity-Projekte geladen sind (siehe window.__renderVnProjekte weiter unten —
+  // Sanity ist die Quelle der Wahrheit, die JSON-Datei ist nur der Fallback/Seed).
   var vnContainer = document.querySelector("[data-vn-container]");
   var vnSlots = document.querySelectorAll("[data-vn-slot]");
+  function renderVnProjekte(projekte) {
+    if (vnContainer) {
+      vnContainer.innerHTML = projekte
+        .map(function (p) {
+          return (
+            '<div class="vn-block reveal is-visible">' +
+            '<p style="font-family:\'Montserrat\',sans-serif;font-weight:700;margin-bottom:10px">' +
+            escapeHtml(p.titel || "") +
+            "</p>" +
+            (p.beschreibung ? "<p>" + escapeHtml(p.beschreibung) + "</p>" : "") +
+            '<div class="vn-pair">' +
+            '<figure><img src="' + p.vorher_bild + '" alt="' + escapeHtml(p.vorher_alt || "") + '" loading="lazy"><figcaption>Vorher</figcaption></figure>' +
+            '<figure><img src="' + p.nachher_bild + '" alt="' + escapeHtml(p.nachher_alt || "") + '" loading="lazy"><figcaption>Nachher</figcaption></figure>' +
+            "</div></div>"
+          );
+        })
+        .join("");
+    }
+    vnSlots.forEach(function (slot) {
+      var kategorie = slot.getAttribute("data-vn-slot");
+      var match = projekte.filter(function (p) { return p.kategorie === kategorie; })[0];
+      if (!match) return; // keine passenden Fotos vorhanden — Slot bleibt leer (via :empty ausgeblendet)
+      slot.innerHTML =
+        '<figure><img src="' + match.vorher_bild + '" alt="' + escapeHtml(match.vorher_alt || "") + '" loading="lazy"><figcaption>Vorher</figcaption></figure>' +
+        '<figure><img src="' + match.nachher_bild + '" alt="' + escapeHtml(match.nachher_alt || "") + '" loading="lazy"><figcaption>Nachher</figcaption></figure>';
+    });
+  }
+  window.__renderVnProjekte = renderVnProjekte;
   if (vnContainer || vnSlots.length) {
     fetch("content/vorher-nachher.json", { cache: "no-store" })
       .then(function (res) { return res.ok ? res.json() : { projekte: [] }; })
-      .then(function (data) {
-        var projekte = data.projekte || [];
-
-        if (vnContainer) {
-          vnContainer.innerHTML = projekte
-            .map(function (p) {
-              return (
-                '<div class="vn-block reveal is-visible">' +
-                '<p style="font-family:\'Montserrat\',sans-serif;font-weight:700;margin-bottom:10px">' +
-                escapeHtml(p.titel || "") +
-                "</p>" +
-                (p.beschreibung ? "<p>" + escapeHtml(p.beschreibung) + "</p>" : "") +
-                '<div class="vn-pair">' +
-                '<figure><img src="' + p.vorher_bild + '" alt="' + escapeHtml(p.vorher_alt || "") + '" loading="lazy"><figcaption>Vorher</figcaption></figure>' +
-                '<figure><img src="' + p.nachher_bild + '" alt="' + escapeHtml(p.nachher_alt || "") + '" loading="lazy"><figcaption>Nachher</figcaption></figure>' +
-                "</div></div>"
-              );
-            })
-            .join("");
-        }
-
-        vnSlots.forEach(function (slot) {
-          var kategorie = slot.getAttribute("data-vn-slot");
-          var match = projekte.filter(function (p) { return p.kategorie === kategorie; })[0];
-          if (!match) return; // keine passenden Fotos vorhanden — Slot bleibt leer (via :empty ausgeblendet)
-          slot.innerHTML =
-            '<figure><img src="' + match.vorher_bild + '" alt="' + escapeHtml(match.vorher_alt || "") + '" loading="lazy"><figcaption>Vorher</figcaption></figure>' +
-            '<figure><img src="' + match.nachher_bild + '" alt="' + escapeHtml(match.nachher_alt || "") + '" loading="lazy"><figcaption>Nachher</figcaption></figure>';
-        });
-      })
+      .then(function (data) { renderVnProjekte(data.projekte || []); })
       .catch(function () {});
   }
   function escapeHtml(str) {
