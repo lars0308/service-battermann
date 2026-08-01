@@ -534,7 +534,7 @@ section.dim{ background:var(--paper-dim); }
 .about-card{
   order:1;
   position:relative; display:block; overflow:hidden;
-  border-radius:12px; box-shadow:0 20px 40px rgba(0,0,0,0.12); text-decoration:none;
+  border-radius:var(--radius); box-shadow:var(--shadow); text-decoration:none;
   transform:translateY(-5px);
 }
 /* .reveal.is-visible setzt transform sonst auf translateY(0) zurück und würde
