@@ -522,6 +522,16 @@ section.dim{ background:var(--paper-dim); }
   .hero-slide-dots{ right:16px; bottom:20px; }
   .hero-slider .hero-slider-content{ padding-bottom:calc(var(--space-4) + 34px); }
 }
+@media (max-width:768px){
+  /* Die Slides sind breite 16:9-Aufnahmen, auf dem schmalen Hochformat-Handy-
+     Viewport wird also der Bildrand rechts/links stark weggeschnitten. Lars
+     steht in den Fotos auf der rechten Bildhälfte — reine "center"-Kürzung
+     (Desktop-Wert, siehe .hero-slide oben) schneidet ihn dort ab. !important
+     nötig, weil Slide 1 ihre Position außerdem per Inline-style setzt
+     (höhere Spezifität als eine normale Klassenregel). Nur die X-Achse wird
+     erzwungen, die Y-Position (zentriert vs. 15%/30%) bleibt unangetastet. */
+  .hero-slide{ background-position-x:80% !important; }
+}
 
 /* ---------- Startseite: interaktive "Über mich"-Karte ----------
    Desktop: Bild links, Text rechts (per order, unabhängig von der

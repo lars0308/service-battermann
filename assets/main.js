@@ -163,10 +163,24 @@
       var cardFinalRight = centerX + scaledWidth / 2;
       var cardFinalTop = centerY - scaledHeight / 2;
 
+      // Rechte Spalte des Mosaiks (Kachel 2/3/5): rechts von der vergrößerten Kachel
+      // ist oft nicht genug Platz für die volle Panel-Breite übrig. Ein reines
+      // Clamping auf die verfügbare Breite (wie zuvor) schiebt das Panel dann so
+      // weit nach links, dass es unter der (höher liegenden) aktiven Kachel
+      // verschwindet — das Panel wirkt "abgeschnitten"/unsichtbar. Reparatur:
+      // Bei zu wenig Platz rechts klappt das Panel stattdessen komplett auf die
+      // linke Seite der Kachel um, statt sich unter sie zu schieben.
       var panelWidth = glassPanel.offsetWidth || 300;
-      var left = cardFinalRight + 16;
-      var maxLeft = glassSplit.clientWidth - panelWidth;
-      if (left > maxLeft) left = Math.max(0, maxLeft);
+      var gap = 16;
+      var cardFinalLeft = centerX - scaledWidth / 2;
+      var spaceRight = glassSplit.clientWidth - cardFinalRight - gap;
+      var left;
+      if (spaceRight >= panelWidth) {
+        left = cardFinalRight + gap;
+      } else {
+        left = cardFinalLeft - gap - panelWidth;
+        if (left < 0) left = 0;
+      }
 
       var top = cardFinalTop;
       if (top < 0) top = 0;
