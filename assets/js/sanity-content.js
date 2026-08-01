@@ -21,7 +21,7 @@
   // (Sanitys Bild-CDN versteht dieselben URL-Parameter wie andere Bild-CDNs).
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
-    '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,showCallButton,"imageBaseUrl":image.asset->url},' +
+    '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,showCallButton,"imageBaseUrl":image.asset->url,"imageHotspot":image.hotspot},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
@@ -80,6 +80,19 @@
       var i = orderNum - 1;
       if (doc.verb) map["hero." + i + ".verb"] = doc.verb;
       if (doc.imageBaseUrl) map["hero." + i + ".imageUrl"] = responsiveImageUrl(doc.imageBaseUrl);
+      // Gleiches Prinzip wie bei den Leistungskacheln (siehe applyCardFocalPoints):
+      // Sanitys Hotspot ist ein relativer 0-1-Wert, deckt sich 1:1 mit CSS
+      // background-position in Prozent. Bewusst NICHT über den Sanity Image-URL-
+      // Builder (serverseitiger Fix-Crop mit fester Zielgröße) gelöst — der Hero
+      // wechselt je nach Viewport/Breakpoint sein Seitenverhältnis (100svh minus
+      // wechselnde Header-Höhe), ein einmal fix zugeschnittenes Bild könnte den
+      // Fokuspunkt dabei nicht mehr nachführen. background-position tut das
+      // automatisch bei jeder Größe, ohne dass ein zusätzliches Bild-Paket
+      // (@sanity/image-url) oder ein Build-Schritt nötig wird.
+      if (doc.imageHotspot && typeof doc.imageHotspot.x === "number" && typeof doc.imageHotspot.y === "number") {
+        map["hero." + i + ".imagePosition"] =
+          (doc.imageHotspot.x * 100).toFixed(2) + "% " + (doc.imageHotspot.y * 100).toFixed(2) + "%";
+      }
     });
     var heroFirst = heroByOrder[1];
     if (heroFirst && Array.isArray(heroFirst.roundTexts) && heroFirst.roundTexts.length) {
@@ -320,28 +333,37 @@
     });
   }
 
-  // Hero-Hintergrundbilder: nur austauschen, während die Folie NICHT sichtbar ist,
-  // damit auf der Startseite nie ein sichtbares Umspringen des aktiven Bilds passiert.
+  // Hero-Hintergrundbilder: Bild wird VOR dem Einsetzen im Hintergrund vorgeladen,
+  // damit nie eine leere/graue Fläche aufblitzt, während das neue Bild lädt.
+  //
+  // WICHTIG (Korrektur eines echten Bugs): Die aktuell sichtbare ("is-active")
+  // Folie wurde bisher bewusst NICHT sofort aktualisiert, sondern erst, wenn sie
+  // beim nächsten Rotationszyklus in den Hintergrund wechselt — mit der Absicht,
+  // kein sichtbares Umspringen des gerade angezeigten Bilds zu verursachen. Das
+  // hatte einen Nebeneffekt, der genau den gemeldeten Fehler erklärt: Slide 1
+  // (das Hauptporträt, Reihenfolge 1) ist beim ersten Laden praktisch IMMER die
+  // aktive Folie — ihr von Lars im Studio gesetztes Bild/Hotspot griff dadurch
+  // erst nach einer vollen Rotation (~15+ Sekunden), nicht beim ersten Blick auf
+  // die Seite. Jetzt wird auch die aktive Folie sofort aktualisiert, sobald das
+  // vorgeladene Bild bereit ist — ein möglicher kurzer Bildwechsel beim allerersten
+  // Laden wiegt weniger als eine Kern-Funktion (Studio-Fokuspunkt), die auf der
+  // wichtigsten Folie schlicht nicht griff.
   function patchHeroBackgrounds(map) {
     var slides = document.querySelectorAll(".hero-slide[data-hero-slide-index]");
     slides.forEach(function (slideEl) {
       var i = slideEl.getAttribute("data-hero-slide-index");
       var url = map["hero." + i + ".imageUrl"];
       if (!url) return;
-      var setBg = function () {
+      var position = map["hero." + i + ".imagePosition"];
+      var preload = new Image();
+      preload.onload = function () {
         slideEl.style.backgroundImage = "url('" + url + "')";
+        // !important nötig: die Mobile-Media-Query in styles.css erzwingt sonst
+        // per !important eine feste rechtslastige Position (Lars im Bild
+        // sichtbar halten) und würde den individuellen Hotspot überschreiben.
+        if (position) slideEl.style.setProperty("background-position", position, "important");
       };
-      if (!slideEl.classList.contains("is-active")) {
-        setBg();
-        return;
-      }
-      var observer = new MutationObserver(function () {
-        if (!slideEl.classList.contains("is-active")) {
-          setBg();
-          observer.disconnect();
-        }
-      });
-      observer.observe(slideEl, { attributes: true, attributeFilter: ["class"] });
+      preload.src = url;
     });
   }
 
