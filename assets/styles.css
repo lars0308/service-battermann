@@ -530,25 +530,32 @@ section.dim{ background:var(--paper-dim); }
   transition:background 1s cubic-bezier(0.16,1,0.3,1);
 }
 .hero-slider .hero-slider-content{
-  display:block; position:relative; z-index:2;
+  display:block; position:relative; z-index:6;
   padding-bottom:calc(var(--space-5) + 10px);
   max-width:none; margin:0;
   padding-left:clamp(24px, 5vw, 72px); padding-right:24px;
-  transform:translateY(0); transition:transform 1.1s cubic-bezier(0.16,1,0.3,1);
+  transform:translateY(0); transition:transform 1.4s cubic-bezier(0.25,1,0.5,1);
 }
 
-/* ---------- Einmaliger Lade-Reveal (nur beim allerersten Seitenaufruf) ----------
-   Die Klasse .is-first-reveal steht von Anfang an im HTML (kein FOUC-Risiko:
-   der "ladende" Look IST der erste gemalte Zustand). main.js entfernt sie,
-   sobald das tatsächlich aktive Hero-Hintergrundbild fertig geladen ist (das
-   Sanity-Bild, falls vorhanden, sonst das lokale Fallback-Bild) oder spätestens
-   nach einer kurzen Sicherheitsfrist. Alle Eigenschaften unten existieren nur
-   als übergangsweiser Zustand — nach dem Entfernen der Klasse ist die Sektion
-   pixelgenau wieder im normalen, unveränderten Layout (keine bleibenden Klassen,
-   keine bleibende CSS-Abweichung). translateY statt einer Positions-/Layout-
-   Umschaltung, weil sich nur transform sauber animieren lässt (position/
-   justify-content-Wechsel würden hart springen statt zu gleiten). */
-.hero-slider.is-first-reveal .hero-scrim{ background:rgba(8,9,10,0.97); }
+/* ---------- Frosted-Glass-Reveal-Intro (nur beim allerersten Seitenaufruf) ----------
+   Die Klasse .is-first-reveal steht von Anfang an im HTML (kein FOUC-Risiko: der
+   "ladende" Look IST der erste gemalte Zustand). main.js hält sie für exakt 3s
+   (inszenierte Sequenz, siehe main.js), entfernt sie dann — CSS übernimmt das
+   Wegleiten der Glaswand + das synchrone Gleiten des Slogans in die Endposition.
+   Nach Ablauf der 1.4s-Transition setzt main.js zusätzlich display:none auf die
+   Glaswand (siehe .hero-glass-intro) — danach exakt das normale, unveränderte
+   Layout, keine bleibende CSS-Abweichung. transform/opacity statt Layout-
+   Umschaltung, weil sich nur das sauber animieren lässt. */
+.hero-glass-intro{
+  position:absolute; inset:0; z-index:5;
+  background:rgba(15,15,15,0.65);
+  -webkit-backdrop-filter:blur(45px); backdrop-filter:blur(45px);
+  transform:translateY(0); opacity:1;
+  transition:transform 1.4s cubic-bezier(0.25,1,0.5,1), opacity 1.4s cubic-bezier(0.25,1,0.5,1);
+}
+.hero-slider:not(.is-first-reveal) .hero-glass-intro{
+  transform:translateY(100%); opacity:0; pointer-events:none;
+}
 .hero-slider.is-first-reveal .hero-slider-content{
   transform:translateY(-28vh); text-align:center; padding-left:24px;
 }
@@ -558,7 +565,7 @@ section.dim{ background:var(--paper-dim); }
   opacity:0; pointer-events:none; transition:opacity 0.5s ease;
 }
 @media (prefers-reduced-motion: reduce){
-  .hero-slider.is-first-reveal .hero-scrim,
+  .hero-glass-intro,
   .hero-slider.is-first-reveal .hero-slider-content{ transition:none; }
 }
 .hero-slide-heading-wrap{ position:relative; margin-bottom:var(--space-3); }

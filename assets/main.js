@@ -63,26 +63,46 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
-  // Einmaliger Lade-Reveal (nur Startseite, nur der allererste Aufruf): die Klasse
-  // .is-first-reveal steht von Anfang an im HTML (siehe styles.css) und zeigt den
-  // Slogan kurz zentriert vor einem abgedunkelten Hero. Sobald sanity-content.js das
-  // tatsächlich finale Hero-Bild geladen hat (Event "hero-image-ready", siehe dort),
-  // wird die Klasse entfernt — CSS übernimmt das Gleiten in die normale Position.
-  // Sicherheitsfrist von 2.5s, falls sanity-content.js aus irgendeinem Grund nie
-  // feuert (z. B. von einem Adblocker/einer Firewall blockiert) — die Seite darf nie
-  // dauerhaft im Ladezustand hängen bleiben. Bei reduzierter Bewegung entfällt der
-  // Effekt komplett: sofort der normale, fertige Zustand, kein Warten auf ein Bild-
-  // Event, das ohnehin nie animiert zu sehen wäre.
+  // Einmaliges Frosted-Glass-Reveal-Intro (nur Startseite, nur der allererste
+  // Aufruf): Die Klasse .is-first-reveal steht von Anfang an im HTML (siehe
+  // styles.css) und zeigt den zentrierten Slogan vor einer blickdichten
+  // Glaswand (.hero-glass-intro, backdrop-filter blur). Bewusst ein FESTES
+  // 3-Sekunden-Timing statt (wie in der Vorrunde) rein bildladungsgetrieben —
+  // das ist hier explizit als inszenierte, filmische Sequenz gewünscht, nicht
+  // als reines Lade-Feedback. Trotzdem: taucht das finale Hero-Bild später als
+  // 3s auf (langsame Verbindung), wird zusätzlich darauf gewartet (max(3000ms,
+  // Bildladezeit)) — sonst würde der Vorhang ein noch unscharfes/vertauschtes
+  // Bild freigeben. Nach der 1.4s-Ausblendanimation wird die Glaswand komplett
+  // aus dem Layout entfernt (kein bleibender Fußabdruck). Bei reduzierter
+  // Bewegung entfällt die gesamte Sequenz: sofort der normale Endzustand.
   var heroSliderEl = document.querySelector(".hero-slider.is-first-reveal");
+  var heroGlassEl = document.querySelector("[data-hero-glass-intro]");
   if (heroSliderEl) {
     if (reduceMotion) {
       heroSliderEl.classList.remove("is-first-reveal");
+      if (heroGlassEl) heroGlassEl.style.display = "none";
     } else {
+      var heroImageSettled = false;
+      window.addEventListener(
+        "hero-image-ready",
+        function () { heroImageSettled = true; },
+        { once: true }
+      );
+      // Absolute Obergrenze, falls sanity-content.js das Event nie feuert
+      // (z. B. Adblocker/Firewall) — die Seite darf nie dauerhaft hängen bleiben.
+      window.setTimeout(function () { heroImageSettled = true; }, 4000);
+
       var revealHero = function () {
+        if (!heroImageSettled) {
+          window.setTimeout(revealHero, 150);
+          return;
+        }
         heroSliderEl.classList.remove("is-first-reveal");
+        window.setTimeout(function () {
+          if (heroGlassEl) heroGlassEl.style.display = "none";
+        }, 1450);
       };
-      window.addEventListener("hero-image-ready", revealHero, { once: true });
-      window.setTimeout(revealHero, 2500);
+      window.setTimeout(revealHero, 3000);
     }
   }
 
