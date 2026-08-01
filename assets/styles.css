@@ -68,6 +68,13 @@
    Playwright reproduziert). clip erzeugt keinen Scroll-Container und
    umgeht das Problem komplett, bei identischer horizontaler Kappwirkung. */
 html{ scroll-behavior:smooth; overflow-x:clip; touch-action:pan-y; }
+/* Ohne das zeigt Android/Chrome beim Antippen von Buttons/Links einen eigenen,
+   halbtransparenten BLAUEN Overlay-Effekt (Standard-"Tap Highlight") — auf dem
+   Leistungen-Akkordeon sah das wie ein hängengebliebenes blaues Blockieren der
+   Zeile aus, weil die Fläche recht groß und der Seitenhintergrund hell ist. Wir
+   ersetzen die Rückmeldung stattdessen gezielt durch die Marken-Akzentfarbe
+   (siehe .service-row-toggle unten), statt uns auf den Browser-Default zu verlassen. */
+html{ -webkit-tap-highlight-color:transparent; }
 a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible{
   outline:2px solid var(--accent); outline-offset:2px;
 }
@@ -801,9 +808,16 @@ section.dim{ background:var(--paper-dim); }
 .service-row-toggle{
   all:unset; box-sizing:border-box; display:flex; align-items:center; gap:20px;
   width:100%; padding:26px 4px; cursor:pointer; touch-action:manipulation;
+  border-left:2px solid transparent; transition:border-color 0.3s ease;
 }
+/* Dezente, markentypische Fokus-Rückmeldung statt des entfernten Browser-
+   Tap-Highlights (siehe html{-webkit-tap-highlight-color} oben): eine
+   hauchdünne grüne Linie links plus eingefärbter Titel, solange die Zeile
+   aufgeklappt ist — bleibt sichtbar, nicht nur im kurzen Antipp-Moment. */
+.service-row.is-open .service-row-toggle{ border-left-color:var(--accent); }
+.service-row.is-open .service-row-title{ color:var(--accent); }
 .service-row-num{ font-family:'Archivo Black',sans-serif; font-size:1.3rem; color:var(--line); flex-shrink:0; width:44px; }
-.service-row-title{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.2rem; flex:1; color:var(--ink); }
+.service-row-title{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.2rem; flex:1; color:var(--ink); transition:color 0.3s ease; }
 .service-row-verb{ color:var(--link); margin-right:6px; }
 .legal-star{ color:var(--accent); margin-left:2px; }
 .service-row-icon{

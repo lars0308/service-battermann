@@ -12,11 +12,59 @@
 (function () {
   "use strict";
 
-  var fields = document.querySelectorAll("[data-sanity-field]");
-  if (!fields.length) return; // diese Seite hat nichts zu patchen
-
   var PROJECT_ID = "9bz9h1mi";
   var DATASET = "production";
+
+  // Sicherheitsnetz fürs Kontaktformular: unabhängig vom generischen
+  // [data-sanity-field]-Patching unten (das bricht komplett ab, wenn diese
+  // Seite z. B. mal keine solchen Attribute mehr hätte) und unabhängig davon,
+  // ob der große Sanity-Fetch weiter unten bereits fertig war, BEVOR abgesendet
+  // wurde. Ohne dieses Netz könnte ein sehr schneller Absende-Klick (oder ein
+  // Autofill-Tool) das Formular mit noch leerem accessKey/apiKey abschicken,
+  // während der reguläre, größere Sanity-Fetch noch unterwegs ist — Static
+  // Forms lehnt das dann mit "API key is required" ab. Der Listener prüft
+  // beim Absenden ein letztes Mal nach und holt den Key bei Bedarf gezielt
+  // (eigene, kleine Anfrage statt der großen Seiten-Query) nach, BEVOR die
+  // Anfrage tatsächlich rausgeht.
+  var contactForm = document.querySelector('form[name="kontakt"]');
+  if (contactForm) {
+    contactForm.addEventListener("submit", function (e) {
+      var accessKeyInput = contactForm.querySelector('input[name="accessKey"]');
+      var apiKeyInput = contactForm.querySelector('input[name="apiKey"]');
+      if (!accessKeyInput || accessKeyInput.value) return; // schon befüllt -> ganz normal absenden
+
+      e.preventDefault();
+      var keyQuery = encodeURIComponent('*[_type=="siteSettings"][0].staticFormsApiKey');
+      var keyEndpoint =
+        "https://" + PROJECT_ID + ".api.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + keyQuery;
+      fetch(keyEndpoint, { cache: "no-store" })
+        .then(function (res) {
+          return res.ok ? res.json() : null;
+        })
+        .then(function (json) {
+          var key = json && json.result;
+          if (key) {
+            accessKeyInput.value = key;
+            if (apiKeyInput) apiKeyInput.value = key;
+          }
+        })
+        .catch(function () {
+          /* Absichtlich kein Fallback-Wert im Code (wäre ein öffentlich
+             sichtbares Geheimnis im Seitenquelltext) — schlägt der Nachlade-
+             Versuch fehl, geht die Anfrage trotzdem raus und Static Forms
+             liefert die reale, zutreffende Fehlermeldung zurück, statt dass
+             der Nutzer denkt, seine Anfrage sei angekommen. */
+        })
+        .then(function () {
+          // form.submit() statt requestSubmit(): löst KEIN erneutes "submit"-
+          // Event aus, sonst würde dieser Listener sich selbst erneut aufrufen.
+          contactForm.submit();
+        });
+    });
+  }
+
+  var fields = document.querySelectorAll("[data-sanity-field]");
+  if (!fields.length) return; // diese Seite hat nichts zu patchen
   // Bild-URLs bekommen direkt in der Query den Schärfe-/Format-Parameter mit
   // (Sanitys Bild-CDN versteht dieselben URL-Parameter wie andere Bild-CDNs).
   var IMG_SUFFIX = '+"?auto=format&q=90"';
