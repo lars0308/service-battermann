@@ -530,7 +530,7 @@ section.dim{ background:var(--paper-dim); }
      nötig, weil Slide 1 ihre Position außerdem per Inline-style setzt
      (höhere Spezifität als eine normale Klassenregel). Nur die X-Achse wird
      erzwungen, die Y-Position (zentriert vs. 15%/30%) bleibt unangetastet. */
-  .hero-slide{ background-position-x:80% !important; }
+  .hero-slide{ background-position-x:85% !important; }
 }
 
 /* ---------- Startseite: interaktive "Über mich"-Karte ----------
