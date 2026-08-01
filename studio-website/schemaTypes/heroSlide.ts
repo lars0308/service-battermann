@@ -55,9 +55,10 @@ export const heroSlide = defineType({
     }),
   ],
   preview: {
-    select: {title: 'verb', media: 'image', order: 'order'},
-    prepare({title, media, order}) {
-      return {title: title || 'Ohne Text', subtitle: `Slide ${order ?? '?'}`, media}
+    select: {title: 'verb', roundTexts: 'roundTexts', media: 'image', order: 'order'},
+    prepare({title, roundTexts, media, order}) {
+      var fallback = Array.isArray(roundTexts) && roundTexts.length ? roundTexts[0] : 'Ohne Text';
+      return {title: title || fallback, subtitle: `Slide ${order ?? '?'}`, media}
     },
   },
   orderings: [
