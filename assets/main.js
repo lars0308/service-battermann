@@ -15,6 +15,34 @@
     });
   }
 
+  // Apple-Mega-Menü: stabiles Hover-Verhalten mit kurzer Schließ-Verzögerung, statt reinem
+  // CSS :hover. Reines :hover schließt technisch nicht bei einem DOM-Kind (auch nicht bei
+  // fixed-position Panels), aber jede kurze Verzögerung beim Umschwenken der Maus (z. B.
+  // schnelle/diagonale Bewegung) kann das Panel unnötig kurz zuklappen lassen — die
+  // Verzögerung fängt das ab. Nur auf echten Hover-Geräten aktiv (Desktop mit Maus).
+  if (window.matchMedia && window.matchMedia("(hover:hover) and (pointer:fine)").matches) {
+    document.querySelectorAll(".nav-item.has-mega").forEach(function (item) {
+      var closeTimer = null;
+      var open = function () {
+        if (closeTimer) { window.clearTimeout(closeTimer); closeTimer = null; }
+        item.classList.add("mega-open");
+      };
+      var scheduleClose = function () {
+        if (closeTimer) window.clearTimeout(closeTimer);
+        closeTimer = window.setTimeout(function () {
+          item.classList.remove("mega-open");
+          closeTimer = null;
+        }, 250);
+      };
+      item.addEventListener("mouseenter", open);
+      item.addEventListener("mouseleave", scheduleClose);
+      item.addEventListener("focusin", open);
+      item.addEventListener("focusout", function (e) {
+        if (!item.contains(e.relatedTarget)) scheduleClose();
+      });
+    });
+  }
+
   // Flüssiges Fade-in-up beim Scrollen (40px, 0.8s) — respektiert prefers-reduced-motion
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var revealEls = document.querySelectorAll(".reveal");
@@ -91,6 +119,43 @@
       { threshold: 0.4 }
     );
     kitIo.observe(kitContainer);
+  }
+
+  // Split-Screen-Glasfenster: Hover (Desktop) bzw. Tap (Mobil) auf einer Kachel zeigt die
+  // Kurzfassung rechts an. Läuft unabhängig vom Kit-Fokus-Impuls-Autolauf oben (eigene
+  // is-hovering/is-hover-active-Klassen) und funktioniert auch bei prefers-reduced-motion,
+  // da es informativ ist statt rein dekorativ.
+  var glassPanel = document.querySelector("[data-leistung-glass]");
+  var glassTitle = document.querySelector("[data-leistung-glass-title]");
+  var glassDesc = document.querySelector("[data-leistung-glass-desc]");
+  if (kitContainer && kitCards.length && glassPanel && glassTitle && glassDesc) {
+    var showCardInGlass = function (card) {
+      var titleEl = card.querySelector(".leistung-card-title");
+      var title = titleEl ? titleEl.textContent.trim() : "";
+      var desc = card.getAttribute("data-short-desc") || "";
+      glassPanel.classList.add("is-updating");
+      window.setTimeout(
+        function () {
+          glassTitle.textContent = title;
+          glassDesc.textContent = desc;
+          glassPanel.classList.remove("is-updating");
+        },
+        reduceMotion ? 0 : 120
+      );
+      kitCards.forEach(function (c) { c.classList.remove("is-hover-active"); });
+      card.classList.add("is-hover-active");
+      kitContainer.classList.add("is-hovering");
+    };
+    var resetGlass = function () {
+      kitContainer.classList.remove("is-hovering");
+      kitCards.forEach(function (c) { c.classList.remove("is-hover-active"); });
+    };
+    kitCards.forEach(function (card) {
+      card.addEventListener("mouseenter", function () { showCardInGlass(card); });
+      card.addEventListener("focus", function () { showCardInGlass(card); });
+      card.addEventListener("touchstart", function () { showCardInGlass(card); }, { passive: true });
+    });
+    kitContainer.addEventListener("mouseleave", resetGlass);
   }
 
   // Großformatige Typografie-Sektion: Zeilen fahren einzeln hoch

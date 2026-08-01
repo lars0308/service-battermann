@@ -8,9 +8,11 @@
 <link rel="canonical" href="https://www.service-battermann.de/">
 <link rel="icon" href="images/logo-icon.png">
 <link rel="stylesheet" href="assets/fonts.css?v=9">
-<link rel="stylesheet" href="assets/styles.css?v=14">
+<link rel="stylesheet" href="assets/styles.css?v=15">
 </head>
 <body>
+
+<div class="info-banner" data-info-banner hidden></div>
 
 <a class="visually-hidden" href="#main">Zum Inhalt springen</a>
 
@@ -26,41 +28,65 @@
         <a href="leistungen.html" data-sanity-field="settings.navLeistungen">Leistungen</a>
         <div class="mega-panel">
           <div class="mega-panel-inner">
-            <a class="mega-col" href="leistungen.html#leistung-hausmeister">              <span class="mega-col-title">Hausmeisterservice &amp; Objektbetreuung</span>
-              <span class="mega-col-desc">Fester Ansprechpartner, Kontrolle, Instandhaltung.</span>
+            <a class="mega-col" href="leistungen.html#leistung-hausmeister" data-sanity-field="megaCol.leistungen.0.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.leistungen.0.title">Hausmeisterservice &amp; Objektbetreuung</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.leistungen.0.description">Fester Ansprechpartner, Kontrolle, Instandhaltung.</span>
             </a>
-            <a class="mega-col" href="leistungen.html#leistung-montage">              <span class="mega-col-title">Haus, Wohnung &amp; Montage</span>
-              <span class="mega-col-desc">Möbelmontage, Reparaturen, Kleinaufträge.</span>
+            <a class="mega-col" href="leistungen.html#leistung-montage" data-sanity-field="megaCol.leistungen.1.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.leistungen.1.title">Haus, Wohnung &amp; Montage</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.leistungen.1.description">Möbelmontage, Reparaturen, Kleinaufträge.</span>
             </a>
-            <a class="mega-col" href="leistungen.html#leistung-garten">              <span class="mega-col-title">Garten &amp; Außenanlagen</span>
-              <span class="mega-col-desc">Heckenschnitt, Rasenpflege, Aufräumarbeiten.</span>
+            <a class="mega-col" href="leistungen.html#leistung-garten" data-sanity-field="megaCol.leistungen.2.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.leistungen.2.title">Garten &amp; Außenanlagen</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.leistungen.2.description">Heckenschnitt, Rasenpflege, Aufräumarbeiten.</span>
             </a>
-            <a class="mega-col" href="leistungen.html#leistung-bad">              <span class="mega-col-title">Bad &amp; Sanitär<span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
-              <span class="mega-col-desc">Armaturen, Fugen, kleine Reparaturen.</span>
+            <a class="mega-col" href="leistungen.html#leistung-bad" data-sanity-field="megaCol.leistungen.3.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.leistungen.3.title">Bad &amp; Sanitär</span><span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.leistungen.3.description">Armaturen, Fugen, kleine Reparaturen.</span>
             </a>
-            <a class="mega-col" href="leistungen.html#leistung-elektro">              <span class="mega-col-title">Elektro-Kleinreparaturen<span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
-              <span class="mega-col-desc">Lampen, Schalter, Steckdosen, Fehlersuche.</span>
+            <a class="mega-col" href="leistungen.html#leistung-elektro" data-sanity-field="megaCol.leistungen.4.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.leistungen.4.title">Elektro-Kleinreparaturen</span><span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.leistungen.4.description">Lampen, Schalter, Steckdosen, Fehlersuche.</span>
             </a>
             <a class="mega-col mega-col-all" href="leistungen.html">Alle Leistungen im Detail →</a>
           </div>
         </div>
       </div>
-      <a href="ueber-mich.html" data-sanity-field="settings.navUeberMich">Über mich</a>
+      <div class="nav-item has-mega">
+        <a href="ueber-mich.html" data-sanity-field="settings.navUeberMich">Über mich</a>
+        <div class="mega-panel">
+          <div class="mega-panel-inner">
+            <a class="mega-col" href="ueber-mich.html#ueber-anfang" data-sanity-field="megaCol.ueberMich.0.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.ueberMich.0.title">Wie alles begann</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.ueberMich.0.description">Vom gelernten Elektriker zum Allrounder.</span>
+            </a>
+            <a class="mega-col" href="ueber-mich.html#ueber-arbeitsweise" data-sanity-field="megaCol.ueberMich.1.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.ueberMich.1.title">Wie ich arbeite</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.ueberMich.1.description">Ehrlich, pünktlich, sauber hinterlassen.</span>
+            </a>
+            <a class="mega-col" href="ueber-mich.html#ueber-kunden" data-sanity-field="megaCol.ueberMich.2.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.ueberMich.2.title">Für wen ich da bin</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.ueberMich.2.description">Privatkunden genauso wie Hausverwaltungen.</span>
+            </a>
+            <a class="mega-col mega-col-all" href="ueber-mich.html">Mehr über mich →</a>
+          </div>
+        </div>
+      </div>
       <div class="nav-item has-mega">
         <a href="einsatzgebiet-faq.html" data-sanity-field="settings.navEinsatzgebiet">Einsatzgebiet &amp; FAQ</a>
         <div class="mega-panel">
           <div class="mega-panel-inner">
-            <a class="mega-col" href="einsatzgebiet-faq.html#faq-antwort">
-              <span class="mega-col-title">Wie schnell bekomme ich eine Antwort?</span>
-              <span class="mega-col-desc">In der Regel innerhalb von 24 Stunden.</span>
+            <a class="mega-col" href="einsatzgebiet-faq.html#faq-antwort" data-sanity-field="megaCol.einsatzgebiet.0.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.einsatzgebiet.0.title">Wie schnell bekomme ich eine Antwort?</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.einsatzgebiet.0.description">In der Regel innerhalb von 24 Stunden.</span>
             </a>
-            <a class="mega-col" href="einsatzgebiet-faq.html#faq-kosten">
-              <span class="mega-col-title">Was kostet ein erstes Gespräch?</span>
-              <span class="mega-col-desc">Nichts — unverbindlich und kostenlos.</span>
+            <a class="mega-col" href="einsatzgebiet-faq.html#faq-kosten" data-sanity-field="megaCol.einsatzgebiet.1.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.einsatzgebiet.1.title">Was kostet ein erstes Gespräch?</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.einsatzgebiet.1.description">Nichts — unverbindlich und kostenlos.</span>
             </a>
-            <a class="mega-col" href="einsatzgebiet-faq.html#faq-klein">
-              <span class="mega-col-title">Auch kleine Aufträge?</span>
-              <span class="mega-col-desc">Ausdrücklich ja, ohne Mindestauftragswert.</span>
+            <a class="mega-col" href="einsatzgebiet-faq.html#faq-klein" data-sanity-field="megaCol.einsatzgebiet.2.url" data-sanity-attr="href">
+              <span class="mega-col-title"><span data-sanity-field="megaCol.einsatzgebiet.2.title">Auch kleine Aufträge?</span></span>
+              <span class="mega-col-desc" data-sanity-field="megaCol.einsatzgebiet.2.description">Ausdrücklich ja, ohne Mindestauftragswert.</span>
             </a>
             <a class="mega-col mega-col-all" href="einsatzgebiet-faq.html">Gebiet &amp; alle Fragen ansehen →</a>
           </div>
@@ -183,42 +209,52 @@
     <h2 class="reveal">Fünf Bereiche, ein Ansprechpartner</h2>
     <p class="reveal">Vom klapprigen Lichtschalter bis zur laufenden Betreuung mehrerer Objekte: direkt zum passenden Bereich.</p>
 
-    <div class="leistung-cards">
-      <a class="leistung-card leistung-card-1 reveal" href="leistungen.html#leistung-hausmeister">
-        <img src="images/fahrzeug-logo.jpg" alt="" loading="lazy" data-sanity-field="services.0.cardImageUrl" data-sanity-attr="src">
-        <span class="leistung-card-scrim" aria-hidden="true"></span>
-        <span class="leistung-card-num">01</span>
-        <span class="leistung-card-title" data-sanity-field="services.0.title">Hausmeisterservice &amp; Objektbetreuung</span>
-        <span class="leistung-card-arrow" aria-hidden="true">→</span>
-      </a>
-      <a class="leistung-card leistung-card-2 reveal" href="leistungen.html#leistung-montage">
-        <img src="images/arbeit-montage.jpg" alt="" loading="lazy" data-sanity-field="services.1.cardImageUrl" data-sanity-attr="src">
-        <span class="leistung-card-scrim" aria-hidden="true"></span>
-        <span class="leistung-card-num">02</span>
-        <span class="leistung-card-title" data-sanity-field="services.1.title">Haus, Wohnung &amp; Montage</span>
-        <span class="leistung-card-arrow" aria-hidden="true">→</span>
-      </a>
-      <a class="leistung-card leistung-card-3 reveal" href="leistungen.html#leistung-garten">
-        <img src="images/arbeit-garten.jpg" alt="" loading="lazy" data-sanity-field="services.2.cardImageUrl" data-sanity-attr="src">
-        <span class="leistung-card-scrim" aria-hidden="true"></span>
-        <span class="leistung-card-num">03</span>
-        <span class="leistung-card-title" data-sanity-field="services.2.title">Garten &amp; Außenanlagen</span>
-        <span class="leistung-card-arrow" aria-hidden="true">→</span>
-      </a>
-      <a class="leistung-card leistung-card-4 reveal" href="leistungen.html#leistung-bad">
-        <img src="images/vorher-nachher/bad-nachher-1.jpg" alt="" loading="lazy" data-sanity-field="services.3.cardImageUrl" data-sanity-attr="src">
-        <span class="leistung-card-scrim" aria-hidden="true"></span>
-        <span class="leistung-card-num">04</span>
-        <span class="leistung-card-title"><span data-sanity-field="services.3.title">Bad &amp; Sanitär</span><span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
-        <span class="leistung-card-arrow" aria-hidden="true">→</span>
-      </a>
-      <a class="leistung-card leistung-card-5 reveal" href="leistungen.html#leistung-elektro">
-        <img src="images/elektro/elektro-fehlersuche.jpg" alt="" loading="lazy" data-sanity-field="services.4.cardImageUrl" data-sanity-attr="src">
-        <span class="leistung-card-scrim" aria-hidden="true"></span>
-        <span class="leistung-card-num">05</span>
-        <span class="leistung-card-title"><span data-sanity-field="services.4.title">Elektro-Kleinreparaturen</span><span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
-        <span class="leistung-card-arrow" aria-hidden="true">→</span>
-      </a>
+    <div class="leistung-split">
+      <div class="leistung-cards">
+        <a class="leistung-card leistung-card-1 reveal" href="leistungen.html#leistung-hausmeister" data-short-desc="Fester Ansprechpartner für Kontrolle, Pflege und Kleinreparaturen an Ihrem Objekt.">
+          <img src="images/fahrzeug-logo.jpg" alt="" loading="lazy" data-sanity-field="services.0.cardImageUrl" data-sanity-attr="src">
+          <span class="leistung-card-scrim" aria-hidden="true"></span>
+          <span class="leistung-card-num">01</span>
+          <span class="leistung-card-title" data-sanity-field="services.0.title">Hausmeisterservice &amp; Objektbetreuung</span>
+          <span class="leistung-card-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="leistung-card leistung-card-2 reveal" href="leistungen.html#leistung-montage" data-short-desc="Möbel, Regale, Türen, Fenster — fachgerecht montiert und justiert.">
+          <img src="images/arbeit-montage.jpg" alt="" loading="lazy" data-sanity-field="services.1.cardImageUrl" data-sanity-attr="src">
+          <span class="leistung-card-scrim" aria-hidden="true"></span>
+          <span class="leistung-card-num">02</span>
+          <span class="leistung-card-title" data-sanity-field="services.1.title">Haus, Wohnung &amp; Montage</span>
+          <span class="leistung-card-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="leistung-card leistung-card-3 reveal" href="leistungen.html#leistung-garten" data-short-desc="Rasen, Hecke, Zaun: Ihr Garten in Form, ohne dass Sie selbst ran müssen.">
+          <img src="images/arbeit-garten.jpg" alt="" loading="lazy" data-sanity-field="services.2.cardImageUrl" data-sanity-attr="src">
+          <span class="leistung-card-scrim" aria-hidden="true"></span>
+          <span class="leistung-card-num">03</span>
+          <span class="leistung-card-title" data-sanity-field="services.2.title">Garten &amp; Außenanlagen</span>
+          <span class="leistung-card-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="leistung-card leistung-card-4 reveal" href="leistungen.html#leistung-bad" data-short-desc="Tropfende Armatur oder undichte Fuge? Schnell und sauber behoben.">
+          <img src="images/vorher-nachher/bad-nachher-1.jpg" alt="" loading="lazy" data-sanity-field="services.3.cardImageUrl" data-sanity-attr="src">
+          <span class="leistung-card-scrim" aria-hidden="true"></span>
+          <span class="leistung-card-num">04</span>
+          <span class="leistung-card-title"><span data-sanity-field="services.3.title">Bad &amp; Sanitär</span><span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+          <span class="leistung-card-arrow" aria-hidden="true">→</span>
+        </a>
+        <a class="leistung-card leistung-card-5 reveal" href="leistungen.html#leistung-elektro" data-short-desc="Von der Steckdose bis zur Fehlersuche — sicher und zuverlässig.">
+          <img src="images/elektro/elektro-fehlersuche.jpg" alt="" loading="lazy" data-sanity-field="services.4.cardImageUrl" data-sanity-attr="src">
+          <span class="leistung-card-scrim" aria-hidden="true"></span>
+          <span class="leistung-card-num">05</span>
+          <span class="leistung-card-title"><span data-sanity-field="services.4.title">Elektro-Kleinreparaturen</span><span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+          <span class="leistung-card-arrow" aria-hidden="true">→</span>
+        </a>
+      </div>
+
+      <aside class="leistung-glass-panel reveal" data-leistung-glass aria-live="polite">
+        <div class="leistung-glass-inner">
+          <span class="leistung-glass-eyebrow" data-leistung-glass-eyebrow>Leistung im Fokus</span>
+          <h3 class="leistung-glass-title" data-leistung-glass-title>Hausmeisterservice &amp; Objektbetreuung</h3>
+          <p class="leistung-glass-desc" data-leistung-glass-desc>Fester Ansprechpartner für Kontrolle, Pflege und Kleinreparaturen an Ihrem Objekt.</p>
+        </div>
+      </aside>
     </div>
 
     <p style="margin-top:28px"><a href="leistungen.html" class="inline-cta">Alle Leistungen im Detail ansehen →</a></p>
@@ -292,8 +328,8 @@
   </a>
 </div>
 
-<script src="assets/main.js?v=14"></script>
-<script src="assets/js/sanity-content.js?v=14"></script>
+<script src="assets/main.js?v=15"></script>
+<script src="assets/js/sanity-content.js?v=15"></script>
 <script src="assets/js/google-reviews.js?v=9" defer></script>
 </body>
 </html>

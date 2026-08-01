@@ -102,12 +102,24 @@ separates, kostenloses CMS-Tool.
    - **Kontaktdaten**: Telefonnummer, WhatsApp-Link, E-Mail, Erreichbarkeit
      — wirkt sich auf Footer, Mega-Menü und den "Direkt anrufen"-Button im
      Hero auf allen Seiten aus.
+   - **Mega-Menü-Link**: die Titel/Kurzbeschreibungen/Ziel-Links der
+     Dropdown-Spalten unter "Leistungen", "Über mich" und "Einsatzgebiet &
+     FAQ" im Menü. Kontakt hat bewusst keine eigenen Mega-Menü-Link-Einträge
+     — die 3 Kontakt-Links im Menü ziehen ihre Werte direkt aus
+     "Kontaktdaten", damit Telefonnummer/E-Mail nicht doppelt gepflegt
+     werden müssen.
+   - **Info-Banner**: optionaler schmaler Hinweisbalken ganz oben auf jeder
+     Seite. Manueller Ein/Aus-Schalter plus optionales Ablaufdatum — nach
+     Erreichen des Datums verschwindet er automatisch, ohne dass du ihn
+     manuell wieder ausschalten musst.
    - **Website-Einstellungen**:
      - Logo (Icon) — wird in Header und Footer auf allen Seiten ersetzt.
      - Die 4 Navigations-Reiter-Texte ("Leistungen", "Über mich", …).
      - Hero-Unterzeile (die kleine Zeile über der Hero-Überschrift).
      - Hero-Wechselgeschwindigkeit in Millisekunden (wie lange ein
        Hero-Bild stehen bleibt).
+     - Kit-Animationssteuerung: Tempo, Skalierung und Abdunklung des
+       automatischen Hervorhebungs-Effekts der 5 Leistungskacheln.
      - Rechtlicher Footer-Hinweis (der Sternchen-Text im Footer aller Seiten).
      - Static Forms API-Key — siehe Hinweis unten.
 3. Nach dem Speichern in Sanity ist die Änderung **beim nächsten Laden der

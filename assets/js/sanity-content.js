@@ -25,6 +25,8 @@
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
+    '"megaMenu":*[_type=="megaMenuLink"]|order(section asc, order asc){section,order,title,description,url},' +
+    '"infoBanner":*[_type=="infoBanner"][0]{text,active,expiresAt},' +
     '"vorherNachher":*[_type=="vorherNachherProjekt"]{titel,beschreibung,kategorie,"vorherUrl":vorherBild.asset->url' + IMG_SUFFIX + ',vorherAlt,"nachherUrl":nachherBild.asset->url' + IMG_SUFFIX + ',nachherAlt},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
     '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,staticFormsApiKey,kitCardIntervalMs,kitActiveScale,kitInactiveOpacity,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
@@ -102,6 +104,24 @@
       if (doc.question) map["faq." + i + ".question"] = doc.question;
       if (doc.answer) map["faq." + i + ".answer"] = doc.answer;
     });
+    // Mega-Menü-Links: nach festem section+order-Schlüssel gruppieren statt Array-Position
+    // (gleiche Absicherung wie bei Hero/Leistungen gegen doppelte/fehlerhafte Dokumente).
+    // Kontakt bewusst nicht dabei — die 3 Kontakt-Links im Menü ziehen ihre Werte weiterhin
+    // direkt aus "contact" (siehe unten), damit Telefon/E-Mail nur an einer Stelle gepflegt wird.
+    var megaSectionSizes = { leistungen: 5, ueberMich: 3, einsatzgebiet: 3 };
+    var megaByKey = {};
+    (data.megaMenu || []).forEach(function (doc) {
+      var maxItems = doc.section && megaSectionSizes[doc.section];
+      if (!maxItems || typeof doc.order !== "number" || doc.order < 0 || doc.order >= maxItems) return;
+      var key = doc.section + "." + doc.order;
+      if (!megaByKey[key]) megaByKey[key] = doc;
+    });
+    Object.keys(megaByKey).forEach(function (key) {
+      var doc = megaByKey[key];
+      if (doc.title) map["megaCol." + key + ".title"] = doc.title;
+      if (doc.description) map["megaCol." + key + ".description"] = doc.description;
+      if (doc.url) map["megaCol." + key + ".url"] = doc.url;
+    });
     if (data.contact) {
       ["phone", "phoneHref", "whatsapp", "email", "openingHours"].forEach(function (key) {
         if (data.contact[key]) map["contact." + key] = data.contact[key];
@@ -151,6 +171,21 @@
     if (map["settings.kitInactiveOpacity"]) {
       kitContainer.style.setProperty("--kit-inactive-opacity", map["settings.kitInactiveOpacity"]);
     }
+  }
+
+  // Info-Banner: standardmäßig unsichtbar (siehe HTML [hidden]) — zeigt sich nur, wenn
+  // "active" an ist UND (kein Ablaufdatum ODER Ablaufdatum noch nicht erreicht). Der
+  // Systemzeit-Abgleich passiert bewusst hier im Client, da die Seite rein statisch ist
+  // und keinen Server hat, der das serverseitig prüfen könnte.
+  function applyInfoBanner(data) {
+    var banner = data.infoBanner;
+    var el = document.querySelector(".info-banner");
+    if (!el || !banner || !banner.active || !banner.text) return;
+    if (banner.expiresAt && new Date(banner.expiresAt).getTime() <= Date.now()) return;
+    el.textContent = banner.text;
+    el.hidden = false;
+    el.classList.add("is-visible");
+    document.body.classList.add("has-info-banner");
   }
 
   // Sanity ist die Quelle der Wahrheit für Vorher/Nachher-Projekte; die statische
@@ -304,6 +339,7 @@
       applyKitAnimationSettings(map);
       applyCallButtonToggle(map);
       applyVorherNachher(data);
+      applyInfoBanner(data);
       if (data.settings && data.settings.logoIconUrl) {
         applyFavicon(data.settings.logoIconUrl);
       }

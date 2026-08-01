@@ -5,6 +5,8 @@ import {siteSettings} from './siteSettings'
 import {contactInfo} from './contactInfo'
 import {vorherNachherProjekt} from './vorherNachherProjekt'
 import {faqEntry} from './faqEntry'
+import {megaMenuLink} from './megaMenuLink'
+import {infoBanner} from './infoBanner'
 
 export const schemaTypes = [
   heroSlide,
@@ -14,4 +16,6 @@ export const schemaTypes = [
   contactInfo,
   vorherNachherProjekt,
   faqEntry,
+  megaMenuLink,
+  infoBanner,
 ]
