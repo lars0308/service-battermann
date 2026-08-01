@@ -62,7 +62,9 @@
   var heroLines = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-line"));
   var heroDots = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-dot"));
   var heroRoundEl = document.querySelector("[data-hero-round-text]");
-  var HERO_ROUND_TEXTS = ["ist persönlich für Sie da", "kümmert sich selbst darum", "steht für sein Wort"];
+  // Als window-Property statt lokaler Konstante, damit sanity-content.js die Liste
+  // live ersetzen kann (Lars pflegt die 3 Textvarianten in Sanity statt im Code).
+  window.__heroRoundTexts = ["ist persönlich für Sie da", "kümmert sich selbst darum", "steht für sein Wort"];
   if (heroSlides.length && heroLines.length) {
     var HERO_CYCLE_MS = 5200;
     var heroCurrent = 0;
@@ -71,8 +73,9 @@
 
     var activateHeroSlide = function (index) {
       if (index === 0 && heroCurrent === heroSlides.length - 1 && heroRoundEl) {
-        heroRound = (heroRound + 1) % HERO_ROUND_TEXTS.length;
-        heroRoundEl.textContent = HERO_ROUND_TEXTS[heroRound];
+        var texts = window.__heroRoundTexts;
+        heroRound = (heroRound + 1) % texts.length;
+        heroRoundEl.textContent = texts[heroRound];
       }
       heroSlides.forEach(function (s, i) { s.classList.toggle("is-active", i === index); });
       heroDots.forEach(function (d, i) {

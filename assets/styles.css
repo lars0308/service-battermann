@@ -200,8 +200,11 @@ header.site .brand{ margin-right:auto; }
 .brand{ display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink); min-width:0; }
 .brand img{ width:36px; height:36px; flex-shrink:0; }
 @media (prefers-color-scheme: dark){
-  header.site .brand img{ filter:invert(1); }
+  header.site .brand img{ filter:brightness(1.5) contrast(0.92); }
 }
+/* Mehrfarbiges Logo auf dauerhaft dunklem Grund (Footer): kein invert(1),
+   das würde Grün/Braun in Magenta/Cyan verkehren (Foto-Negativ-Effekt). */
+.logo-on-dark{ filter:brightness(1.5) contrast(0.92); }
 .brand .txt{ line-height:1.15; min-width:0; }
 .brand .txt strong{ display:block; font-family:'Montserrat',sans-serif; font-weight:800; font-size:0.92rem; }
 .brand .txt span{ display:block; font-size:0.72rem; color:var(--ink-soft); }

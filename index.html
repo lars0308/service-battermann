@@ -7,8 +7,8 @@
 <meta name="description" content="Handwerker, Hausmeisterservice und Elektriker in Lindhorst, Stadthagen &amp; Umgebung. Direkt erreichbar, zuverlässig, faire Preise. Jetzt Kontakt aufnehmen.">
 <link rel="canonical" href="https://www.service-battermann.de/">
 <link rel="icon" href="images/logo-icon.png">
-<link rel="stylesheet" href="assets/fonts.css?v=7">
-<link rel="stylesheet" href="assets/styles.css?v=7">
+<link rel="stylesheet" href="assets/fonts.css?v=8">
+<link rel="stylesheet" href="assets/styles.css?v=8">
 </head>
 <body>
 
@@ -39,10 +39,10 @@
 
 <section class="hero hero-slider" id="hero-split">
   <div class="hero-slides" aria-hidden="true">
-    <div class="hero-slide is-active" style="background-image:url('images/arbeit-leuchte.jpg');background-position:center 10%"></div>
-    <div class="hero-slide" style="background-image:url('images/arbeit-garten.jpg')"></div>
-    <div class="hero-slide" style="background-image:url('images/arbeit-montage.jpg')"></div>
-    <div class="hero-slide" style="background-image:url('images/elektro/elektro-fehlersuche.jpg')"></div>
+    <div class="hero-slide is-active" data-hero-slide-index="0" style="background-image:url('images/arbeit-leuchte.jpg');background-position:center 10%"></div>
+    <div class="hero-slide" data-hero-slide-index="1" style="background-image:url('images/arbeit-garten.jpg')"></div>
+    <div class="hero-slide" data-hero-slide-index="2" style="background-image:url('images/arbeit-montage.jpg')"></div>
+    <div class="hero-slide" data-hero-slide-index="3" style="background-image:url('images/elektro/elektro-fehlersuche.jpg')"></div>
   </div>
   <div class="hero-scrim" aria-hidden="true"></div>
 
@@ -50,10 +50,10 @@
     <span class="eyebrow">Hausmeisterservice · Objektbetreuung · Allround-Handwerk</span>
     <div class="hero-slide-heading-wrap">
       <h1 class="display hero-slide-h1" id="hero-slide-heading">
-        <span class="hero-slide-line is-active" data-slide-index="0">Lars Battermann:<br><span class="hero-slide-verb" data-hero-round-text>ist persönlich für Sie da</span></span>
-        <span class="hero-slide-line" data-slide-index="1">Lars Battermann:<br><span class="hero-slide-verb">Pflegt Objekte</span></span>
-        <span class="hero-slide-line" data-slide-index="2">Lars Battermann:<br><span class="hero-slide-verb">Montiert Möbel</span></span>
-        <span class="hero-slide-line" data-slide-index="3">Lars Battermann:<br><span class="hero-slide-verb">Repariert Schäden</span></span>
+        <span class="hero-slide-line is-active" data-slide-index="0">Lars Battermann:<br><span class="hero-slide-verb" data-hero-round-text data-sanity-field="hero.0.roundTexts">ist persönlich für Sie da</span></span>
+        <span class="hero-slide-line" data-slide-index="1">Lars Battermann:<br><span class="hero-slide-verb" data-sanity-field="hero.1.verb">Pflegt Objekte</span></span>
+        <span class="hero-slide-line" data-slide-index="2">Lars Battermann:<br><span class="hero-slide-verb" data-sanity-field="hero.2.verb">Montiert Möbel</span></span>
+        <span class="hero-slide-line" data-slide-index="3">Lars Battermann:<br><span class="hero-slide-verb" data-sanity-field="hero.3.verb">Repariert Schäden</span></span>
       </h1>
     </div>
     <div class="cta-row">
@@ -72,10 +72,10 @@
 
 <section class="trust-strip-section dark">
   <div class="wrap trust-strip">
-    <div class="item">Sie erreichen mich direkt.<br>Ich nehme selbst ab.<br>Kein Callcenter dazwischen.</div>
-    <div class="item">Rückmeldung in der Regel innerhalb von 24 Stunden, oft am selben Tag.</div>
-    <div class="item">Auch kleine Aufträge sind willkommen. Nichts ist zu klein für einen Anruf.</div>
-    <div class="item">Rechnung auf Wunsch, damit Kosten steuerlich geltend gemacht werden können.</div>
+    <div class="item" data-sanity-field="trust.0.text">Sie erreichen mich direkt.<br>Ich nehme selbst ab.<br>Kein Callcenter dazwischen.</div>
+    <div class="item" data-sanity-field="trust.1.text">Rückmeldung in der Regel innerhalb von 24 Stunden, oft am selben Tag.</div>
+    <div class="item" data-sanity-field="trust.2.text">Auch kleine Aufträge sind willkommen. Nichts ist zu klein für einen Anruf.</div>
+    <div class="item" data-sanity-field="trust.3.text">Rechnung auf Wunsch, damit Kosten steuerlich geltend gemacht werden können.</div>
   </div>
 </section>
 
@@ -125,38 +125,38 @@
 
     <div class="leistung-cards">
       <a class="leistung-card leistung-card-1 reveal" href="leistungen.html#leistung-hausmeister">
-        <img src="images/fahrzeug-logo.jpg" alt="" loading="lazy">
+        <img src="images/fahrzeug-logo.jpg" alt="" loading="lazy" data-sanity-field="services.0.cardImageUrl" data-sanity-attr="src">
         <span class="leistung-card-scrim" aria-hidden="true"></span>
         <span class="leistung-card-num">01</span>
-        <span class="leistung-card-title">Hausmeisterservice &amp; Objektbetreuung</span>
+        <span class="leistung-card-title" data-sanity-field="services.0.title">Hausmeisterservice &amp; Objektbetreuung</span>
         <span class="leistung-card-arrow" aria-hidden="true">→</span>
       </a>
       <a class="leistung-card leistung-card-2 reveal" href="leistungen.html#leistung-montage">
-        <img src="images/arbeit-montage.jpg" alt="" loading="lazy">
+        <img src="images/arbeit-montage.jpg" alt="" loading="lazy" data-sanity-field="services.1.cardImageUrl" data-sanity-attr="src">
         <span class="leistung-card-scrim" aria-hidden="true"></span>
         <span class="leistung-card-num">02</span>
-        <span class="leistung-card-title">Haus, Wohnung &amp; Montage</span>
+        <span class="leistung-card-title" data-sanity-field="services.1.title">Haus, Wohnung &amp; Montage</span>
         <span class="leistung-card-arrow" aria-hidden="true">→</span>
       </a>
       <a class="leistung-card leistung-card-3 reveal" href="leistungen.html#leistung-garten">
-        <img src="images/arbeit-garten.jpg" alt="" loading="lazy">
+        <img src="images/arbeit-garten.jpg" alt="" loading="lazy" data-sanity-field="services.2.cardImageUrl" data-sanity-attr="src">
         <span class="leistung-card-scrim" aria-hidden="true"></span>
         <span class="leistung-card-num">03</span>
-        <span class="leistung-card-title">Garten &amp; Außenanlagen</span>
+        <span class="leistung-card-title" data-sanity-field="services.2.title">Garten &amp; Außenanlagen</span>
         <span class="leistung-card-arrow" aria-hidden="true">→</span>
       </a>
       <a class="leistung-card leistung-card-4 reveal" href="leistungen.html#leistung-bad">
-        <img src="images/vorher-nachher/bad-nachher-1.jpg" alt="" loading="lazy">
+        <img src="images/vorher-nachher/bad-nachher-1.jpg" alt="" loading="lazy" data-sanity-field="services.3.cardImageUrl" data-sanity-attr="src">
         <span class="leistung-card-scrim" aria-hidden="true"></span>
         <span class="leistung-card-num">04</span>
-        <span class="leistung-card-title">Bad &amp; Sanitär<span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+        <span class="leistung-card-title"><span data-sanity-field="services.3.title">Bad &amp; Sanitär</span><span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
         <span class="leistung-card-arrow" aria-hidden="true">→</span>
       </a>
       <a class="leistung-card leistung-card-5 reveal" href="leistungen.html#leistung-elektro">
-        <img src="images/elektro/elektro-fehlersuche.jpg" alt="" loading="lazy">
+        <img src="images/elektro/elektro-fehlersuche.jpg" alt="" loading="lazy" data-sanity-field="services.4.cardImageUrl" data-sanity-attr="src">
         <span class="leistung-card-scrim" aria-hidden="true"></span>
         <span class="leistung-card-num">05</span>
-        <span class="leistung-card-title">Elektro-Kleinreparaturen<span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
+        <span class="leistung-card-title"><span data-sanity-field="services.4.title">Elektro-Kleinreparaturen</span><span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
         <span class="leistung-card-arrow" aria-hidden="true">→</span>
       </a>
     </div>
@@ -193,7 +193,7 @@
   <div class="wrap">
     <div>
       <a class="brand plain" href="index.html" style="margin-bottom:14px">
-        <img src="images/logo-icon.png" alt="" style="filter:invert(1)">
+        <img src="images/logo-icon.png" alt="" class="logo-on-dark">
         <span class="txt"><strong style="color:var(--on-dark)">Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
       </a>
       <p>Handwerker &amp; Hausmeisterservice für Privatkunden, Hausverwaltungen und Firmen in Lindhorst, Stadthagen, Bückeburg und Umgebung.</p>
@@ -207,17 +207,17 @@
     </div>
     <div>
       <h4>Direkter Kontakt</h4>
-      <a href="tel:+4915567467763">+49 155 / 674 677 63</a>
-      <a href="https://wa.me/4915567467763">WhatsApp schreiben</a>
-      <a href="mailto:service.battermann@gmx.de">service.battermann@gmx.de</a>
-      <span style="display:block;color:var(--on-dark-soft)">Mo–Sa, 09:00–20:00 Uhr</span>
+      <a href="tel:+4915567467763" data-sanity-field="contact.phoneHref" data-sanity-attr="href" data-sanity-prefix="tel:"><span data-sanity-field="contact.phone">+49 155 / 674 677 63</span></a>
+      <a href="https://wa.me/4915567467763" data-sanity-field="contact.whatsapp" data-sanity-attr="href">WhatsApp schreiben</a>
+      <a href="mailto:service.battermann@gmx.de" data-sanity-field="contact.email" data-sanity-attr="href" data-sanity-prefix="mailto:"><span data-sanity-field="contact.email">service.battermann@gmx.de</span></a>
+      <span style="display:block;color:var(--on-dark-soft)" data-sanity-field="contact.openingHours">Mo–Sa, 09:00–20:00 Uhr</span>
     </div>
   </div>
   <div class="wrap footer-bottom">
     <span>© 2026 Objekt- und Reparaturservice Battermann · Lars Battermann</span>
     <span><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span>
   </div>
-  <p class="wrap footer-legal">Ausführung ausschließlich im gesetzlich zulässigen Rahmen für meisterfreie Instandsetzungsarbeiten.</p>
+  <p class="wrap footer-legal" data-sanity-field="settings.legalNotice">Ausführung ausschließlich im gesetzlich zulässigen Rahmen für meisterfreie Instandsetzungsarbeiten.</p>
 </footer>
 
 <div class="cookie-banner" data-cookie-banner hidden>
@@ -232,7 +232,8 @@
   </a>
 </div>
 
-<script src="assets/main.js?v=7"></script>
-<script src="assets/js/google-reviews.js?v=7" defer></script>
+<script src="assets/main.js?v=8"></script>
+<script src="assets/js/sanity-content.js?v=8"></script>
+<script src="assets/js/google-reviews.js?v=8" defer></script>
 </body>
 </html>

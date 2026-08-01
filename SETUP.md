@@ -101,6 +101,46 @@ Zwischenspeicherung von Bewertungstexten — das Skript speichert deshalb
 nichts (kein localStorage/Cache), sondern fragt bei jedem Seitenaufruf neu
 ab, und zeigt die Google-Zuschreibung ("Bewertungen von Google") mit an.
 
+## 5. Texte & Bilder live über Sanity ändern (Startseite)
+
+Ein Teil der Startseite lässt sich jetzt **ohne GitHub, ohne Programmierung
+und ohne Netlify-Neubau** direkt bearbeiten — über Sanity Studio, ein
+separates, kostenloses CMS-Tool.
+
+1. `https://service-battermann.sanity.studio` öffnen und mit deinem
+   Sanity-Konto anmelden (Projekt-ID `9bz9h1mi`, Dataset `production`).
+2. Dort bearbeitbar:
+   - **Hero-Slide** (4 Stück): Text je Bildwechsel ganz oben, plus die
+     3 rotierenden Sätze für das allererste Bild ("ist persönlich für Sie
+     da" / "kümmert sich selbst darum" / "steht für sein Wort"), und das
+     Hintergrundbild selbst.
+   - **Vorteil** (4 Stück): die vier kurzen Textpunkte direkt unter dem
+     Hero-Bild.
+   - **Leistungsbereich** (5 Stück): Titel und Kartenbild der fünf
+     Leistungs-Kacheln auf der Startseite.
+   - **Kontaktdaten**: Telefonnummer, WhatsApp-Link, E-Mail, Erreichbarkeit
+     — wirkt sich auf den Footer aller Seiten aus.
+   - **Website-Einstellungen → Rechtlicher Footer-Hinweis**: der
+     Sternchen-Text im Footer aller Seiten.
+3. Nach dem Speichern in Sanity ist die Änderung **beim nächsten Laden der
+   Seite sofort sichtbar** — kein Netlify-Rebuild nötig, anders als beim
+   Vorher/Nachher-Bereich (Abschnitt 3).
+
+**Wie das technisch funktioniert, kurz erklärt:** Die Seite lädt weiterhin
+zuerst ganz normal als statisches HTML (wichtig für Google & schnelles
+erstes Laden). Erst danach fragt ein kleines Skript
+(`assets/js/sanity-content.js`) einmal leise bei Sanity nach und ersetzt
+nur die Textstellen/Bilder, die sich geändert haben — ohne sichtbares
+Aufblitzen. Ist Sanity gerade nicht erreichbar oder ein Feld leer, bleibt
+einfach der bisherige Text stehen; es kann dadurch nichts kaputtgehen.
+
+**Was noch NICHT an Sanity angebunden ist** (bewusst nicht, um den Umbau
+nicht ausufern zu lassen): die Detailtexte/Bildergalerien auf
+`leistungen.html`, die Überschriften der Bewertungs-/Einsatzgebiet-Bereiche,
+und der Vorher/Nachher-Bereich (der bleibt wie bisher über den
+GitHub-Admin unter Abschnitt 2/3 gepflegt — zwei CMS für dieselben Bilder
+wäre nur verwirrend). Wenn du das später ausweiten willst, sag Bescheid.
+
 ## Warum kein WordPress?
 
 Der ursprüngliche Wunsch war "bevorzugt WordPress". Für eine reine
