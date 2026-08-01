@@ -14,11 +14,20 @@ export const heroSlide = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
-      name: 'image',
-      title: 'Hintergrundbild',
+      name: 'bildDesktop',
+      title: 'Hintergrundbild Desktop (16:9 Querformat)',
       type: 'image',
       options: {hotspot: true},
+      description: 'Breites Querformat-Bild für PC/Tablet-Ansicht.',
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'bildMobile',
+      title: 'Hintergrundbild Smartphone (9:16 Hochformat)',
+      type: 'image',
+      options: {hotspot: true},
+      description:
+        'Eigenes, hochkant fotografiertes Bild für die Handy-Ansicht — verhindert unscharfes/falsch zugeschnittenes Querformat auf schmalen Bildschirmen. Optional: bleibt dieses Feld leer, verwendet das Handy weiterhin das Desktop-Bild.',
     }),
     defineField({
       name: 'prefix',
@@ -55,7 +64,7 @@ export const heroSlide = defineType({
     }),
   ],
   preview: {
-    select: {title: 'verb', roundTexts: 'roundTexts', media: 'image', order: 'order'},
+    select: {title: 'verb', roundTexts: 'roundTexts', media: 'bildDesktop', order: 'order'},
     prepare({title, roundTexts, media, order}) {
       var fallback = Array.isArray(roundTexts) && roundTexts.length ? roundTexts[0] : 'Ohne Text';
       return {title: title || fallback, subtitle: `Slide ${order ?? '?'}`, media}

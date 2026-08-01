@@ -498,15 +498,29 @@ section.dim{ background:var(--paper-dim); }
   .hero-slider{ height:calc(100vh - 82px); }
 }
 .hero-slides{ position:absolute; inset:0; z-index:0; }
+/* .hero-slide ist jetzt ein <picture> (vorher ein background-image-<div>) —
+   <picture> ist inline von Natur aus, daher display:block hier explizit nötig,
+   damit position:absolute/inset weiterhin wie gewohnt greift. */
 .hero-slide{
-  position:absolute; inset:0;
-  background-size:cover; background-position:center 30%;
-  image-rendering:-webkit-optimize-contrast;
+  display:block; position:absolute; inset:0;
   opacity:0;
   will-change:opacity;
   transition:opacity 1.4s cubic-bezier(0.16,1,0.3,1);
 }
 .hero-slide.is-active{ opacity:1; }
+.hero-slide img{
+  display:block; width:100%; height:100%; object-fit:cover;
+  image-rendering:-webkit-optimize-contrast;
+  /* --hero-desktop-pos/--hero-mobile-pos werden per JS aus dem Sanity-Hotspot
+     gesetzt (siehe sanity-content.js); center 30% ist der Fallback ohne
+     gepflegten Hotspot. Getrennte Custom Properties statt einer geteilten,
+     weil Desktop- und Mobile-Bild jetzt zwei unterschiedliche Fotos mit
+     potenziell unterschiedlichem Fokuspunkt sein können. */
+  object-position:var(--hero-desktop-pos, center 30%);
+}
+@media (max-width:768px){
+  .hero-slide img{ object-position:var(--hero-mobile-pos, var(--hero-desktop-pos, center 30%)); }
+}
 .hero-scrim{
   position:absolute; inset:0; z-index:1;
   /* Oben dezent, unten kräftiger abgedunkelt: schützt den Kontrast der weißen
@@ -581,17 +595,6 @@ section.dim{ background:var(--paper-dim); }
   .hero-slide-dots{ right:16px; bottom:20px; }
   .hero-slider .hero-slider-content{ padding-bottom:calc(var(--space-4) + 34px); }
 }
-@media (max-width:768px){
-  /* Die Slides sind breite 16:9-Aufnahmen, auf dem schmalen Hochformat-Handy-
-     Viewport wird also der Bildrand rechts/links stark weggeschnitten. Lars
-     steht in den Fotos auf der rechten Bildhälfte — reine "center"-Kürzung
-     (Desktop-Wert, siehe .hero-slide oben) schneidet ihn dort ab. !important
-     nötig, weil Slide 1 ihre Position außerdem per Inline-style setzt
-     (höhere Spezifität als eine normale Klassenregel). Nur die X-Achse wird
-     erzwungen, die Y-Position (zentriert vs. 15%/30%) bleibt unangetastet. */
-  .hero-slide{ background-position-x:85% !important; }
-}
-
 /* ---------- Startseite: interaktive "Über mich"-Karte ----------
    Desktop: Bild links, Text rechts (per order, unabhängig von der
    DOM-Reihenfolge). Mobile: Text zuerst, Bild darunter (siehe Media Query). */

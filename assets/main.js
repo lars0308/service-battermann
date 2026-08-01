@@ -299,7 +299,7 @@
   var heroRoundEl = document.querySelector("[data-hero-round-text]");
   // Als window-Property statt lokaler Konstante, damit sanity-content.js die Liste
   // live ersetzen kann (Lars pflegt die 3 Textvarianten in Sanity statt im Code).
-  window.__heroRoundTexts = ["ist persönlich für Sie da", "kümmert sich selbst darum", "steht für sein Wort"];
+  window.__heroRoundTexts = ["Ihr Allround-Handwerker", "kümmert sich selbst darum", "steht für sein Wort"];
   // Gleiches Prinzip für die Wechselgeschwindigkeit (Sanity: Website-Einstellungen → Hero).
   window.__heroAutoplayMs = 5200;
   if (heroSlides.length && heroLines.length) {

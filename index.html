@@ -127,10 +127,22 @@
 
 <section class="hero hero-slider is-first-reveal" id="hero-split">
   <div class="hero-slides" aria-hidden="true">
-    <div class="hero-slide is-active" data-hero-slide-index="0" style="background-image:url('images/portrait-lars-hero.jpg');background-position:center 15%"></div>
-    <div class="hero-slide" data-hero-slide-index="1" style="background-image:url('images/arbeit-garten.jpg')"></div>
-    <div class="hero-slide" data-hero-slide-index="2" style="background-image:url('images/arbeit-montage.jpg')"></div>
-    <div class="hero-slide" data-hero-slide-index="3" style="background-image:url('images/elektro/elektro-fehlersuche.jpg')"></div>
+    <picture class="hero-slide is-active" data-hero-slide-index="0">
+      <source media="(max-width:768px)" srcset="images/portrait-lars-hero.jpg" data-hero-mobile-src>
+      <img src="images/portrait-lars-hero.jpg" alt="" style="--hero-desktop-pos:center 15%" data-hero-img>
+    </picture>
+    <picture class="hero-slide" data-hero-slide-index="1">
+      <source media="(max-width:768px)" srcset="images/arbeit-garten.jpg" data-hero-mobile-src>
+      <img src="images/arbeit-garten.jpg" alt="" data-hero-img>
+    </picture>
+    <picture class="hero-slide" data-hero-slide-index="2">
+      <source media="(max-width:768px)" srcset="images/arbeit-montage.jpg" data-hero-mobile-src>
+      <img src="images/arbeit-montage.jpg" alt="" data-hero-img>
+    </picture>
+    <picture class="hero-slide" data-hero-slide-index="3">
+      <source media="(max-width:768px)" srcset="images/elektro/elektro-fehlersuche.jpg" data-hero-mobile-src>
+      <img src="images/elektro/elektro-fehlersuche.jpg" alt="" data-hero-img>
+    </picture>
   </div>
   <div class="hero-scrim" aria-hidden="true"></div>
 
@@ -138,7 +150,7 @@
     <span class="eyebrow" data-sanity-field="settings.heroEyebrow">Hausmeisterservice · Objektbetreuung · Allround-Handwerk</span>
     <div class="hero-slide-heading-wrap">
       <h1 class="display hero-slide-h1" id="hero-slide-heading">
-        <span class="hero-slide-line is-active" data-slide-index="0">Lars Battermann:<br><span class="hero-slide-verb" data-hero-round-text data-sanity-field="hero.0.roundTexts">ist persönlich für Sie da</span></span>
+        <span class="hero-slide-line is-active" data-slide-index="0">Lars Battermann:<br><span class="hero-slide-verb" data-hero-round-text data-sanity-field="hero.0.roundTexts">Ihr Allround-Handwerker</span></span>
         <span class="hero-slide-line" data-slide-index="1">Lars Battermann:<br><span class="hero-slide-verb" data-sanity-field="hero.1.verb">Pflegt Objekte</span></span>
         <span class="hero-slide-line" data-slide-index="2">Lars Battermann:<br><span class="hero-slide-verb" data-sanity-field="hero.2.verb">Montiert Möbel</span></span>
         <span class="hero-slide-line" data-slide-index="3">Lars Battermann:<br><span class="hero-slide-verb" data-sanity-field="hero.3.verb">Repariert Schäden</span></span>

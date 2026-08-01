@@ -69,7 +69,7 @@
   // (Sanitys Bild-CDN versteht dieselben URL-Parameter wie andere Bild-CDNs).
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
-    '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,showCallButton,"imageBaseUrl":image.asset->url,"imageHotspot":image.hotspot},' +
+    '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,showCallButton,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
@@ -108,6 +108,12 @@
     var width = isNarrowViewport ? 800 : 1920;
     return baseUrl + "?w=" + width + "&auto=format&q=90";
   }
+  // Hero-Bilder bekommen eigens q=95 (etwas schärfer als der Standard q=90) —
+  // sie sind das erste, größte, am längsten betrachtete Bild der Seite.
+  function heroImageUrl(baseUrl, width) {
+    if (!baseUrl) return baseUrl;
+    return baseUrl + "?w=" + width + "&auto=format&q=95";
+  }
 
   function buildFieldMap(data) {
     var map = {};
@@ -127,19 +133,24 @@
       if (!doc) return;
       var i = orderNum - 1;
       if (doc.verb) map["hero." + i + ".verb"] = doc.verb;
-      if (doc.imageBaseUrl) map["hero." + i + ".imageUrl"] = responsiveImageUrl(doc.imageBaseUrl);
+      if (doc.desktopBaseUrl) map["hero." + i + ".desktopUrl"] = heroImageUrl(doc.desktopBaseUrl, 1920);
+      // Kein eigenes Handy-Bild gepflegt? Dann fällt <source> einfach weg und
+      // der Browser nimmt automatisch das <img>-Desktop-Bild (siehe HTML) —
+      // funktioniert wie bisher, nur ohne die frühere object-position-85%-
+      // Krücke, die ein Querformat-Bild auf einem Hochformat-Screen zurechtbog.
+      if (doc.mobileBaseUrl) map["hero." + i + ".mobileUrl"] = heroImageUrl(doc.mobileBaseUrl, 1080);
       // Gleiches Prinzip wie bei den Leistungskacheln (siehe applyCardFocalPoints):
       // Sanitys Hotspot ist ein relativer 0-1-Wert, deckt sich 1:1 mit CSS
-      // background-position in Prozent. Bewusst NICHT über den Sanity Image-URL-
-      // Builder (serverseitiger Fix-Crop mit fester Zielgröße) gelöst — der Hero
-      // wechselt je nach Viewport/Breakpoint sein Seitenverhältnis (100svh minus
-      // wechselnde Header-Höhe), ein einmal fix zugeschnittenes Bild könnte den
-      // Fokuspunkt dabei nicht mehr nachführen. background-position tut das
-      // automatisch bei jeder Größe, ohne dass ein zusätzliches Bild-Paket
-      // (@sanity/image-url) oder ein Build-Schritt nötig wird.
-      if (doc.imageHotspot && typeof doc.imageHotspot.x === "number" && typeof doc.imageHotspot.y === "number") {
-        map["hero." + i + ".imagePosition"] =
-          (doc.imageHotspot.x * 100).toFixed(2) + "% " + (doc.imageHotspot.y * 100).toFixed(2) + "%";
+      // object-position in Prozent — funktioniert bei jeder Bildschirmgröße,
+      // ohne dass Desktop- und Mobile-Bild denselben Fokuspunkt teilen müssten
+      // (sie sind ja jetzt zwei unterschiedliche Fotos/Zuschnitte).
+      if (doc.desktopHotspot && typeof doc.desktopHotspot.x === "number" && typeof doc.desktopHotspot.y === "number") {
+        map["hero." + i + ".desktopPosition"] =
+          (doc.desktopHotspot.x * 100).toFixed(2) + "% " + (doc.desktopHotspot.y * 100).toFixed(2) + "%";
+      }
+      if (doc.mobileHotspot && typeof doc.mobileHotspot.x === "number" && typeof doc.mobileHotspot.y === "number") {
+        map["hero." + i + ".mobilePosition"] =
+          (doc.mobileHotspot.x * 100).toFixed(2) + "% " + (doc.mobileHotspot.y * 100).toFixed(2) + "%";
       }
     });
     var heroFirst = heroByOrder[1];
@@ -443,30 +454,64 @@
   // finale Bild (Sanity, falls vorhanden) steht und nicht kurz danach nochmal
   // "poppt". Kein Sanity-Bild für die aktive Folie? Dann löst das Promise
   // sofort auf (das lokale Fallback-Bild ist ohnehin längst da).
+  // Lädt eine Bild-URL im Hintergrund vor und löst erst danach auf — verhindert,
+  // dass ein <img src>/<source srcset> auf ein noch nicht geladenes Bild
+  // umgestellt wird (kurzes Aufblitzen von "kaputtem Bild" bzw. des alten
+  // Bilds, das mitten im Laden ruckartig ersetzt wird).
+  function preloadThen(url, apply) {
+    return new Promise(function (resolve) {
+      var preload = new Image();
+      preload.onload = function () {
+        apply();
+        resolve();
+      };
+      // Kaputte/nicht erreichbare URL soll den Reveal nicht für immer blockieren.
+      preload.onerror = function () { resolve(); };
+      preload.src = url;
+    });
+  }
+
+  // Jede Folie ist jetzt ein <picture> mit eigenem Desktop-<img> und optionaler
+  // Mobile-<source> (siehe HTML) statt eines einzelnen background-image-<div>.
+  // Beide Bilder werden unabhängig voneinander vorgeladen und getauscht.
   function patchHeroBackgrounds(map) {
     var slides = document.querySelectorAll(".hero-slide[data-hero-slide-index]");
     var activeReady = Promise.resolve();
     slides.forEach(function (slideEl) {
       var i = slideEl.getAttribute("data-hero-slide-index");
-      var url = map["hero." + i + ".imageUrl"];
-      if (!url) return;
-      var position = map["hero." + i + ".imagePosition"];
       var isActive = slideEl.classList.contains("is-active");
-      var ready = new Promise(function (resolve) {
-        var preload = new Image();
-        preload.onload = function () {
-          slideEl.style.backgroundImage = "url('" + url + "')";
-          // !important nötig: die Mobile-Media-Query in styles.css erzwingt sonst
-          // per !important eine feste rechtslastige Position (Lars im Bild
-          // sichtbar halten) und würde den individuellen Hotspot überschreiben.
-          if (position) slideEl.style.setProperty("background-position", position, "important");
-          resolve();
-        };
-        // Kaputte/nicht erreichbare Bild-URL soll den Reveal nicht für immer
-        // blockieren — dann bleibt einfach das bisherige Bild stehen.
-        preload.onerror = function () { resolve(); };
-        preload.src = url;
-      });
+      var imgEl = slideEl.querySelector("[data-hero-img]");
+      var sourceEl = slideEl.querySelector("[data-hero-mobile-src]");
+      var desktopUrl = map["hero." + i + ".desktopUrl"];
+      var mobileUrl = map["hero." + i + ".mobileUrl"];
+      var desktopPos = map["hero." + i + ".desktopPosition"];
+      var mobilePos = map["hero." + i + ".mobilePosition"];
+
+      var tasks = [];
+      if (desktopUrl && imgEl) {
+        tasks.push(
+          preloadThen(desktopUrl, function () {
+            imgEl.src = desktopUrl;
+            if (desktopPos) imgEl.style.setProperty("--hero-desktop-pos", desktopPos);
+          })
+        );
+      } else if (imgEl && desktopPos) {
+        imgEl.style.setProperty("--hero-desktop-pos", desktopPos);
+      }
+      if (mobileUrl && sourceEl) {
+        tasks.push(
+          preloadThen(mobileUrl, function () {
+            sourceEl.srcset = mobileUrl;
+            if (imgEl && mobilePos) imgEl.style.setProperty("--hero-mobile-pos", mobilePos);
+          })
+        );
+      } else if (imgEl && mobilePos) {
+        // Kein eigenes Handy-Bild gepflegt, aber ein Mobile-Hotspot gesetzt
+        // (z. B. weil zuvor mal eins hinterlegt war) -> Position trotzdem
+        // anwenden, betrifft dann eben das Desktop-Bild auf dem Handy.
+        imgEl.style.setProperty("--hero-mobile-pos", mobilePos);
+      }
+      var ready = tasks.length ? Promise.all(tasks) : Promise.resolve();
       if (isActive) activeReady = ready;
     });
     return activeReady;
