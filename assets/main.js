@@ -35,6 +35,60 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
+  // "Kit-Fokus-Impuls": Die 5 Leistungskacheln werden beim ersten Erreichen der Sektion
+  // EINMALIG nacheinander kurz hervorgehoben (kein Dauerloop, kein Blinken). Hover/Touch
+  // durch den Nutzer bricht die Sequenz sofort ab und macht dem normalen Hover-Zustand Platz.
+  var kitContainer = document.querySelector(".leistung-cards");
+  var kitCards = Array.prototype.slice.call(document.querySelectorAll(".leistung-cards .leistung-card"));
+  if (kitContainer && kitCards.length && !reduceMotion && "IntersectionObserver" in window) {
+    var kitTimers = [];
+    var kitRunning = false;
+
+    var stopKitImpuls = function () {
+      kitTimers.forEach(function (t) { window.clearTimeout(t); });
+      kitTimers = [];
+      kitRunning = false;
+      kitContainer.classList.remove("is-sequencing");
+      kitCards.forEach(function (c) { c.classList.remove("is-focus-active"); });
+    };
+
+    var runKitImpuls = function () {
+      if (kitRunning) return;
+      kitRunning = true;
+      kitContainer.classList.add("is-sequencing");
+      kitCards.forEach(function (card, i) {
+        kitTimers.push(
+          window.setTimeout(function () {
+            kitCards.forEach(function (c) { c.classList.remove("is-focus-active"); });
+            card.classList.add("is-focus-active");
+            if (i === kitCards.length - 1) {
+              kitTimers.push(window.setTimeout(stopKitImpuls, 550));
+            }
+          }, i * 400)
+        );
+      });
+    };
+
+    kitCards.forEach(function (card) {
+      card.addEventListener("mouseenter", stopKitImpuls);
+      card.addEventListener("focus", stopKitImpuls);
+      card.addEventListener("touchstart", stopKitImpuls, { passive: true });
+    });
+
+    var kitIo = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            runKitImpuls();
+            kitIo.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.4 }
+    );
+    kitIo.observe(kitContainer);
+  }
+
   // Großformatige Typografie-Sektion: Zeilen fahren einzeln hoch
   var typeHero = document.querySelector(".type-hero");
   if (typeHero) {

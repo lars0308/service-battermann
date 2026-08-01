@@ -23,7 +23,7 @@
   var QUERY =
     '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,showCallButton,"imageBaseUrl":image.asset->url},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
-    '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,"cardImageUrl":cardImage.asset->url' + IMG_SUFFIX + '},' +
+    '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
     '"vorherNachher":*[_type=="vorherNachherProjekt"]{titel,beschreibung,kategorie,"vorherUrl":vorherBild.asset->url' + IMG_SUFFIX + ',vorherAlt,"nachherUrl":nachherBild.asset->url' + IMG_SUFFIX + ',nachherAlt},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
@@ -74,10 +74,29 @@
     (data.trust || []).forEach(function (doc, i) {
       if (doc.text) map["trust." + i + ".text"] = doc.text;
     });
-    (data.services || []).forEach(function (doc, i) {
+    // Gleiche order-basierte Zuordnung wie beim Hero (siehe oben) statt Array-Position —
+    // schützt auch die 5 Leistungskacheln vor doppelten/zusätzlichen Sanity-Dokumenten.
+    var servicesByOrder = {};
+    (data.services || []).forEach(function (doc) {
+      if (typeof doc.order === "number" && doc.order >= 1 && doc.order <= 5 && !servicesByOrder[doc.order]) {
+        servicesByOrder[doc.order] = doc;
+      }
+    });
+    [1, 2, 3, 4, 5].forEach(function (orderNum) {
+      var doc = servicesByOrder[orderNum];
+      if (!doc) return;
+      var i = orderNum - 1;
       if (doc.title) map["services." + i + ".title"] = doc.title;
       if (doc.description) map["services." + i + ".description"] = doc.description;
-      if (doc.cardImageUrl) map["services." + i + ".cardImageUrl"] = doc.cardImageUrl;
+      if (doc.cardImageBaseUrl) map["services." + i + ".cardImageUrl"] = doc.cardImageBaseUrl + "?auto=format&q=90";
+      // Sanitys Hotspot ist bereits ein relativer 0-1-Wert im Bild — deckt sich exakt mit
+      // der CSS object-position-Syntax. So bleibt der gewählte Bildausschnitt bei jeder
+      // Kachelgröße/jedem Breakpoint korrekt (ein serverseitiger Fix-Crop könnte das bei
+      // einem responsiven Mosaik-Grid mit wechselnden Seitenverhältnissen nicht leisten).
+      if (doc.cardImageHotspot && typeof doc.cardImageHotspot.x === "number" && typeof doc.cardImageHotspot.y === "number") {
+        map["services." + i + ".cardImagePosition"] =
+          (doc.cardImageHotspot.x * 100).toFixed(2) + "% " + (doc.cardImageHotspot.y * 100).toFixed(2) + "%";
+      }
     });
     (data.faq || []).forEach(function (doc, i) {
       if (doc.question) map["faq." + i + ".question"] = doc.question;
@@ -190,6 +209,18 @@
     });
   }
 
+  // Sanity-Hotspot (Fokuspunkt) auf das jeweilige <img> übertragen, damit auf jeder
+  // Kachelgröße/jedem Breakpoint der von Lars im Studio gewählte Bildausschnitt sichtbar
+  // bleibt, statt dass object-fit:cover zufällig den falschen Teil abschneidet.
+  function applyCardFocalPoints(map) {
+    Object.keys(map).forEach(function (key) {
+      if (key.indexOf(".cardImagePosition") === -1) return;
+      var fieldKey = key.replace(".cardImagePosition", ".cardImageUrl");
+      var imgEl = document.querySelector('[data-sanity-field="' + fieldKey + '"]');
+      if (imgEl) imgEl.style.objectPosition = map[key];
+    });
+  }
+
   // Hero-Hintergrundbilder: nur austauschen, während die Folie NICHT sichtbar ist,
   // damit auf der Startseite nie ein sichtbares Umspringen des aktiven Bilds passiert.
   function patchHeroBackgrounds(map) {
@@ -243,6 +274,7 @@
       var map = buildFieldMap(data);
       applyPatches(map);
       patchHeroBackgrounds(map);
+      applyCardFocalPoints(map);
       applyCallButtonToggle(map);
       applyVorherNachher(data);
       if (data.settings && data.settings.logoIconUrl) {
