@@ -63,73 +63,78 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
-  // "Kit-Fokus-Impuls": Die 5 Leistungskacheln werden beim ersten Erreichen der Sektion
-  // EINMALIG nacheinander kurz hervorgehoben (kein Dauerloop, kein Blinken). Hover/Touch
-  // durch den Nutzer bricht die Sequenz sofort ab und macht dem normalen Hover-Zustand Platz.
+  // "Kit-Fokus-Impuls" (Ruhezustand) + Split-Screen-Glasfenster (manuelle Interaktion):
+  // Im Ruhezustand läuft ein sehr langsamer Endlos-Loop, der die 5 Kacheln nacheinander
+  // dezent anhebt — reine Einladung, OHNE das Glasfenster zu öffnen. Sobald der Nutzer
+  // selbst hovert/tippt, pausiert der Loop sofort, die Kachel schiebt sich links ins
+  // Bild vor, das Glasfenster öffnet sich. Verlässt die Maus die Kacheln, startet der
+  // Loop wieder von vorn.
   var kitContainer = document.querySelector(".leistung-cards");
   var kitCards = Array.prototype.slice.call(document.querySelectorAll(".leistung-cards .leistung-card"));
+  var glassPanel = document.querySelector("[data-leistung-glass]");
+  var glassTitle = document.querySelector("[data-leistung-glass-title]");
+  var glassDesc = document.querySelector("[data-leistung-glass-desc]");
   // Als window-Property statt lokaler Konstante, damit sanity-content.js sie live
   // ersetzen kann (Lars pflegt Tempo/Skalierung/Abdunklung in Sanity statt im Code).
   window.__kitCardIntervalMs = 3000;
-  if (kitContainer && kitCards.length && !reduceMotion && "IntersectionObserver" in window) {
-    var kitTimers = [];
-    var kitRunning = false;
 
-    var stopKitImpuls = function () {
+  if (kitContainer && kitCards.length) {
+    var kitTimers = [];
+    var kitPaused = false;
+    var kitLoopStarted = false;
+
+    var clearKitTimers = function () {
       kitTimers.forEach(function (t) { window.clearTimeout(t); });
       kitTimers = [];
-      kitRunning = false;
+    };
+    var clearAutoClasses = function () {
       kitContainer.classList.remove("is-sequencing");
       kitCards.forEach(function (c) { c.classList.remove("is-focus-active"); });
     };
 
-    var runKitImpuls = function () {
-      if (kitRunning) return;
-      kitRunning = true;
+    var runPulseCycle = function () {
+      if (kitPaused || reduceMotion) return;
       var stepMs = window.__kitCardIntervalMs;
       kitContainer.classList.add("is-sequencing");
       kitCards.forEach(function (card, i) {
         kitTimers.push(
           window.setTimeout(function () {
+            if (kitPaused) return;
             kitCards.forEach(function (c) { c.classList.remove("is-focus-active"); });
             card.classList.add("is-focus-active");
-            if (i === kitCards.length - 1) {
-              kitTimers.push(window.setTimeout(stopKitImpuls, stepMs));
-            }
           }, i * stepMs)
         );
       });
+      // Nach einer vollen Runde: kurz zurücksetzen, dann von vorn — echter Loop,
+      // solange der Nutzer nicht pausiert hat.
+      kitTimers.push(
+        window.setTimeout(function () {
+          if (kitPaused) return;
+          clearAutoClasses();
+          kitTimers.push(window.setTimeout(runPulseCycle, stepMs * 0.5));
+        }, kitCards.length * stepMs)
+      );
     };
 
-    kitCards.forEach(function (card) {
-      card.addEventListener("mouseenter", stopKitImpuls);
-      card.addEventListener("focus", stopKitImpuls);
-      card.addEventListener("touchstart", stopKitImpuls, { passive: true });
-    });
+    var startLoop = function () {
+      if (kitLoopStarted || reduceMotion) return;
+      kitLoopStarted = true;
+      runPulseCycle();
+    };
+    var pauseLoop = function () {
+      kitPaused = true;
+      clearKitTimers();
+      clearAutoClasses();
+    };
+    var resumeLoop = function () {
+      if (!kitLoopStarted) return;
+      kitPaused = false;
+      clearKitTimers();
+      runPulseCycle();
+    };
 
-    var kitIo = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            runKitImpuls();
-            kitIo.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.4 }
-    );
-    kitIo.observe(kitContainer);
-  }
-
-  // Split-Screen-Glasfenster: Hover (Desktop) bzw. Tap (Mobil) auf einer Kachel zeigt die
-  // Kurzfassung rechts an. Läuft unabhängig vom Kit-Fokus-Impuls-Autolauf oben (eigene
-  // is-hovering/is-hover-active-Klassen) und funktioniert auch bei prefers-reduced-motion,
-  // da es informativ ist statt rein dekorativ.
-  var glassPanel = document.querySelector("[data-leistung-glass]");
-  var glassTitle = document.querySelector("[data-leistung-glass-title]");
-  var glassDesc = document.querySelector("[data-leistung-glass-desc]");
-  if (kitContainer && kitCards.length && glassPanel && glassTitle && glassDesc) {
     var showCardInGlass = function (card) {
+      if (!glassPanel || !glassTitle || !glassDesc) return;
       var titleEl = card.querySelector(".leistung-card-title");
       var title = titleEl ? titleEl.textContent.trim() : "";
       var desc = card.getAttribute("data-short-desc") || "";
@@ -150,12 +155,31 @@
       kitContainer.classList.remove("is-hovering");
       kitCards.forEach(function (c) { c.classList.remove("is-hover-active"); });
     };
+
     kitCards.forEach(function (card) {
-      card.addEventListener("mouseenter", function () { showCardInGlass(card); });
-      card.addEventListener("focus", function () { showCardInGlass(card); });
-      card.addEventListener("touchstart", function () { showCardInGlass(card); }, { passive: true });
+      card.addEventListener("mouseenter", function () { pauseLoop(); showCardInGlass(card); });
+      card.addEventListener("focus", function () { pauseLoop(); showCardInGlass(card); });
+      card.addEventListener("touchstart", function () { pauseLoop(); showCardInGlass(card); }, { passive: true });
     });
-    kitContainer.addEventListener("mouseleave", resetGlass);
+    kitContainer.addEventListener("mouseleave", function () {
+      resetGlass();
+      resumeLoop();
+    });
+
+    if (!reduceMotion && "IntersectionObserver" in window) {
+      var kitIo = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              startLoop();
+              kitIo.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+      kitIo.observe(kitContainer);
+    }
   }
 
   // Großformatige Typografie-Sektion: Zeilen fahren einzeln hoch

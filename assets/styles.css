@@ -330,13 +330,17 @@ body.has-info-banner .mega-panel{ top:110px; }
   transition:opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1);
 }
 .fab-group.is-visible{ opacity:1; transform:translateY(0); pointer-events:auto; }
-.fab-group.is-visible{ animation:fab-pulse-scale 5s cubic-bezier(0.16,1,0.3,1) infinite; }
-@keyframes fab-pulse-scale{
-  0%, 88%, 100%{ transform:scale(1); }
-  94%{ transform:scale(1.05); }
+/* Ersetzt den vorherigen reinen Scale-Puls: ein Keyframe statt zwei, die beide "transform"
+   animieren würden (zwei gleichzeitige transform-Animationen auf demselben Element
+   überschreiben sich sonst gegenseitig, statt sich zu kombinieren). */
+.fab-group.is-visible{ animation:fab-float 4s ease-in-out infinite; }
+@keyframes fab-float{
+  0%, 100%{ transform:translateY(0) scale(1); }
+  50%{ transform:translateY(-6px) scale(1.03); }
 }
 @media (prefers-reduced-motion: reduce){
   .fab-group.is-visible{ animation:none; }
+  .whatsapp-fab{ animation:none !important; }
 }
 .whatsapp-fab{
   width:56px !important; height:56px !important;
@@ -345,9 +349,14 @@ body.has-info-banner .mega-panel{ top:110px; }
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0; box-sizing:border-box;
   box-shadow:0 8px 22px -6px rgba(11,42,23,0.5);
-  transition:transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s cubic-bezier(0.16,1,0.3,1);
+  transition:transform 0.25s cubic-bezier(0.16,1,0.3,1);
+  animation:whatsapp-glow-pulse 2.6s ease-in-out infinite;
 }
-.whatsapp-fab:hover{ transform:scale(1.08); box-shadow:0 12px 26px -6px rgba(11,42,23,0.6); }
+@keyframes whatsapp-glow-pulse{
+  0%, 100%{ box-shadow:0 8px 22px -6px rgba(11,42,23,0.5), 0 0 0 0 rgba(37,211,102,0.5); }
+  50%{ box-shadow:0 8px 22px -6px rgba(11,42,23,0.5), 0 0 0 9px rgba(37,211,102,0); }
+}
+.whatsapp-fab:hover{ transform:scale(1.08); }
 .whatsapp-fab svg{ width:26px !important; height:26px !important; flex-shrink:0; }
 .fab-cta{
   display:inline-flex; align-items:center; gap:8px; white-space:nowrap;
@@ -564,7 +573,10 @@ section.dim{ background:var(--paper-dim); }
 }
 
 /* ---------- Leistungen-Liste (Emil-Kowalski-Reveal beim Scrollen) ---------- */
-#leistungen-list-section{ position:relative; }
+/* Übergang zu den Bewertungen bewusst kompakt statt des vollen Standard-Sektionsabstands
+   (var(--space-5) oben+unten wären zusammen ~176px reiner Leerraum). */
+#leistungen-list-section{ position:relative; padding-bottom:var(--space-3); }
+#bewertungen-section{ padding-top:var(--space-3); }
 
 /* ---------- Leistungs-Karten (Startseite) — asymmetrisches Bild-Mosaik ---------- */
 .leistung-split{
@@ -585,8 +597,8 @@ section.dim{ background:var(--paper-dim); }
    und knüpft optisch an den Glas-Look des Mega-Menüs an. */
 .leistung-glass-panel{
   position:sticky; top:96px;
-  background:rgba(15,15,15,0.85);
-  -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px);
+  background:rgba(15,15,15,0.75);
+  -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
   border:1px solid rgba(255,255,255,0.08);
   border-radius:var(--radius);
   padding:28px 26px;
@@ -612,7 +624,7 @@ section.dim{ background:var(--paper-dim); }
 /* Hover/Tap-Fokus auf einer Kachel (unabhängig vom Kit-Fokus-Impuls-Autolauf,
    siehe main.js) — hebt die aktive Kachel an, dunkelt den Rest deutlicher ab. */
 .leistung-cards.is-hovering .leistung-card{ opacity:0.4; transition:transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease; }
-.leistung-cards.is-hovering .leistung-card.is-hover-active{ opacity:1; transform:scale(1.03); z-index:1; }
+.leistung-cards.is-hovering .leistung-card.is-hover-active{ opacity:1; transform:translateX(-8px) scale(1.04); z-index:2; }
 .leistung-card-1{ grid-column:1 / 4; grid-row:1 / 3; }
 .leistung-card-2{ grid-column:4 / 7; grid-row:1 / 2; }
 .leistung-card-3{ grid-column:4 / 7; grid-row:2 / 3; }
@@ -647,11 +659,6 @@ section.dim{ background:var(--paper-dim); }
 .leistung-card-scrim{
   position:absolute; inset:0;
   background:linear-gradient(0deg, rgba(15,14,12,0.88) 0%, rgba(15,14,12,0.5) 55%, rgba(15,14,12,0.05) 100%);
-}
-.leistung-card-num{
-  position:relative; z-index:1;
-  font-family:'Archivo Black', sans-serif; font-size:0.85rem; color:rgba(244,241,233,0.65);
-  margin-bottom:6px;
 }
 .leistung-card-title{
   position:relative; z-index:1;
