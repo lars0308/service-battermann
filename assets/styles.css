@@ -615,24 +615,36 @@ section.dim{ background:var(--paper-dim); }
 }
 
 /* Schwebendes Glasfenster: zeigt beim Hover/Tap einer Kachel die Kurzfassung, direkt
-   neben der vergrößerten Kachel positioniert (JS setzt left/top). Dunkles Frosted-
-   Glass bewusst gewählt — auf dem hellen Papier-Hintergrund der Sektion sorgt das für
-   echten Blur-Kontrast und knüpft optisch an den Glas-Look des Mega-Menüs an. */
+   neben der vergrößerten Kachel positioniert — JS berechnet left/top/height so, dass
+   die Höhe exakt der (skalierten) Ziel-Höhe der aktiven Kachel entspricht ("aus einem
+   Guss"). Dunkles Frosted-Glass bewusst statt eines fast-weißen 2%-Tons: der Bereich
+   liegt auf hellem Papier-Hintergrund, die Nachbarkacheln werden auf opacity:0.1
+   abgedunkelt (siehe unten) — ein fast-transparentes weißes Glas würde dort mit
+   weißer Schrift praktisch unlesbar verschwimmen. Radius identisch zu .leistung-card
+   (var(--radius)) für den "aus einem Guss"-Look. */
 .leistung-glass-panel{
   position:absolute; width:300px;
   background:rgba(15,15,15,0.78);
-  -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.1);
+  -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,0.08);
   border-radius:var(--radius);
-  padding:26px 24px;
+  padding:40px 34px;
+  /* overflow:hidden garantiert, dass die per JS gesetzte Höhe (= Höhe der aktiven
+     Kachel) immer exakt eingehalten wird — ohne das würde ein längerer, zweizeiliger
+     Titel (z. B. bei Kachel 1) die Box trotz gesetzter Höhe nach unten aufdrücken. */
+  overflow:hidden;
   box-shadow:-24px 12px 48px -20px rgba(0,0,0,0.55);
   z-index:35;
   opacity:0; visibility:hidden; pointer-events:none; transform:translateX(-12px);
-  transition:opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1), visibility 0s linear 0.35s;
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1),
+    left 0.6s cubic-bezier(0.16,1,0.3,1), top 0.6s cubic-bezier(0.16,1,0.3,1),
+    height 0.6s cubic-bezier(0.16,1,0.3,1), visibility 0s linear 0.6s;
 }
 .leistung-glass-panel.is-floating-visible{
   opacity:1; visibility:visible; pointer-events:auto; transform:translateX(0);
-  transition:opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  transition:opacity 0.6s cubic-bezier(0.16,1,0.3,1), transform 0.6s cubic-bezier(0.16,1,0.3,1),
+    left 0.6s cubic-bezier(0.16,1,0.3,1), top 0.6s cubic-bezier(0.16,1,0.3,1),
+    height 0.6s cubic-bezier(0.16,1,0.3,1);
 }
 .leistung-glass-eyebrow{
   display:block; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.72rem;
@@ -650,10 +662,12 @@ section.dim{ background:var(--paper-dim); }
 .leistung-glass-panel.is-updating .leistung-glass-desc{ opacity:0; }
 /* Die schwebende, JS-positionierte Variante ergibt nur auf breiten Hover-fähigen
    Bildschirmen Sinn (die Mosaik-Spalten müssen dafür nebeneinander Platz haben).
-   Darunter/auf Touch bleibt das Glasfenster ein normaler Block unter den Kacheln. */
+   Darunter/auf Touch bleibt das Glasfenster ein normaler Block unter den Kacheln;
+   height:auto überschreibt die für Desktop per JS gesetzte inline Höhe. */
 @media (max-width:1099px), (hover:none), (pointer:coarse){
   .leistung-glass-panel{
-    position:relative; width:auto; margin-top:24px; left:auto !important; top:auto !important;
+    position:relative; width:auto; margin-top:24px;
+    left:auto !important; top:auto !important; height:auto !important;
     opacity:1; visibility:visible; pointer-events:auto; transform:none; transition:none;
   }
 }
@@ -667,8 +681,8 @@ section.dim{ background:var(--paper-dim); }
    Abdunklung ohne Skalierung. */
 @media (hover:hover) and (pointer:fine) and (min-width:1100px){
   .leistung-cards.is-hovering .leistung-card{
-    opacity:0.2; filter:blur(4px);
-    transition:transform 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease, filter 0.4s ease;
+    opacity:0.1; filter:blur(8px);
+    transition:transform 0.6s cubic-bezier(0.16,1,0.3,1), opacity 0.5s ease, filter 0.5s ease;
   }
   .leistung-cards.is-hovering .leistung-card.is-hover-active{
     opacity:1; filter:none; transform:translateX(-8px) scale(1.22); z-index:40;

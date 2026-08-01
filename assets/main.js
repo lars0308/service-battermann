@@ -134,25 +134,48 @@
       runPulseCycle();
     };
 
-    // Positioniert das Glasfenster direkt rechts neben der gehoverten Kachel (statt
-    // einer festen Sidebar) — nur auf breiten Hover-Bildschirmen relevant, auf
-    // schmalen/Touch-Geräten überschreibt eine CSS-Regel mit !important die hier
-    // gesetzten inline-Werte und lässt das Fenster stattdessen im Fluss stehen.
+    // Positioniert UND größt das Glasfenster passend zur Zielgröße der gehoverten
+    // Kachel (statt einer festen Sidebar) — nur auf breiten Hover-Bildschirmen
+    // relevant, auf schmalen/Touch-Geräten überschreibt eine CSS-Regel mit
+    // !important die hier gesetzten inline-Werte.
+    //
+    // WICHTIG: offsetWidth/offsetHeight/offsetLeft/offsetTop statt
+    // getBoundingClientRect() — die Box-Modell-Maße sind komplett transform-
+    // unabhängig. getBoundingClientRect() hätte hier gelegentlich eine falsche
+    // "natürliche" Größe geliefert, wenn die Kachel gerade erst vom Kit-Fokus-
+    // Impuls-Autolauf (eigene, unabhängige scale-Transition) zurückgesetzt wurde
+    // und dessen 0.8s-Transition noch nicht fertig war. Die skalierte Zielgröße
+    // wird rechnerisch vorhergesagt (Skalierung um die Mitte + der feste
+    // translateX-Versatz aus dem CSS), damit Glasfenster und Kachel synchron zur
+    // selben Endgröße animieren, statt dass das Glasfenster nachspringt.
+    var HOVER_SCALE = 1.22;
+    var HOVER_SHIFT_X = -8;
     var positionGlassPanel = function (card) {
       if (!glassPanel || !glassSplit) return;
-      var containerRect = glassSplit.getBoundingClientRect();
-      var cardRect = card.getBoundingClientRect();
+      var naturalWidth = card.offsetWidth;
+      var naturalHeight = card.offsetHeight;
+      var naturalLeft = card.offsetLeft; // relativ zu glassSplit (offsetParent)
+      var naturalTop = card.offsetTop;
+      var scaledWidth = naturalWidth * HOVER_SCALE;
+      var scaledHeight = naturalHeight * HOVER_SCALE;
+      var centerX = naturalLeft + naturalWidth / 2 + HOVER_SHIFT_X;
+      var centerY = naturalTop + naturalHeight / 2;
+      var cardFinalRight = centerX + scaledWidth / 2;
+      var cardFinalTop = centerY - scaledHeight / 2;
+
       var panelWidth = glassPanel.offsetWidth || 300;
-      var panelHeight = glassPanel.offsetHeight || 200;
-      var left = cardRect.right - containerRect.left + 16;
-      var maxLeft = containerRect.width - panelWidth;
+      var left = cardFinalRight + 16;
+      var maxLeft = glassSplit.clientWidth - panelWidth;
       if (left > maxLeft) left = Math.max(0, maxLeft);
-      var top = cardRect.top - containerRect.top + cardRect.height / 2 - panelHeight / 2;
+
+      var top = cardFinalTop;
       if (top < 0) top = 0;
-      var maxTop = glassSplit.offsetHeight - panelHeight;
+      var maxTop = glassSplit.offsetHeight - scaledHeight;
       if (maxTop > 0 && top > maxTop) top = maxTop;
+
       glassPanel.style.left = left + "px";
       glassPanel.style.top = top + "px";
+      glassPanel.style.height = scaledHeight + "px";
     };
 
     var showCardInGlass = function (card) {
@@ -169,10 +192,13 @@
         },
         reduceMotion ? 0 : 120
       );
+      // Position/Höhe VOR dem Hinzufügen der scale-Klasse berechnen (siehe
+      // Kommentar an positionGlassPanel) — beide Elemente starten dann ihre
+      // jeweilige Transition im selben Frame und laufen synchron.
+      positionGlassPanel(card);
       kitCards.forEach(function (c) { c.classList.remove("is-hover-active"); });
       card.classList.add("is-hover-active");
       kitContainer.classList.add("is-hovering");
-      positionGlassPanel(card);
       glassPanel.classList.add("is-floating-visible");
     };
     var resetGlass = function () {
