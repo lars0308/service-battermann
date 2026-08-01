@@ -436,23 +436,40 @@
   // vorgeladene Bild bereit ist — ein möglicher kurzer Bildwechsel beim allerersten
   // Laden wiegt weniger als eine Kern-Funktion (Studio-Fokuspunkt), die auf der
   // wichtigsten Folie schlicht nicht griff.
+  // Gibt ein Promise zurück, das erst auflöst, sobald das Bild der GERADE
+  // AKTIVEN Folie (i. d. R. die erste, beim ersten Laden fast immer sichtbar)
+  // fertig geladen ist — genutzt vom einmaligen Lade-Reveal in main.js, damit
+  // der dort gezeigte Slogan erst dann nach unten gleitet, wenn wirklich das
+  // finale Bild (Sanity, falls vorhanden) steht und nicht kurz danach nochmal
+  // "poppt". Kein Sanity-Bild für die aktive Folie? Dann löst das Promise
+  // sofort auf (das lokale Fallback-Bild ist ohnehin längst da).
   function patchHeroBackgrounds(map) {
     var slides = document.querySelectorAll(".hero-slide[data-hero-slide-index]");
+    var activeReady = Promise.resolve();
     slides.forEach(function (slideEl) {
       var i = slideEl.getAttribute("data-hero-slide-index");
       var url = map["hero." + i + ".imageUrl"];
       if (!url) return;
       var position = map["hero." + i + ".imagePosition"];
-      var preload = new Image();
-      preload.onload = function () {
-        slideEl.style.backgroundImage = "url('" + url + "')";
-        // !important nötig: die Mobile-Media-Query in styles.css erzwingt sonst
-        // per !important eine feste rechtslastige Position (Lars im Bild
-        // sichtbar halten) und würde den individuellen Hotspot überschreiben.
-        if (position) slideEl.style.setProperty("background-position", position, "important");
-      };
-      preload.src = url;
+      var isActive = slideEl.classList.contains("is-active");
+      var ready = new Promise(function (resolve) {
+        var preload = new Image();
+        preload.onload = function () {
+          slideEl.style.backgroundImage = "url('" + url + "')";
+          // !important nötig: die Mobile-Media-Query in styles.css erzwingt sonst
+          // per !important eine feste rechtslastige Position (Lars im Bild
+          // sichtbar halten) und würde den individuellen Hotspot überschreiben.
+          if (position) slideEl.style.setProperty("background-position", position, "important");
+          resolve();
+        };
+        // Kaputte/nicht erreichbare Bild-URL soll den Reveal nicht für immer
+        // blockieren — dann bleibt einfach das bisherige Bild stehen.
+        preload.onerror = function () { resolve(); };
+        preload.src = url;
+      });
+      if (isActive) activeReady = ready;
     });
+    return activeReady;
   }
 
   // Der grüne "Direkt anrufen"-Button ist nicht pro Slide vorhanden (ein Button für
@@ -486,7 +503,12 @@
       }
       var map = buildFieldMap(data);
       applyPatches(map);
-      patchHeroBackgrounds(map);
+      // Lade-Reveal (main.js) wartet auf dieses Event, um erst dann vom
+      // zentrierten Ladezustand zum normalen Layout zu gleiten, wenn das
+      // finale (ggf. Sanity-)Hero-Bild wirklich fertig geladen ist.
+      patchHeroBackgrounds(map).then(function () {
+        window.dispatchEvent(new Event("hero-image-ready"));
+      });
       applyCardFocalPoints(map);
       applyServiceGalleries(data);
       applyKitAnimationSettings(map);
@@ -504,6 +526,9 @@
     })
     .catch(function (err) {
       if (timeoutId) window.clearTimeout(timeoutId);
+      // Sanity nicht erreichbar: Es gibt kein "finales" Bild abzuwarten außer
+      // dem längst geladenen lokalen Fallback — Reveal darf sofort weiter.
+      window.dispatchEvent(new Event("hero-image-ready"));
       if (window.console && console.warn) {
         console.warn("[sanity-content] Live-Inhalte nicht geladen, zeige statischen Stand. Grund:", err && err.message);
       }

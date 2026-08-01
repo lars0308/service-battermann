@@ -63,6 +63,29 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
+  // Einmaliger Lade-Reveal (nur Startseite, nur der allererste Aufruf): die Klasse
+  // .is-first-reveal steht von Anfang an im HTML (siehe styles.css) und zeigt den
+  // Slogan kurz zentriert vor einem abgedunkelten Hero. Sobald sanity-content.js das
+  // tatsächlich finale Hero-Bild geladen hat (Event "hero-image-ready", siehe dort),
+  // wird die Klasse entfernt — CSS übernimmt das Gleiten in die normale Position.
+  // Sicherheitsfrist von 2.5s, falls sanity-content.js aus irgendeinem Grund nie
+  // feuert (z. B. von einem Adblocker/einer Firewall blockiert) — die Seite darf nie
+  // dauerhaft im Ladezustand hängen bleiben. Bei reduzierter Bewegung entfällt der
+  // Effekt komplett: sofort der normale, fertige Zustand, kein Warten auf ein Bild-
+  // Event, das ohnehin nie animiert zu sehen wäre.
+  var heroSliderEl = document.querySelector(".hero-slider.is-first-reveal");
+  if (heroSliderEl) {
+    if (reduceMotion) {
+      heroSliderEl.classList.remove("is-first-reveal");
+    } else {
+      var revealHero = function () {
+        heroSliderEl.classList.remove("is-first-reveal");
+      };
+      window.addEventListener("hero-image-ready", revealHero, { once: true });
+      window.setTimeout(revealHero, 2500);
+    }
+  }
+
   // "Kit-Fokus-Impuls" (Ruhezustand) + Split-Screen-Glasfenster (manuelle Interaktion):
   // Im Ruhezustand läuft ein sehr langsamer Endlos-Loop, der die 5 Kacheln nacheinander
   // dezent anhebt — reine Einladung, OHNE das Glasfenster zu öffnen. Sobald der Nutzer
