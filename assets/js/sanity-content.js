@@ -44,15 +44,29 @@
   function buildFieldMap(data) {
     var map = {};
     var hero = data.hero || [];
-    hero.forEach(function (doc, i) {
+    // Nicht die Array-Position nach der Sortierung als Slide-Index nehmen (bricht bei
+    // doppelten/zusätzlichen heroSlide-Dokumenten im Studio, z. B. aus Versehen zweimal
+    // "+ Neu" geklickt — verschiebt dann ALLE nachfolgenden Bilder auf falsche Indizes).
+    // Stattdessen das feste "order"-Feld (1-4) verwenden, das bleibt stabil.
+    var heroByOrder = {};
+    hero.forEach(function (doc) {
+      if (typeof doc.order === "number" && doc.order >= 1 && doc.order <= 4 && !heroByOrder[doc.order]) {
+        heroByOrder[doc.order] = doc;
+      }
+    });
+    [1, 2, 3, 4].forEach(function (orderNum) {
+      var doc = heroByOrder[orderNum];
+      if (!doc) return;
+      var i = orderNum - 1;
       if (doc.verb) map["hero." + i + ".verb"] = doc.verb;
       if (doc.imageBaseUrl) map["hero." + i + ".imageUrl"] = responsiveImageUrl(doc.imageBaseUrl);
     });
-    if (hero[0] && Array.isArray(hero[0].roundTexts) && hero[0].roundTexts.length) {
-      map["hero.0.roundTexts"] = hero[0].roundTexts;
+    var heroFirst = heroByOrder[1];
+    if (heroFirst && Array.isArray(heroFirst.roundTexts) && heroFirst.roundTexts.length) {
+      map["hero.0.roundTexts"] = heroFirst.roundTexts;
     }
-    if (hero[0] && typeof hero[0].showCallButton === "boolean") {
-      map["hero.0.showCallButton"] = hero[0].showCallButton;
+    if (heroFirst && typeof heroFirst.showCallButton === "boolean") {
+      map["hero.0.showCallButton"] = heroFirst.showCallButton;
     }
     (data.trust || []).forEach(function (doc, i) {
       if (doc.text) map["trust." + i + ".text"] = doc.text;
