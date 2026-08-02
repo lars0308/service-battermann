@@ -266,6 +266,19 @@ section.dark .eyebrow, .hero .eyebrow{ color:var(--accent); }
    sticky-Wrapper mit normalem Innen-Flow umgeht das Problem strukturell,
    statt die beiden Versätze von Hand im Gleichschritt zu halten. */
 .nav-wrapper{ position:sticky; top:0; z-index:60; }
+/* ECHTER Fund hinter dem wiederkehrenden "Menü rutscht hinter Hero-Buttons"-
+   Bug: nav.main-nav's z-index wurde in den letzten Hotfixes immer weiter
+   erhöht, blieb aber wirkungslos, weil .nav-wrapper (sticky + eigener
+   z-index:60) eine EIGENE Stacking-Context bildet. Ein Kind-Element kann
+   niemals über diese Context hinaus wirken — verglichen wird am Ende nur
+   .nav-wrapper (z-index:60) gegen Elemente außerhalb, z. B. .hero-cta-choreo
+   (z-index:10000) oder .fab-group (z-index:9999). Der Menü-Innenwert
+   (99999999) war dadurch komplett irrelevant. Fix: sobald das Menü offen
+   ist, bekommt der ganze .nav-wrapper selbst denselben astronomischen Wert,
+   damit die komplette Stacking-Context nach oben rutscht — nicht nur ihr
+   Inhalt. Bleibt das Menü zu, bleibt z-index:60 unverändert (wichtig, damit
+   der sticky Header weiterhin unter Danke-Popup/Lightbox liegt). */
+.nav-wrapper:has(nav.main-nav.open){ z-index:99999999; }
 
 /* ---------- Info-Banner (optional, per Sanity gesteuert) ---------- */
 .info-banner{
@@ -384,16 +397,17 @@ body.has-info-banner .mega-panel{ top:110px; }
      Footer) statt der theme-abhängigen Papierfarbe. */
   nav.main-nav{
     position:fixed; top:66px; right:0; left:0; height:calc(100vh - 66px);
-    /* Absolut blickdicht: nichts vom Seiteninhalt darf durchscheinen. */
-    background:rgba(15,15,15,var(--glass-opacity, 0.98));
-    -webkit-backdrop-filter:blur(var(--glass-blur, 25px)); backdrop-filter:blur(var(--glass-blur, 25px));
+    /* Absolut blickdicht, kein Glas-Look mehr: eine feste, deckende Fläche
+       statt teiltransparentem Blur — nichts vom Seiteninhalt (Hero-Buttons,
+       Lade-Schleier, Logo-Text) darf mehr durchscheinen. */
+    background:#0f0f0f !important;
     border-left:1px solid rgba(255,255,255,0.08);
     display:flex; flex-direction:column; align-items:flex-start; gap:26px;
     padding:50px 24px 24px; transform:translateX(100%); transition:transform .25s ease;
     overflow-y:auto;
     /* Muss kompromisslos über ALLEM liegen, inkl. der Hero-Buttons auf
        z-index:10000 — sonst rutscht das geöffnete Menü optisch dahinter. */
-    z-index:999999 !important;
+    z-index:99999999 !important;
   }
   body.has-info-banner nav.main-nav{ top:106px; height:calc(100vh - 106px); }
   nav.main-nav.open{ transform:translateX(0); }
@@ -539,9 +553,15 @@ section.dim{ background:var(--paper-dim); }
      ausschließlich die 3 Hero-Buttons, der Rest der Website bleibt
      unverändert (Desktop komplett unberührt). */
   .hero-cta-choreo .btn{
-    padding:10px 16px; font-size:0.9rem; gap:6px;
+    height:42px !important; padding:0 12px !important;
+    font-size:14px; font-weight:500; gap:6px;
+    display:inline-flex; align-items:center; justify-content:center;
   }
-  .hero-cta-choreo .btn svg{ width:16px; height:16px; }
+  .hero-cta-choreo .btn svg{ width:15px; height:15px; flex-shrink:0; }
+  /* Dicke, harte Rahmen weg — stattdessen hauchdünne, farblich passende
+     Lichtkanten statt des massiven 2px-Standardrahmens aus der Basis-.btn. */
+  .hero-cta-choreo .btn-hero-primary{ border:1px solid rgba(212,175,55,0.3); }
+  .hero-cta-choreo .btn-whatsapp{ border:1px solid rgba(37,211,102,0.35); }
 }
 
 /* ---------- Vorteile-Karten (unter dem Hero) — schlichter shadcn-Look:
