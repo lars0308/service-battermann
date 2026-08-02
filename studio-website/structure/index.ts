@@ -20,7 +20,14 @@ import {PinIcon} from '@sanity/icons/Pin'
 // siteSettings, contactInfo, pageImpressum, pageDatenschutz sind Singletons:
 // es soll jeweils nur ein Dokument geben, an eine feste _id gebunden, damit
 // die Website nicht versehentlich mehrere Instanzen bekommt.
-const SINGLETONS = ['siteSettings', 'contactInfo', 'pageImpressum', 'pageDatenschutz', 'heroSettings']
+const SINGLETONS = [
+  'siteSettings',
+  'contactInfo',
+  'pageImpressum',
+  'pageDatenschutz',
+  'heroSettings',
+  'themeSettings',
+]
 
 // Alle Dokumenttypen, die unten explizit einem Seiten-Fach zugeordnet sind —
 // dient nur der "Sonstiges"-Sicherheitsnetz-Liste ganz unten, falls künftig
@@ -137,6 +144,11 @@ export const structure: StructureResolver = (S) =>
                 .title('Website-Einstellungen')
                 .child(
                   S.document().schemaType('siteSettings').documentId('siteSettings').title('Website-Einstellungen'),
+                ),
+              S.listItem()
+                .title('Design & Farben')
+                .child(
+                  S.document().schemaType('themeSettings').documentId('themeSettings').title('Design & Farben'),
                 ),
               S.listItem()
                 .title('Kontaktdaten')

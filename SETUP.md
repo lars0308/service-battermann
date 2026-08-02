@@ -138,25 +138,29 @@ separates, kostenloses CMS-Tool.
    nur an der Stelle im Studio sichtbar, wo er auf der Website auch wirklich
    erscheint.
 3. Dort bearbeitbar:
-   - **Hero-Bereich** (Fach "Startseite (Home)", ein Dokument): Bilder und
-     Sprüche sind bewusst komplett voneinander getrennt, keine feste 1:1-
-     Kopplung mehr zwischen einem bestimmten Bild und einem bestimmten Text:
-     - **Hintergrundbilder** (Array, bis zu 4 werden auf der Website
-       verwendet): pro Bild zwei getrennte Bildfelder — **Desktop (16:9
-       Querformat)**, Pflicht, und **Smartphone (9:16 Hochformat)**,
-       optional (bleibt das Feld leer, nutzt das Handy automatisch das
-       Desktop-Bild). Beide Felder haben einen eigenen Fokuspunkt (Hotspot)
-       — bei einem Klick/Ziehen im Studio-Bild wird der Bildausschnitt live
-       angepasst. Die Bilder wechseln im Hintergrund per Kreuzblende durch.
-     - **Sprüche** (Liste, beliebig viele über den "+"-Knopf): kurze Sätze,
-       die im Vordergrund unabhängig von den Bildern per Kreuzblende
-       durchwechseln, z. B. „Lackiert Türen, Zargen und Heizkörper.“ Jeder
-       Spruch hat einen eigenen Kippschalter "Spruch aktiv schalten?" — auf
-       "aus" gestellt, verschwindet er aus der Rotation, ohne dass er
-       gelöscht werden müsste (z. B. um ein Gewerk vorübergehend
-       auszublenden).
+   - **Hero-Bereich** (Fach "Startseite (Home)", ein Dokument): ein
+     Baukasten-Array `heroSlides` — jede Folie kombiniert frei ein
+     Hintergrundbild UND/ODER einen Vordergrund-Spruch, keine feste
+     Kopplung mehr. Pro Folie:
+     - **Interner Titel**: nur für dich im Studio sichtbar (z. B. „Gewerk
+       Maler"), hilft beim Überblick in der Liste.
+     - **Bild Desktop (16:9)** und **Bild Smartphone (9:16, optional)** mit
+       je eigenem Fokuspunkt (Hotspot) — bei einem Klick/Ziehen im
+       Studio-Bild wird der Bildausschnitt live angepasst. Bleibt das
+       Handy-Bild leer, nutzt das Smartphone automatisch das Desktop-Bild.
+     - **"Bild im Slider aktiv schalten?"**: Kippschalter. Aus (oder gar
+       kein Bild hochgeladen) — das zuletzt gezeigte Hintergrundbild bleibt
+       bei dieser Folie einfach stehen, nur der Text wechselt.
+     - **Spruch über dem Bild**: kurzer Satz, z. B. „Lackiert Türen, Zargen
+       und Heizkörper."
+     - **"Spruch über dem Bild aktiv schalten?"**: Kippschalter, genauso —
+       aus gestellt, bleibt der vorherige Spruch einfach stehen.
+     Bilder und Sprüche laufen im selben 5-Sekunden-Takt durch die Liste;
+     fehlt bei einer Folie eine der beiden Seiten (oder ist sie
+     ausgeschaltet), wird für diesen Schritt einfach nur die andere Seite
+     aktualisiert. Mit "+ Element hinzufügen" beliebig viele Folien ergänzen.
      - **"Direkt anrufen"-Button zeigen**: globaler Ein/Aus-Schalter für den
-       grünen Anruf-Button im Hero.
+       Anruf-Button im Hero.
    - **Vorteil** (4 Stück): die vier kurzen Textpunkte direkt unter dem
      Hero-Bild.
    - **Leistungsbereich** (5 Stück): steuert BEIDE Seiten aus einem
@@ -197,6 +201,12 @@ separates, kostenloses CMS-Tool.
      Seite. Manueller Ein/Aus-Schalter plus optionales Ablaufdatum — nach
      Erreichen des Datums verschwindet er automatisch, ohne dass du ihn
      manuell wieder ausschalten musst.
+   - **Design & Farben** (Fach "Website-weit"): zentrale Farbsteuerung der
+     gesamten Website über den Sanity-Farbwähler — `Marken-Gold` (Slogans,
+     Dachzeile, Premium-Elemente), `Marken-Grün` (WhatsApp-Button, Fokus-
+     Ränder), `Grundton Dark-/Light-Theme` sowie `Haupttextfarbe Dark-/Light-
+     Theme`. Änderungen wirken sich sofort auf alle Unterseiten aus, ohne
+     Code-Änderung. Ohne gepflegte Werte gelten die aktuellen Standardfarben.
    - **Website-Einstellungen**:
      - Logo (Icon) — wird in Header und Footer auf allen Seiten ersetzt.
      - Die 4 Navigations-Reiter-Texte ("Leistungen", "Über mich", …).

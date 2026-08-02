@@ -11,6 +11,7 @@ import {einsatzgebietOrt} from './einsatzgebietOrt'
 import {promiseCard} from './promiseCard'
 import {pageImpressum} from './pageImpressum'
 import {pageDatenschutz} from './pageDatenschutz'
+import {themeSettings} from './themeSettings'
 
 export const schemaTypes = [
   heroSettings,
@@ -26,4 +27,5 @@ export const schemaTypes = [
   promiseCard,
   pageImpressum,
   pageDatenschutz,
+  themeSettings,
 ]

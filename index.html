@@ -126,8 +126,8 @@
 <main id="main">
 
 <section class="hero hero-slider is-first-reveal" id="hero-split">
-  <!-- Hintergrundbilder (heroSettings.heroBilder): eigener Kreuzblende-Takt,
-       komplett unabhängig vom Spruch-Text unten (siehe hero-slide-verb). -->
+  <!-- Hintergrundbilder (heroSettings.heroSlides): bis zu 4 aktive Bilder aus
+       dem Baukasten-Array werden hier eingepatcht (siehe assets/main.js). -->
   <div class="hero-slides" aria-hidden="true">
     <picture class="hero-slide is-active" data-hero-slide-index="0">
       <source media="(max-width:768px)" srcset="images/portrait-lars-hero.jpg">
@@ -153,16 +153,25 @@
 
   <div class="wrap hero-slider-content">
     <div class="hero-slide-heading-wrap">
-      <!-- Spruch-Text (heroSettings.heroSprueche): eigener Kreuzblende-Takt, blendet
-           per reiner Opacity-Transition um — Position bleibt dabei felsenfest stehen
-           (siehe .hero-slide-verb in styles.css, keine Transform-Animation mehr). -->
+      <!-- Spruch-Text (heroSettings.heroSlides): blendet per reiner Opacity-
+           Transition um — Position bleibt dabei felsenfest stehen (siehe
+           .hero-slide-verb in styles.css, keine Transform-Animation). -->
       <h1 class="display hero-slide-h1" id="hero-slide-heading">
         Lars Battermann:<br><span class="hero-slide-verb" data-hero-spruch>Ihr Allround-Handwerker</span>
       </h1>
     </div>
-    <div class="cta-row">
-      <a href="tel:+4915567467763" class="btn btn-call" data-hero-call-btn data-sanity-field="contact.phoneHref" data-sanity-attr="href" data-sanity-prefix="tel:">Direkt anrufen</a>
-      <a href="kontakt.html" class="btn btn-sharp">Anfrage senden →</a>
+    <!-- Ergonomische Zwei-Zeilen-Choreografie: Zeile 1 = zwei Kompakt-Buttons
+         50/50 (WhatsApp-Grün / Anruf-Gold), Zeile 2 = ein breiter Haupt-CTA
+         darunter. Alle drei Buttons bleiben innerhalb von .hero-slider-content
+         (z-index:10000) und bewegen sich beim Glasintro keinen Millimeter. -->
+    <div class="cta-row hero-cta-choreo">
+      <div class="hero-cta-row-1">
+        <a href="https://wa.me/4915567467763" class="btn btn-whatsapp" data-sanity-field="contact.whatsapp" data-sanity-attr="href"><svg width="18" height="18" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.362.687 4.564 1.872 6.418L4 29l7.79-1.845A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.818a9.77 9.77 0 0 1-4.983-1.363l-.357-.212-4.622 1.095 1.13-4.505-.233-.371A9.77 9.77 0 0 1 5.727 15c0-5.673 4.6-10.273 10.274-10.273S26.273 9.327 26.273 15 21.674 24.818 16.001 24.818zm5.634-7.646c-.309-.155-1.827-.902-2.11-1.005-.283-.103-.489-.155-.695.155-.206.31-.798 1.005-.978 1.212-.18.206-.36.232-.669.077-.309-.155-1.305-.481-2.486-1.535-.919-.82-1.539-1.833-1.719-2.142-.18-.31-.019-.477.136-.63.14-.14.309-.361.463-.542.155-.18.206-.31.309-.516.103-.206.052-.387-.026-.542-.077-.155-.695-1.674-.953-2.293-.251-.603-.506-.521-.695-.53-.18-.008-.386-.01-.592-.01-.206 0-.542.077-.826.387-.283.31-1.082 1.057-1.082 2.577s1.108 2.99 1.262 3.196c.155.206 2.181 3.33 5.284 4.67.738.319 1.314.51 1.763.652.741.236 1.415.203 1.948.123.594-.089 1.827-.747 2.085-1.469.257-.723.257-1.341.18-1.469-.077-.129-.283-.206-.592-.361z"/></svg>WhatsApp</a>
+        <a href="tel:+4915567467763" class="btn btn-call" data-hero-call-btn data-sanity-field="contact.phoneHref" data-sanity-attr="href" data-sanity-prefix="tel:"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Direkt anrufen</a>
+      </div>
+      <div class="hero-cta-row-2">
+        <a href="kontakt.html" class="btn btn-hero-primary">Jetzt Anfrage senden</a>
+      </div>
     </div>
   </div>
 

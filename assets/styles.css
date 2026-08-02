@@ -16,18 +16,32 @@
    "Drei Dinge"-Karten, Leistungs-Kachel-Textfenster) bleiben bewusst beim
    dunklen Weißton-auf-Dunkel-Look, unabhängig vom Seitenmodus. */
 :root{
-  --ink:#191614;
+  /* Global per Sanity (themeSettings) steuerbare Basis-Töne — sanity-content.js
+     überschreibt diese sechs Variablen live per style.setProperty() auf
+     document.documentElement, sobald Lars im Studio eigene Farben pflegt. Alle
+     abgeleiteten Tokens darunter referenzieren ausschließlich diese sechs
+     Variablen, damit eine Änderung sich automatisch durch die ganze Website zieht.
+     Ohne gepflegten Sanity-Wert gelten die hier hinterlegten Fallback-Töne. */
+  --primary-gold:#C2953F;
+  --brand-green:#25D366;
+  --bg-dark:#0f0f0f;
+  --bg-light:#fcfbfa; /* Alabaster, bewusst kein reines Weiß */
+  --text-dark:#F4F1E9; /* helle Schrift auf dunklem Grund */
+  --text-light:#191614; /* dunkle Schrift auf hellem Grund */
+
+  --ink:var(--text-light);
   --ink-soft:#5B564C;
-  --paper:#fcfbfa; /* Alabaster, bewusst kein reines Weiß */
+  --paper:var(--bg-light);
   --paper-dim:#f5f4f0; /* mattes Sand-Grau */
   --surface-dark:#1A1E24;
   --surface-dark-2:#232933;
-  --surface-deep:#0f0f0f; /* eigener, noch tieferer Ton für die Glasmorphismus-Flächen (Intro, Premium-Karten) */
-  --on-dark:#F4F1E9;
+  --surface-deep:var(--bg-dark); /* eigener, noch tieferer Ton für die Glasmorphismus-Flächen (Intro, Premium-Karten) */
+  --on-dark:var(--text-dark);
   --on-dark-soft:#AFB3B8;
-  --accent:#C2953F;
-  --accent-hover:#A67B2E;
-  --accent-ink:#191614;
+  --accent:var(--primary-gold);
+  --accent-hover:#A67B2E; /* Fallback für Browser ohne color-mix()-Unterstützung */
+  --accent-hover:color-mix(in srgb, var(--primary-gold) 80%, black);
+  --accent-ink:var(--text-light);
   --link:#745925; /* WCAG AA-konformer Textton der Akzentfarbe auf hellem Grund (6:1) */
   --line:#E4E0D4;
   --line-dark:#333A45;
@@ -49,9 +63,9 @@
 }
 @media (prefers-color-scheme: dark){
   :root{
-    --ink:#F2EEE3;
+    --ink:var(--text-dark);
     --ink-soft:#C7C0AF;
-    --paper:#0f0f0f;
+    --paper:var(--bg-dark);
     --paper-dim:#161616;
     --link:#DDB268;
     --line:#39352B;
@@ -200,16 +214,25 @@ section.dark .eyebrow, .hero .eyebrow{ color:var(--accent); }
 .btn-ghost-dark:hover{ border-color:var(--accent); color:var(--accent); transform:translateY(-2px) scale(1.015); }
 .btn-ghost{ border-color:var(--ink); color:var(--ink); }
 .btn-ghost:hover{ border-color:var(--link); color:var(--link); transform:translateY(-2px) scale(1.015); }
-.btn-whatsapp{ background:#25D366; color:#0b2a17; display:inline-flex; align-items:center; gap:8px; }
+.btn-whatsapp{ background:var(--brand-green); color:#0b2a17; display:inline-flex; align-items:center; gap:8px; }
 .btn-whatsapp svg{ flex-shrink:0; }
 .btn-whatsapp:hover{ background:#1ebe5b; transform:translateY(-2px) scale(1.015); box-shadow:0 10px 24px -12px rgba(37,211,102,0.5); }
-.btn-call{ background:#25D366; color:#0b2a17; }
-.btn-call:hover{ background:#1ebe5b; transform:translateY(-2px) scale(1.015); box-shadow:0 10px 24px -12px rgba(37,211,102,0.5); }
+/* "Direkt anrufen" ist ausschließlich der rechte Button der Hero-Zeile 1 —
+   Marken-Gold statt Grün, damit WhatsApp (Grün) und Anruf (Gold) klar
+   unterscheidbar nebeneinander stehen. */
+.btn-call{ background:var(--primary-gold); color:var(--accent-ink); display:inline-flex; align-items:center; gap:8px; }
+.btn-call svg{ flex-shrink:0; }
+.btn-call:hover{ background:var(--accent-hover); transform:translateY(-2px) scale(1.015); box-shadow:0 10px 24px -12px rgba(0,0,0,0.35); }
 .btn-sharp{
   border-radius:0; background:var(--chip-dark); color:var(--on-dark); border-color:var(--chip-dark);
   padding:13px 24px; font-size:0.86rem; letter-spacing:0.02em;
 }
 .btn-sharp:hover{ background:var(--accent); border-color:var(--accent); color:var(--accent-ink); transform:translateY(-2px); }
+
+/* Hero: Haupt-CTA der Zeile 2 — transparenter/goldener Luxus-Look, füllt sich
+   beim Hover mit der Marken-Gold-Farbe. */
+.btn-hero-primary{ background:transparent; border-color:var(--primary-gold); color:var(--on-dark); }
+.btn-hero-primary:hover{ background:var(--primary-gold); border-color:var(--primary-gold); color:var(--accent-ink); transform:translateY(-2px); }
 
 /* ---------- Navigations-Wrapper (Info-Banner + Header) ----------
    Banner und Header liegen als normale Flow-Geschwister IN diesem einen
@@ -403,7 +426,7 @@ body.has-info-banner .mega-panel{ top:110px; }
 .whatsapp-fab{
   width:56px !important; height:56px !important;
   border-radius:50% !important;
-  background:#25D366; color:#0b2a17;
+  background:var(--brand-green); color:#0b2a17;
   display:flex; align-items:center; justify-content:center;
   flex-shrink:0; box-sizing:border-box;
   box-shadow:0 8px 22px -6px rgba(11,42,23,0.5);
@@ -461,9 +484,20 @@ section.dim{ background:var(--paper-dim); }
 .hero h1{ color:var(--on-dark); font-size:clamp(2.4rem, 5vw, 4.1rem); margin-bottom:var(--space-3); }
 .hero .lead{ color:var(--on-dark-soft); font-size:1.1rem; max-width:52ch; }
 .hero .cta-row{ display:flex; flex-wrap:wrap; gap:14px; margin-top:var(--space-3); position:relative; z-index:10000; }
+/* Zwei-Zeilen-Button-Choreografie: Zeile 1 = zwei gleich breite Kompakt-
+   Buttons (WhatsApp/Anrufen), Zeile 2 = ein breiter Haupt-CTA darunter.
+   Ersetzt das reine flex-wrap der .cta-row-Basisregel oben für den Hero. */
+.hero .cta-row.hero-cta-choreo{ flex-direction:column; flex-wrap:nowrap; width:100%; max-width:440px; }
+.hero-cta-row-1{ display:flex; gap:12px; width:100%; }
+.hero-cta-row-1 .btn{ flex:1; justify-content:center; }
+.hero-cta-row-2{ width:100%; }
+.hero-cta-row-2 .btn{ width:100%; justify-content:center; }
 
 @media (max-width: 900px){
   .hero .wrap{ grid-template-columns:1fr; }
+}
+@media (max-width: 480px){
+  .hero-cta-row-1{ flex-direction:column; }
 }
 
 /* ---------- Vorteile-Karten (unter dem Hero) — schlichter shadcn-Look:
@@ -1175,7 +1209,7 @@ section.dim{ background:var(--paper-dim); }
   transition:border-color 0.25s ease;
 }
 .field input::placeholder, .field textarea::placeholder{ color:var(--ink-soft); opacity:0.55; }
-.field input:focus, .field textarea:focus{ outline:none; border-bottom-color:#25D366; }
+.field input:focus, .field textarea:focus{ outline:none; border-bottom-color:var(--brand-green); }
 .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:var(--space-3); }
 @media (max-width:640px){ .field-row{ grid-template-columns:1fr; } }
 .field small{ display:block; color:var(--ink-soft); margin-top:6px; font-size:0.82rem; }
@@ -1348,7 +1382,7 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
 }
 .einsatzgebiet-pill:hover{ border-color:var(--accent); }
 .einsatzgebiet-pill.is-active{
-  background:#25D366; border-color:#25D366; color:#0b2a17;
+  background:var(--brand-green); border-color:var(--brand-green); color:#0b2a17;
 }
 .einsatzgebiet-popover{
   position:absolute; top:0; right:0; z-index:50; width:min(280px, 90vw);

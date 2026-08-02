@@ -345,97 +345,86 @@
     }
   }
 
-  // Hero-Bilder und Hero-Sprüche sind komplett entkoppelt (siehe Sanity-Schema
-  // heroSettings: heroBilder / heroSprueche) — jedes läuft mit eigenem Timer,
-  // eigenem Zyklus, ohne dass eines auf das andere wartet.
+  // Hero-Folien (Sanity: heroSettings.heroSlides) laufen über EINEN
+  // gemeinsamen Takt/Index statt zweier unabhängiger Timer: pro Tick wird das
+  // Hintergrundbild nur gewechselt, wenn die aktuelle Folie eins hat
+  // (slide.domIndex gesetzt) — sonst bleibt das zuletzt gezeigte Bild
+  // unangetastet stehen, und nur der Spruch-Text wechselt (reine Opacity-
+  // Kreuzblende, siehe .hero-slide-verb in styles.css: Text fährt auf
+  // Opacity 0, wird ausgetauscht, blendet wieder auf 1 — ohne sich je zu
+  // bewegen). window.__heroSlides als window-Property, damit
+  // sanity-content.js die Liste jederzeit live ersetzen kann.
   window.__heroAutoplayMs = 5000;
   window.__heroTransitionMs = 1200;
   var heroSlidesWrap = document.querySelector(".hero-slides");
   if (heroSlidesWrap) heroSlidesWrap.style.setProperty("--hero-transition-speed", window.__heroTransitionMs + "ms");
 
-  // Bild-Zyklus (Hintergrund): reines Fade zwischen den Folien, per Klick auf
-  // einen Punkt manuell ansteuerbar.
-  var heroSlides = Array.prototype.slice.call(document.querySelectorAll(".hero-slide"));
+  var heroImgSlides = Array.prototype.slice.call(document.querySelectorAll(".hero-slide"));
   var heroDots = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-dot"));
-  if (heroSlides.length > 1) {
-    var heroCurrent = 0;
-    var heroTimer = null;
-
-    var activateHeroSlide = function (index) {
-      heroSlides.forEach(function (s, i) { s.classList.toggle("is-active", i === index); });
-      heroDots.forEach(function (d, i) {
-        d.classList.toggle("is-active", i === index);
-        d.setAttribute("aria-selected", i === index ? "true" : "false");
-      });
-      heroCurrent = index;
-    };
-
-    var scheduleNextSlide = function () {
-      if (reduceMotion) return;
-      heroTimer = window.setTimeout(function () {
-        activateHeroSlide((heroCurrent + 1) % heroSlides.length);
-        scheduleNextSlide();
-      }, window.__heroAutoplayMs);
-    };
-
-    heroDots.forEach(function (dot, i) {
-      dot.addEventListener("click", function () {
-        if (heroTimer) window.clearTimeout(heroTimer);
-        activateHeroSlide(i);
-        scheduleNextSlide();
-      });
-    });
-
-    activateHeroSlide(0);
-    scheduleNextSlide();
-  }
-
-  // Spruch-Zyklus (Vordergrund-Text): eigener Timer, reine Opacity-Kreuzblende
-  // (siehe .hero-slide-verb in styles.css) — Text fährt zuerst auf Opacity 0,
-  // wird dann ausgetauscht und blendet wieder auf Opacity 1, ohne sich dabei
-  // je zu bewegen. window.__heroSprueche als window-Property, damit
-  // sanity-content.js die Liste jederzeit live ersetzen kann.
-  window.__heroSprueche = [
-    "Möbelmontage & Innenausbau",
-    "Baut Küchen und Schränke auf.",
-    "Montiert Regale und Gardinenstangen.",
-    "Maler- & Ausbesserungsarbeiten",
-    "Lackiert Türen, Zargen und Heizkörper.",
-    "Spachtelt Löcher und Risse glatt.",
-    "Holz- & Bodenpflege",
-    "Schleift und ölt Holzböden.",
-    "Verlegt Laminat und Fußleisten.",
-    "Bad- & Sanitär-Kleinreparaturen",
-    "Repariert Armaturen und Siphons.",
-    "Erneuert alte Silikonfugen.",
-    "Elektro-Kleinreparaturen & Technik",
-    "Tauscht Schalter und Steckdosen aus.",
-    "Schließt Lampen und Geräte an.",
-    "Hausmeisterservice & Objektbetreuung",
-    "Pflegt Immobilien und Außenanlagen.",
-    "Kontrolliert Haustechnik und Gebäude zuverlässig."
-  ];
   var heroSpruchEl = document.querySelector("[data-hero-spruch]");
-  if (heroSpruchEl) {
-    var heroSpruchIndex = 0;
-    var scheduleNextSpruch = function () {
+
+  var activateHeroImgSlide = function (domIndex) {
+    heroImgSlides.forEach(function (s, i) { s.classList.toggle("is-active", i === domIndex); });
+    heroDots.forEach(function (d, i) {
+      d.classList.toggle("is-active", i === domIndex);
+      d.setAttribute("aria-selected", i === domIndex ? "true" : "false");
+    });
+  };
+
+  // Standardwerte, bis (falls) Sanity heroSlides andere liefert — 1:1 mit den
+  // 4 statischen HTML-Folien, damit der Fallback ohne Sanity-Antwort optisch
+  // unverändert bleibt.
+  window.__heroSlides = [
+    { spruchText: "Ihr Allround-Handwerker", spruchAktiv: true, domIndex: 0 },
+    { spruchText: "Pflegt Garten & Außenanlagen", spruchAktiv: true, domIndex: 1 },
+    { spruchText: "Montiert Möbel & Regale", spruchAktiv: true, domIndex: 2 },
+    { spruchText: "Behebt Elektro-Kleinreparaturen", spruchAktiv: true, domIndex: 3 }
+  ];
+
+  if (heroImgSlides.length) activateHeroImgSlide(0);
+
+  var heroSlideIndex = 0;
+  heroDots.forEach(function (dot, i) {
+    dot.addEventListener("click", function () {
+      activateHeroImgSlide(i);
+      // Zeiger im gemeinsamen Takt so weit vorspulen, dass der nächste
+      // automatische Schritt nahtlos hinter der manuell gewählten Folie
+      // weiterläuft statt sofort wieder darüber hinwegzuspringen.
+      var slides = window.__heroSlides || [];
+      for (var s = 0; s < slides.length; s++) {
+        if (slides[s].domIndex === i) { heroSlideIndex = s; break; }
+      }
+    });
+  });
+
+  if (heroImgSlides.length > 1 || heroSpruchEl) {
+    var scheduleNextHeroStep = function () {
       if (reduceMotion) return;
       window.setTimeout(function () {
-        var texts = window.__heroSprueche;
-        if (!texts || texts.length < 2) {
-          scheduleNextSpruch();
+        var slides = window.__heroSlides;
+        if (!slides || slides.length < 2) {
+          scheduleNextHeroStep();
           return;
         }
-        heroSpruchEl.style.opacity = "0";
-        window.setTimeout(function () {
-          heroSpruchIndex = (heroSpruchIndex + 1) % texts.length;
-          heroSpruchEl.textContent = texts[heroSpruchIndex];
-          heroSpruchEl.style.opacity = "1";
-          scheduleNextSpruch();
-        }, 800);
+        heroSlideIndex = (heroSlideIndex + 1) % slides.length;
+        var slide = slides[heroSlideIndex];
+
+        // Kein aktives Bild bei dieser Folie -> Hintergrund bleibt einfach stehen.
+        if (slide.domIndex != null) activateHeroImgSlide(slide.domIndex);
+
+        // Kein aktiver Spruch bei dieser Folie -> Text bleibt einfach stehen.
+        if (heroSpruchEl && slide.spruchAktiv !== false && slide.spruchText) {
+          heroSpruchEl.style.opacity = "0";
+          window.setTimeout(function () {
+            heroSpruchEl.textContent = slide.spruchText;
+            heroSpruchEl.style.opacity = "1";
+          }, 800);
+        }
+
+        scheduleNextHeroStep();
       }, window.__heroAutoplayMs);
     };
-    scheduleNextSpruch();
+    scheduleNextHeroStep();
   }
 
   // Leistungen-Akkordeon: Klick öffnet eine Zeile, alle anderen schließen automatisch

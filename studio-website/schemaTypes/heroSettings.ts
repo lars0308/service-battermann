@@ -1,39 +1,43 @@
 import {defineType, defineField} from 'sanity'
 import {ImageIcon} from '@sanity/icons/Image'
 
-// Bewusst EIN Singleton-Dokument mit zwei komplett unabhängigen Arrays statt
-// mehrerer heroSlide-Dokumente: Bilder (heroBilder) und Sprüche (heroSprueche)
-// hatten vorher eine feste 1:1-Kopplung über ihre Reihenfolge — Bild 2 zeigte
-// immer exakt den Text von Slide 2. Diese Kopplung ist hier komplett aufgelöst:
-// die Bilder wechseln im Hintergrund in ihrem eigenen Takt, die Sprüche im
-// Vordergrund in ihrem eigenen Takt (siehe assets/main.js). Lars pflegt beide
-// Listen unabhängig voneinander und kann mit dem Sanity-Standard-"+"-Knopf
-// beliebig viele Sprüche ergänzen, ohne dafür ein Bild mitliefern zu müssen.
+// EIN flexibles Baukasten-Array (heroSlides) statt getrennter Bild-/Text-
+// Listen: jede Folie kombiniert wahlweise ein Hintergrundbild UND/ODER einen
+// Vordergrund-Spruch, beide unabhängig über einen eigenen Kippschalter
+// (bildAktiv/spruchAktiv) ein-/ausschaltbar. Lars kann so z. B. eine Folie
+// nur mit Text pflegen (kein Bild hochgeladen oder bildAktiv aus) — das
+// Frontend lässt in diesem Fall das zuletzt gezeigte Hintergrundbild
+// einfach stehen und wechselt nur den Text (siehe assets/main.js).
 export const heroSettings = defineType({
   name: 'heroSettings',
   title: 'Hero-Bereich (Startseite)',
   type: 'document',
   icon: ImageIcon,
   description:
-    'Hintergrundbilder und Sprüche sind bewusst voneinander getrennt: beide laufen mit eigenem Takt, unabhängig voneinander.',
+    'Jede Folie kombiniert frei ein Hintergrundbild und/oder einen Spruch — beide Teile lassen sich pro Folie einzeln ein-/ausschalten.',
   fields: [
     defineField({
-      name: 'heroBilder',
-      title: 'Hintergrundbilder',
+      name: 'heroSlides',
+      title: 'Hero-Folien (Bilder + Sprüche, frei kombinierbar)',
       type: 'array',
       description:
-        'Fotos, die im Hintergrund per Kreuzblende durchwechseln. Bis zu 4 Bilder werden auf der Website verwendet (weitere werden im Studio zwar gespeichert, aber nicht mehr angezeigt).',
+        'Jede Folie kombiniert wahlweise ein Hintergrundbild UND/ODER einen Vordergrund-Spruch, beide unabhängig per Kippschalter ein-/ausschaltbar. Fehlt bei einer Folie das Bild (oder steht "Bild aktiv" auf Aus), bleibt beim Erreichen dieser Folie einfach das zuletzt gezeigte Hintergrundbild stehen — nur der Text wechselt. Mit "+ Element hinzufügen" beliebig viele Folien ergänzen.',
       of: [
         {
           type: 'object',
-          name: 'heroBild',
+          name: 'heroSlideItem',
           fields: [
+            defineField({
+              name: 'folieName',
+              title: 'Interner Titel (nur für dich im Studio sichtbar)',
+              type: 'string',
+              description: 'Z. B. „Gewerk Maler" — hilft dir in der Liste beim Überblick.',
+            }),
             defineField({
               name: 'bildDesktop',
               title: 'Bild Desktop (16:9 Querformat)',
               type: 'image',
               options: {hotspot: true},
-              validation: (rule) => rule.required(),
             }),
             defineField({
               name: 'bildMobile',
@@ -43,68 +47,52 @@ export const heroSettings = defineType({
               description:
                 'Eigenes, hochkant fotografiertes Bild fürs Handy. Bleibt dieses Feld leer, verwendet das Handy weiterhin das Desktop-Bild.',
             }),
-          ],
-          preview: {
-            select: {media: 'bildDesktop'},
-            prepare({media}) {
-              return {title: 'Hero-Hintergrundbild', media}
-            },
-          },
-        },
-      ],
-      validation: (rule) => rule.max(4),
-    }),
-    defineField({
-      name: 'heroSprueche',
-      title: 'Sprüche (rotierender Text im Vordergrund)',
-      type: 'array',
-      description:
-        'Kurze Sätze, die per Kreuzblende durchwechseln — unabhängig von den Bildern. Mit "+ Element hinzufügen" beliebig viele ergänzen. Über den Kippschalter "Spruch aktiv schalten?" lässt sich jeder Satz einzeln ein-/ausblenden, ohne ihn löschen zu müssen — praktisch, um z. B. ein Gewerk vorübergehend aus der Rotation zu nehmen.',
-      of: [
-        {
-          type: 'object',
-          name: 'spruchItem',
-          fields: [
             defineField({
-              name: 'text',
-              title: 'Handwerker-Spruch (z. B. „Lackiert Türen, Zargen und Heizkörper.“)',
-              type: 'string',
-              validation: (rule) => rule.required(),
-            }),
-            defineField({
-              name: 'aktiv',
-              title: 'Spruch aktiv schalten?',
+              name: 'bildAktiv',
+              title: 'Bild im Slider aktiv schalten?',
               type: 'boolean',
               initialValue: true,
+              description: 'Auf "Aus" gestellt (oder kein Bild hochgeladen): das vorherige Hintergrundbild bleibt bei dieser Folie einfach stehen.',
+            }),
+            defineField({
+              name: 'spruchText',
+              title: 'Spruch über dem Bild (kurz, z. B. „Lackiert Türen")',
+              type: 'string',
+            }),
+            defineField({
+              name: 'spruchAktiv',
+              title: 'Spruch über dem Bild aktiv schalten?',
+              type: 'boolean',
+              initialValue: true,
+              description: 'Auf "Aus" gestellt (oder kein Text gepflegt): der vorherige Spruch bleibt bei dieser Folie einfach stehen.',
             }),
           ],
           preview: {
-            select: {text: 'text', aktiv: 'aktiv'},
-            prepare({text, aktiv}) {
-              return {title: text || '(ohne Text)', subtitle: aktiv === false ? 'Ausgeblendet' : 'Aktiv'}
+            select: {
+              folieName: 'folieName',
+              spruchText: 'spruchText',
+              media: 'bildDesktop',
+              bildAktiv: 'bildAktiv',
+              spruchAktiv: 'spruchAktiv',
+            },
+            prepare({folieName, spruchText, media, bildAktiv, spruchAktiv}) {
+              var flags: string[] = []
+              if (bildAktiv === false) flags.push('Bild aus')
+              if (spruchAktiv === false) flags.push('Spruch aus')
+              return {
+                title: folieName || spruchText || '(ohne Titel)',
+                subtitle: (spruchText ? '„' + spruchText + '"' : '') + (flags.length ? '  ·  ' + flags.join(', ') : ''),
+                media,
+              }
             },
           },
         },
       ],
       initialValue: [
-        {text: 'Möbelmontage & Innenausbau', aktiv: true},
-        {text: 'Baut Küchen und Schränke auf.', aktiv: true},
-        {text: 'Montiert Regale und Gardinenstangen.', aktiv: true},
-        {text: 'Maler- & Ausbesserungsarbeiten', aktiv: true},
-        {text: 'Lackiert Türen, Zargen und Heizkörper.', aktiv: true},
-        {text: 'Spachtelt Löcher und Risse glatt.', aktiv: true},
-        {text: 'Holz- & Bodenpflege', aktiv: true},
-        {text: 'Schleift und ölt Holzböden.', aktiv: true},
-        {text: 'Verlegt Laminat und Fußleisten.', aktiv: true},
-        {text: 'Bad- & Sanitär-Kleinreparaturen', aktiv: true},
-        {text: 'Repariert Armaturen und Siphons.', aktiv: true},
-        {text: 'Erneuert alte Silikonfugen.', aktiv: true},
-        {text: 'Elektro-Kleinreparaturen & Technik', aktiv: true},
-        {text: 'Tauscht Schalter und Steckdosen aus.', aktiv: true},
-        {text: 'Schließt Lampen und Geräte an.', aktiv: true},
-        {text: 'Hausmeisterservice & Objektbetreuung', aktiv: true},
-        {text: 'Pflegt Immobilien und Außenanlagen.', aktiv: true},
-        {text: 'Kontrolliert Haustechnik und Gebäude zuverlässig.', aktiv: true},
+        {folieName: 'Lars persönlich', spruchText: 'Ihr Allround-Handwerker', bildAktiv: true, spruchAktiv: true},
+        {folieName: 'Gewerk Garten', spruchText: 'Pflegt Garten & Außenanlagen', bildAktiv: true, spruchAktiv: true},
+        {folieName: 'Gewerk Montage', spruchText: 'Montiert Möbel & Regale', bildAktiv: true, spruchAktiv: true},
+        {folieName: 'Gewerk Elektro', spruchText: 'Behebt Elektro-Kleinreparaturen', bildAktiv: true, spruchAktiv: true},
       ],
       validation: (rule) => rule.min(1),
     }),
@@ -116,13 +104,12 @@ export const heroSettings = defineType({
     }),
   ],
   preview: {
-    select: {bilder: 'heroBilder', sprueche: 'heroSprueche'},
-    prepare({bilder, sprueche}) {
-      var bildAnzahl = Array.isArray(bilder) ? bilder.length : 0
-      var spruchAnzahl = Array.isArray(sprueche) ? sprueche.length : 0
+    select: {slides: 'heroSlides'},
+    prepare({slides}) {
+      var anzahl = Array.isArray(slides) ? slides.length : 0
       return {
         title: 'Hero-Bereich (Startseite)',
-        subtitle: bildAnzahl + ' Bild(er) · ' + spruchAnzahl + ' Spruch/Sprüche',
+        subtitle: anzahl + ' Folie(n)',
       }
     },
   },
