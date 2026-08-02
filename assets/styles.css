@@ -2,11 +2,19 @@
    Schriften: Archivo Black / Montserrat (Überschriften), Plus Jakarta Sans (Fließtext)
    Layout: bewusst asymmetrisch, keine starren Raster. */
 
+/* ---------- Premium-Dark-Theme (fest, kein Umschalten mehr) ----------
+   Die Seite lief zuvor hell mit optionalem OS-Dark-Mode; jetzt ist der
+   tiefdunkle Ton (#0f0f0f, identisch zu --surface-deep/den Glasmorphismus-
+   Flächen) auf der ganzen Website fest verankert — kein heller Zustand mehr,
+   auch nicht bei hellem OS-Farbschema. Die frühere @media(prefers-color-
+   scheme:dark)-Variante lieferte bereits passende helle Textfarben/Ränder für
+   dunkle Flächen und ist hier einfach zum festen Standard geworden, statt die
+   Farbwerte neu zu erfinden. */
 :root{
-  --ink:#191614;
-  --ink-soft:#5B564C;
-  --paper:#F8F6F0;
-  --paper-dim:#EFEBE1;
+  --ink:#F2EEE3;
+  --ink-soft:#C7C0AF;
+  --paper:#0f0f0f;
+  --paper-dim:#161616;
   --surface-dark:#1A1E24;
   --surface-dark-2:#232933;
   --surface-deep:#0f0f0f; /* eigener, noch tieferer Ton für die Glasmorphismus-Flächen (Intro, Premium-Karten) */
@@ -15,13 +23,13 @@
   --accent:#C2953F;
   --accent-hover:#A67B2E;
   --accent-ink:#191614;
-  --link:#745925; /* WCAG AA-konformer Textton der Akzentfarbe auf hellem Grund (6:1) */
-  --line:#DCD5C4;
+  --link:#DDB268;
+  --line:#39352B;
   --line-dark:#333A45;
-  --shadow: 0 20px 50px -28px rgba(25,22,20,0.3);
-  --header-bg: rgba(248,246,240,0.85);
-  --field-bg: #ffffff;
-  --chip-dark: #191614; /* feste "schwarze" Fläche für Buttons/Chips, unabhängig vom Farbschema */
+  --shadow: 0 20px 50px -28px rgba(0,0,0,0.6);
+  --header-bg: rgba(15,15,15,0.85);
+  --field-bg: #1c1c1a;
+  --chip-dark: #2A251C; /* etwas heller als die dunkle Seitenfläche, damit Buttons sich weiter abheben */
   --radius: 2px;
   --radius-sm: 2px;
   --wrap: 1180px;
@@ -31,26 +39,6 @@
   --space-4: 48px;
   --space-5: 88px;
   --space-6: 140px;
-}
-
-/* ---------- Automatischer Dark Mode ----------
-   Nur die "hellen" Seitenbereiche (Papier/Creme) wechseln auf warme dunkle
-   Töne; die bereits dunklen Sektionen (Hero, Footer, CTA-Bänder) bleiben
-   unverändert, da sie schon für dunkle Flächen entworfen sind. Akzentfarbe
-   bleibt identisch — sie funktioniert auf hell wie dunkel gleichermaßen. */
-@media (prefers-color-scheme: dark){
-  :root{
-    --ink:#F2EEE3;
-    --ink-soft:#C7C0AF;
-    --paper:#15130F;
-    --paper-dim:#1D1A14;
-    --link:#DDB268;
-    --line:#39352B;
-    --shadow: 0 20px 50px -28px rgba(0,0,0,0.6);
-    --header-bg: rgba(21,19,15,0.85);
-    --field-bg: #211E17;
-    --chip-dark: #2A251C; /* etwas heller als die dunkle Seitenfläche, damit Buttons sich weiter abheben */
-  }
 }
 
 *, *::before, *::after{ box-sizing:border-box; }
@@ -851,111 +839,83 @@ section.dim{ background:var(--paper-dim); }
   }
 }
 
-.service-list{ border-top:1px solid var(--line); margin-top:32px; }
-.service-row{ border-bottom:1px solid var(--line); scroll-margin-top:90px; position:relative; }
-.service-row-bg{ display:none; } /* nur auf Mobile als Kachel-Hintergrund sichtbar, siehe Media Query unten */
+/* ---------- Leistungen: Bento-Kachel-Grid (identisch auf Mobile & Desktop) ----------
+   Ersetzt das frühere weiße Zeilen-Akkordeon vollständig. Jede Kachel zeigt das
+   echte Baustellenfoto aus Sanity (services.N.cardImageUrl, dieselbe Quelle wie
+   die Bento-Karten der Startseite) randlos als Hintergrund. Im Ruhezustand ist
+   die Kachel geschlossen (nur Titel über dunklem Verlaufs-Scrim). Erst bei
+   Hover (Maus/Trackpad) oder Antippen (.is-open, per Klick-Toggle in main.js)
+   schiebt sich das Foto nach links, während von rechts ein durchsichtiges
+   Glasfenster mit Kurztext hereingleitet — Breite statt Höhe animiert, damit
+   auf JEDEM Breakpoint dieselbe Kachelform bestehen bleibt. Kein Blau beim
+   Antippen (siehe html{-webkit-tap-highlight-color:transparent} oben). */
+.service-list{
+  display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px;
+  margin-top:32px;
+}
+.service-row{
+  position:relative; overflow:hidden; border-radius:var(--radius);
+  aspect-ratio:4/3; background:var(--surface-deep); scroll-margin-top:90px;
+}
 .service-row:nth-child(1){ transition-delay:0.05s; }
 .service-row:nth-child(2){ transition-delay:0.12s; }
 .service-row:nth-child(3){ transition-delay:0.19s; }
 .service-row:nth-child(4){ transition-delay:0.26s; }
 .service-row:nth-child(5){ transition-delay:0.33s; }
 
+.service-row-bg{
+  display:block; position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; z-index:1;
+  transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.service-row::after{
+  content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+  background:linear-gradient(90deg, rgba(15,15,15,0.85) 0%, rgba(15,15,15,0.35) 55%, rgba(15,15,15,0.08) 100%);
+}
 .service-row-toggle{
-  all:unset; box-sizing:border-box; display:flex; align-items:center; gap:20px;
-  width:100%; padding:26px 4px; cursor:pointer; touch-action:manipulation;
-  border-left:2px solid transparent; transition:border-color 0.3s ease;
+  all:unset; box-sizing:border-box; position:relative; z-index:3;
+  display:flex; align-items:flex-end; width:100%; height:100%;
+  padding:20px; cursor:pointer; touch-action:manipulation;
 }
-/* Dezente, markentypische Fokus-Rückmeldung statt des entfernten Browser-
-   Tap-Highlights (siehe html{-webkit-tap-highlight-color} oben): eine
-   hauchdünne grüne Linie links plus eingefärbter Titel, solange die Zeile
-   aufgeklappt ist — bleibt sichtbar, nicht nur im kurzen Antipp-Moment. */
-.service-row.is-open .service-row-toggle{ border-left-color:var(--accent); }
-.service-row.is-open .service-row-title{ color:var(--accent); }
-.service-row-num{ font-family:'Archivo Black',sans-serif; font-size:1.3rem; color:var(--line); flex-shrink:0; width:44px; }
-.service-row-title{ font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.2rem; flex:1; color:var(--ink); transition:color 0.3s ease; }
-.service-row-verb{ color:var(--link); margin-right:6px; }
-.legal-star{ color:var(--accent); margin-left:2px; }
-.service-row-icon{
-  font-family:'Archivo Black',sans-serif; font-size:1.4rem; color:var(--accent); flex-shrink:0;
-  transition:transform 0.3s cubic-bezier(0.16,1,0.3,1);
-}
-.service-row.is-open .service-row-icon{ transform:rotate(45deg); }
-.service-row-detail{ max-height:0; overflow:hidden; transition:max-height 0.6s cubic-bezier(0.16,1,0.3,1); padding-left:64px; }
-.service-row.is-open .service-row-detail{ max-height:480px; }
-.service-row-detail p{ padding-bottom:20px; margin:0; max-width:60ch; }
 .service-row-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
-/* Hover-Auto-Expand nur für echte Maus-/Trackpad-Geräte — auf Touchscreens sonst
-   Konflikt zwischen anhaltendem :hover-Zustand nach dem Antippen und dem
-   Klick-Toggle in main.js (Zeile reagiert dann erst beim zweiten Tap). */
-@media (hover:hover) and (pointer:fine){
-  .service-row:hover .service-row-icon{ transform:rotate(45deg); }
-  .service-row:hover .service-row-detail{ max-height:480px; }
+.service-row-num{ display:none; } /* keine Nummerierung mehr */
+.service-row-icon{ display:none; } /* "+"-Icon obsolet — Hover/Tap auf der ganzen Kachel öffnet */
+.service-row-title{
+  font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.05rem;
+  color:#fff;
 }
+.service-row-verb{ color:var(--accent); margin-right:6px; }
+.legal-star{ color:var(--accent); margin-left:2px; }
 
-.service-row-vn{ display:flex; gap:12px; padding-bottom:26px; max-width:420px; }
-.service-row-vn:empty{ display:none; }
-.service-row-vn figure{ margin:0; flex:1; min-width:0; }
-.service-row-vn img{ width:100%; aspect-ratio:4/3; object-fit:cover; border:1px solid var(--line); cursor:zoom-in; }
-.service-row-vn figcaption{
-  margin-top:6px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.72rem;
-  letter-spacing:0.06em; text-transform:uppercase; color:var(--ink-soft);
+.service-row-detail{
+  position:absolute; top:0; right:0; bottom:0; z-index:4;
+  width:0; opacity:0; overflow:hidden; padding:0;
+  display:flex; flex-direction:column; justify-content:center;
+  background:rgba(255,255,255,0.03);
+  -webkit-backdrop-filter:blur(25px); backdrop-filter:blur(25px);
+  border-left:1px solid rgba(255,255,255,0.08);
+  transition:width 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease 0.1s;
 }
-.service-row-gallery{ display:flex; gap:12px; padding-bottom:26px; max-width:520px; flex-wrap:wrap; }
-.service-row-gallery:empty{ display:none; }
-.service-row-gallery figure{ margin:0; flex:1; min-width:120px; }
-.service-row-gallery img{
-  width:100%; aspect-ratio:4/3; object-fit:cover; border:1px solid var(--line); border-radius:var(--radius-sm);
-  cursor:zoom-in; transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);
+.service-row-detail p{ color:rgba(244,241,233,0.85); font-size:0.85rem; padding-bottom:10px; margin:0; max-width:none; }
+.service-row-detail .inline-cta{ color:var(--accent); font-size:0.85rem; }
+/* Bildergalerien/Vorher-Nachher bleiben ungenutzt: im schmalen Glasfenster
+   einer kompakten Bento-Kachel ist kein sauberer Platz für ein Fotoraster. */
+.service-row-vn, .service-row-gallery{ display:none; }
+
+.service-row.is-open .service-row-bg{ transform:translateX(-16%) scale(1.08); }
+.service-row.is-open .service-row-detail{ width:74%; opacity:1; padding:18px 16px; }
+/* Hover nur für echte Maus-/Trackpad-Geräte — auf Touchscreens sonst Konflikt
+   zwischen anhaltendem :hover-Zustand nach dem Antippen und dem Klick-Toggle
+   in main.js (Kachel reagiert dann erst beim zweiten Tap). */
+@media (hover:hover) and (pointer:fine){
+  .service-row:hover .service-row-bg{ transform:translateX(-16%) scale(1.08); }
+  .service-row:hover .service-row-detail{ width:74%; opacity:1; padding:18px 16px; }
 }
-.service-row-gallery img:hover{ transform:scale(1.02); }
+@media (prefers-reduced-motion: reduce){
+  .service-row-bg, .service-row-detail{ transition:none; }
+}
 @media (max-width:600px){
-  /* Mobiles Leistungs-Akkordeon: dunkle Foto-Kachel statt weißer Liste. Beim
-     Antippen schiebt sich das Hintergrundfoto nach links, während von rechts
-     ein durchsichtiges Glas-Textfenster hereingleitet (Breite + Kachel-Höhe
-     animieren gemeinsam über cubic-bezier, kein max-height:0->480px-Sprung
-     der Desktop-Variante mehr). Keine Nummern mehr, kein blaues Antipp-
-     Aufblitzen (siehe html{-webkit-tap-highlight-color:transparent}). */
-  .service-list{ border-top:none; margin-top:24px; display:flex; flex-direction:column; gap:14px; }
-  .service-row{
-    border-bottom:none; overflow:hidden; border-radius:var(--radius);
-    background:var(--surface-deep);
-    max-height:120px; transition:max-height 0.6s cubic-bezier(0.16,1,0.3,1);
-  }
-  .service-row.is-open{ max-height:340px; }
-  .service-row-bg{
-    display:block; position:absolute; inset:0; width:100%; height:100%;
-    object-fit:cover; z-index:1;
-    transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
-  }
-  .service-row.is-open .service-row-bg{ transform:translateX(-16%) scale(1.08); }
-  .service-row::after{
-    content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
-    background:linear-gradient(90deg, rgba(15,15,15,0.88) 0%, rgba(15,15,15,0.4) 55%, rgba(15,15,15,0.08) 100%);
-  }
-  .service-row-toggle{
-    position:relative; z-index:3; padding:0 20px; height:120px; border-left:none;
-  }
-  .service-row-num{ display:none; }
-  .service-row-title{ color:#fff; font-size:1.05rem; }
-  .service-row.is-open .service-row-title{ color:#fff; }
-  .service-row-verb{ color:var(--accent); }
-  .service-row-icon{ color:var(--accent); }
-  .service-row-detail{
-    position:absolute; top:0; right:0; bottom:0; z-index:4;
-    width:0; max-height:none; opacity:0; overflow:hidden; padding:0; padding-left:0;
-    display:flex; flex-direction:column; justify-content:center;
-    background:rgba(255,255,255,0.06);
-    -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
-    border-left:1px solid rgba(255,255,255,0.1);
-    transition:width 0.6s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease 0.1s;
-  }
-  .service-row.is-open .service-row-detail{ width:74%; opacity:1; padding:18px 16px; }
-  .service-row-detail p{ color:rgba(244,241,233,0.85); font-size:0.85rem; padding-bottom:10px; max-width:none; }
-  .service-row-detail .inline-cta{ color:var(--accent); }
-  .service-row-vn, .service-row-gallery{ display:none; } /* kein Platz im schmalen Glas-Fenster */
-}
-@media (max-width:600px) and (prefers-reduced-motion: reduce){
-  .service-row, .service-row-bg, .service-row-detail{ transition:none; }
+  .service-list{ grid-template-columns:1fr; }
 }
 
 /* ---------- Lightbox ---------- */
@@ -1230,15 +1190,15 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
 /* ---------- Utility ---------- */
 .mt-0{ margin-top:0; }
 .center-narrow{ max-width:640px; }
+/* Scharf begrenzter Rahmen für die Karte (Zustimmungs-Hinweis wie geladene
+   Karte gleichermaßen) — hauchdünne, edle Trennlinie statt eines unbegrenzten
+   Blocks mitten auf dunkler Fläche. */
+.map-frame{ border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius); overflow:hidden; }
+.map-frame iframe{ display:block; }
 .map-consent{
-  background:var(--paper-dim); border:1px dashed var(--line);
-  border-radius:var(--radius); padding:var(--space-4); text-align:center;
+  background:rgba(255,255,255,0.03); padding:var(--space-4); text-align:center;
 }
 .badge-list{ display:flex; flex-wrap:wrap; gap:10px; margin-top:var(--space-2); }
-.badge-list span{
-  font-family:'Montserrat',sans-serif; font-weight:600; font-size:0.8rem;
-  background:var(--paper-dim); border:1px solid var(--line); border-radius:999px; padding:6px 14px;
-}
 
 /* ---------- Einsatzgebiet: interaktive Orts-Pillen + Anfahrtskosten-Glaspanel ---------- */
 .einsatzgebiet-interactive{ position:relative; }
@@ -1253,7 +1213,7 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
 }
 .einsatzgebiet-popover{
   position:absolute; top:0; right:0; z-index:50; width:min(280px, 90vw);
-  background:rgba(20,20,20,0.55); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  background:rgba(255,255,255,0.05); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
   border:1px solid rgba(255,255,255,0.12); border-radius:var(--radius);
   padding:18px 20px; box-shadow:var(--shadow);
   display:flex; flex-direction:column; gap:4px;

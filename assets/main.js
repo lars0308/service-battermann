@@ -87,7 +87,7 @@
         ? performance.getEntriesByType("navigation")
         : null;
       var isHardReload = !!(navEntries && navEntries[0] && navEntries[0].type === "reload");
-      introAlreadySeen = !isHardReload && window.sessionStorage.getItem("battermannIntroShown") === "1";
+      introAlreadySeen = !isHardReload && window.sessionStorage.getItem("introWatched") === "1";
     } catch (e) {
       // sessionStorage/Performance-API blockiert (z. B. strenger Privatmodus)
       // -> sicherer Standard: introAlreadySeen bleibt false, Intro läuft normal.
@@ -101,7 +101,7 @@
     if (reduceMotion || introAlreadySeen) {
       skipIntroCleanup();
     } else {
-      try { window.sessionStorage.setItem("battermannIntroShown", "1"); } catch (e) {}
+      try { window.sessionStorage.setItem("introWatched", "1"); } catch (e) {}
 
       // Standardwerte, bis (falls) Sanity introSettings andere Werte liefert
       // (siehe sanity-content.js -> window.__introDurationMs). Bewusst als
