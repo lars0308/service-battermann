@@ -519,6 +519,22 @@ section.dim{ background:var(--paper-dim); }
   padding:calc(var(--space-6) + 20px) 0 var(--space-5);
   overflow:hidden;
   position:relative;
+  /* ECHTER Fund hinter "Dachzeile überlagert Logo/Header beim Scrollen":
+     .hero hatte zwar position:relative, aber KEIN eigenes z-index — ohne
+     z-index bildet position:relative allein noch KEINE Stacking-Context.
+     Dadurch "leckten" die internen z-index-Werte von .hero-eyebrow-top
+     (10000, nötig um während des Glas-Intros über der Glaswand mit
+     z-index:9998 zu bleiben) ungebremst auf die oberste Ebene durch — dort
+     verglichen mit .nav-wrapper (sticky Header, z-index:60) gewinnt 10000
+     gegen 60. Ergebnis: sobald die Dachzeile beim Scrollen visuell durch
+     die Höhe des Headers wandert, malt sie sich VOR das Logo (mit
+     Playwright bei scrollY 60-100px reproduziert und verifiziert). Fix:
+     ein explizites z-index:1 macht .hero selbst zur eigenen Stacking-
+     Context — die 10000/9998-Werte bleiben dadurch strikt INTERN
+     (weiterhin korrekt zueinander geordnet, Text bleibt über der
+     Glaswand), können aber die Website-Chrome (Header, Popups, FAB)
+     nie wieder überstrahlen, ganz gleich wie hoch sie intern sind. */
+  z-index:1;
 }
 .hero:not(.hero-slider){
   background:var(--paper);
@@ -542,27 +558,26 @@ section.dim{ background:var(--paper-dim); }
 .hero-cta-row-2{ width:100%; }
 .hero-cta-row-2 .btn{ width:100%; justify-content:center; }
 
+/* Schlanke, edle Knopf-Optik für alle 3 Hero-Buttons — ab dieser Runde
+   AUSDRÜCKLICH auf Mobil UND Desktop (vorher nur mobil, "Desktop bleibt
+   unberührt"; dieses Briefing verlangt explizit beides). Höhe/Radius/
+   Rahmen sind bewusst zusammen an einer Stelle definiert: height:42px
+   ohne passend reduziertes Padding würde bei box-sizing:border-box den
+   Text vertikal quetschen, deshalb gehören beide Werte untrennbar zusammen. */
+.hero-cta-choreo .btn{
+  height:42px !important; padding:0 12px !important;
+  font-size:14px; font-weight:500; gap:6px;
+  display:inline-flex; align-items:center; justify-content:center;
+  border-radius:8px !important;
+}
+.hero-cta-choreo .btn svg{ width:15px; height:15px; flex-shrink:0; }
+/* Dicke, harte Rahmen weg — stattdessen hauchdünne, farblich passende
+   Lichtkanten statt des massiven 2px-Standardrahmens aus der Basis-.btn. */
+.hero-cta-choreo .btn-hero-primary{ border:1px solid rgba(212,175,55,0.25); }
+.hero-cta-choreo .btn-whatsapp{ border:1px solid rgba(37,211,102,0.35); }
+
 @media (max-width: 900px){
   .hero .wrap{ grid-template-columns:1fr; }
-}
-@media (max-width: 768px){
-  /* WhatsApp/Anrufen bleiben auch auf schmalen Handys strikt nebeneinander
-     (Zeile 1) statt zu klobigen, gestapelten Vollbreite-Knöpfen zu werden —
-     dafür schrumpfen Innenabstand und Schrift kompakt genug, dass beide
-     Texte auf jeder Displaybreite sicher in einer Zeile bleiben. Betrifft
-     ausschließlich die 3 Hero-Buttons, der Rest der Website bleibt
-     unverändert (Desktop komplett unberührt). */
-  .hero-cta-choreo .btn{
-    height:42px !important; padding:0 12px !important;
-    font-size:14px; font-weight:500; gap:6px;
-    display:inline-flex; align-items:center; justify-content:center;
-    border-radius:8px !important;
-  }
-  .hero-cta-choreo .btn svg{ width:15px; height:15px; flex-shrink:0; }
-  /* Dicke, harte Rahmen weg — stattdessen hauchdünne, farblich passende
-     Lichtkanten statt des massiven 2px-Standardrahmens aus der Basis-.btn. */
-  .hero-cta-choreo .btn-hero-primary{ border:1px solid rgba(212,175,55,0.25); }
-  .hero-cta-choreo .btn-whatsapp{ border:1px solid rgba(37,211,102,0.35); }
 }
 
 /* ---------- Vorteile-Karten (unter dem Hero) — schlichter shadcn-Look:
@@ -673,7 +688,7 @@ section.dim{ background:var(--paper-dim); }
    unten) — steht damit klar unter dem weißen Nav-Balken auf dem Foto, statt
    mit im bodenständigen Textblock zu hängen. */
 .hero-eyebrow-top{
-  position:absolute; top:20px; left:clamp(24px, 5vw, 72px); right:24px;
+  position:absolute; top:24px; left:clamp(24px, 5vw, 72px); right:24px;
   z-index:10000; margin:0;
 }
 @media (min-width:901px){
