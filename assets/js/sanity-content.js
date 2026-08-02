@@ -236,6 +236,39 @@
     }
   }
 
+  // pageHome-Baukasten (pageModules): steuert Reihenfolge & Sichtbarkeit der
+  // Startseiten-Blöcke innerhalb von #page-builder-zone. Sicherer Ansatz:
+  // KEIN DOM wird neu injiziert oder entfernt — jeder Block bleibt
+  // statisches HTML mit allen bestehenden JS-Bindungen (Hero-Slider,
+  // Bento-Rotation, Formular-Logik, Einsatzgebiet-Widget usw.) unangetastet.
+  // Es wird nur CSS "order" (Position im Sanity-Array) und das
+  // "hidden"-Attribut (Block im Array vorhanden = sichtbar) gesetzt.
+  // Fehlt pageHome.pageModules ganz (kein Dokument gepflegt): die vier
+  // bisher sichtbaren Blöcke bleiben in ihrer ursprünglichen HTML-Reihenfolge
+  // sichtbar, mapBlock/formBlock bleiben ausgeblendet (unveränderte
+  // Standard-Startseite).
+  function applyPageModules(data) {
+    var zone = document.getElementById("page-builder-zone");
+    if (!zone) return; // nur relevant auf index.html
+    var modules = data.pageHome && data.pageHome.pageModules;
+    if (!modules || !modules.length) return;
+
+    var order = {};
+    modules.forEach(function (m, i) {
+      if (m && m._type) order[m._type] = i;
+    });
+    var blocks = zone.querySelectorAll("[data-page-block]");
+    blocks.forEach(function (el) {
+      var type = el.getAttribute("data-page-block");
+      if (Object.prototype.hasOwnProperty.call(order, type)) {
+        el.style.order = order[type];
+        el.hidden = false;
+      } else {
+        el.hidden = true;
+      }
+    });
+  }
+
   function buildFieldMap(data) {
     var map = {};
     (data.trust || []).forEach(function (doc, i) {
@@ -773,6 +806,7 @@
         console.log("[sanity-content] Daten von Sanity empfangen:", data);
       }
       applyThemeColors(data.themeSettings);
+      applyPageModules(data);
       var map = buildFieldMap(data);
       applyPatches(map);
       applyIntroSettings(map);

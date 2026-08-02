@@ -27,6 +27,7 @@ const SINGLETONS = [
   'pageDatenschutz',
   'heroSettings',
   'themeSettings',
+  'pageHome',
 ]
 
 // Alle Dokumenttypen, die unten explizit einem Seiten-Fach zugeordnet sind —
@@ -41,6 +42,12 @@ const EXPLICITLY_PLACED = [
   'faqEntry',
   'megaMenuLink',
   'infoBanner',
+  'heroBlock',
+  'vorteileBlock',
+  'bentoGridBlock',
+  'aboutMeBlock',
+  'mapBlock',
+  'formBlock',
   ...SINGLETONS,
 ]
 
@@ -55,6 +62,11 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title('Startseite (Home)')
             .items([
+              S.listItem()
+                .title('Block-Reihenfolge (Baukasten)')
+                .child(
+                  S.document().schemaType('pageHome').documentId('pageHome').title('Startseite: Baukasten'),
+                ),
               S.listItem()
                 .title('Hero-Bereich (Bilder + Sprüche)')
                 .child(

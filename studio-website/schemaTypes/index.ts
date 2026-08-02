@@ -12,6 +12,15 @@ import {promiseCard} from './promiseCard'
 import {pageImpressum} from './pageImpressum'
 import {pageDatenschutz} from './pageDatenschutz'
 import {themeSettings} from './themeSettings'
+import {
+  pageHome,
+  heroBlock,
+  vorteileBlock,
+  bentoGridBlock,
+  aboutMeBlock,
+  mapBlock,
+  formBlock,
+} from './pageHome'
 
 export const schemaTypes = [
   heroSettings,
@@ -28,4 +37,11 @@ export const schemaTypes = [
   pageImpressum,
   pageDatenschutz,
   themeSettings,
+  pageHome,
+  heroBlock,
+  vorteileBlock,
+  bentoGridBlock,
+  aboutMeBlock,
+  mapBlock,
+  formBlock,
 ]
