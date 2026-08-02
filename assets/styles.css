@@ -681,15 +681,33 @@ section.dim{ background:var(--paper-dim); }
   padding-bottom:calc(var(--space-5) + 10px);
   max-width:none; margin:0;
   padding-left:clamp(24px, 5vw, 72px); padding-right:24px;
+  /* Voller Breite wegen padding-right/max-width:none, aber Überschrift und
+     CTA-Zeile stehen real nur links — die leere rechte Padding-Fläche lag
+     trotzdem (mangels eigenem pointer-events) mit z-index:10000 über den
+     .hero-slide-dots (z-index:2, gleiche Stacking-Context) und blockte sie
+     komplett. pointer-events:none hier + gezielt wieder :auto auf der
+     CTA-Zeile lässt Klicks durch die leere Fläche zu den Punkten durch. */
+  pointer-events:none;
 }
+.hero-slider .hero-slider-content .cta-row{ pointer-events:auto; }
 /* Goldene Dachzeile: bewusst AUS dem bodenständigen .hero-slider-content-Block
    herausgelöst und direkt an der Oberkante des Hero-Bildes verankert (relativ
    zum umschließenden .hero-slider, nicht zur Überschrift/den Buttons weiter
    unten) — steht damit klar unter dem weißen Nav-Balken auf dem Foto, statt
    mit im bodenständigen Textblock zu hängen. */
 .hero-eyebrow-top{
-  position:absolute; top:24px; left:clamp(24px, 5vw, 72px); right:24px;
+  position:absolute; top:24px; left:clamp(24px, 5vw, 72px);
+  /* Vorher spannte left+right ohne width die Box unsichtbar über die volle
+     Bildbreite. Jetzt: width:fit-content lässt die Glas-Pille eng am Text
+     anliegen, max-width verhindert nur ein Überlaufen auf schmalen Screens. */
+  width:fit-content; max-width:calc(100% - clamp(24px, 5vw, 72px) - 24px);
   z-index:10000; margin:0;
+  padding:9px 18px;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.16);
+  border-radius:999px;
+  -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+  box-shadow:0 6px 20px -10px rgba(0,0,0,0.45);
 }
 @media (min-width:901px){
   .hero-eyebrow-top{ font-size:0.85rem; }
@@ -762,7 +780,16 @@ section.dim{ background:var(--paper-dim); }
 .hero-slide-dots{
   position:absolute; z-index:2; right:24px; bottom:28px;
   display:flex; flex-direction:column; gap:10px;
+  /* .hero besitzt eine eigene Stacking-Context (z-index:1, siehe Kommentar
+     dort) — ein höherer z-index hier allein hätte die Punkte NIE über das
+     fixierte Cookie-Banner (z-index:80, außerhalb dieser Stacking-Context)
+     heben können. main.js setzt stattdessen .has-cookie-banner auf <body>,
+     solange das Banner sichtbar ist, und schiebt die Punkte per bottom-Offset
+     sichtbar darüber (per Playwright reproduziert: elementFromPoint traf vor
+     diesem Fix auf .cookie-banner statt den Dot). */
+  transition:bottom 0.25s ease;
 }
+body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
 .hero-slide-dot{
   width:9px; height:9px; border-radius:50%; padding:0;
   background:rgba(244,241,233,0.35); border:1px solid rgba(244,241,233,0.5);
@@ -774,6 +801,9 @@ section.dim{ background:var(--paper-dim); }
 @media (max-width:900px){
   .hero-slider{ height:calc(100svh - 66px); min-height:520px; }
   .hero-slide-dots{ right:16px; bottom:20px; }
+  /* Cookie-Banner bricht auf schmalen Screens auf mehr Zeilen um und wird
+     dadurch höher als am Desktop — entsprechend mehr Abstand nötig. */
+  body.has-cookie-banner .hero-slide-dots{ bottom:140px; }
   .hero-slider .hero-slider-content{ padding-bottom:calc(var(--space-4) + 34px); }
 }
 @media (max-width:768px){
