@@ -12,6 +12,7 @@ import {promiseCard} from './promiseCard'
 import {pageImpressum} from './pageImpressum'
 import {pageDatenschutz} from './pageDatenschutz'
 import {themeSettings} from './themeSettings'
+import {effectSettings} from './effectSettings'
 import {
   pageHome,
   heroBlock,
@@ -42,6 +43,7 @@ export const schemaTypes = [
   pageImpressum,
   pageDatenschutz,
   themeSettings,
+  effectSettings,
   pageHome,
   heroBlock,
   vorteileBlock,

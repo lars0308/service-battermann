@@ -163,11 +163,12 @@
     '"promise":*[_type=="promiseCard"]|order(order asc){order,icon,title,text},' +
     '"pageImpressum":*[_type=="pageImpressum"][0]{intro,body},' +
     '"pageDatenschutz":*[_type=="pageDatenschutz"][0]{intro,body},' +
-    '"pageUeberMich":*[_type=="pageUeberMich"][0]{heroName,heroSubline,heroLead,"heroPortraitUrl":heroPortrait.asset->url' + IMG_SUFFIX + ',anfangEyebrow,anfangHeadline,anfangText1,anfangText2,"anfangImageUrl":anfangImage.asset->url' + IMG_SUFFIX + ',arbeitsweiseEyebrow,arbeitsweiseHeadline,kundenEyebrow,kundenHeadline,kundenText,kundenCtaLabel,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
+    '"pageUeberMich":*[_type=="pageUeberMich"][0]{heroEyebrow,heroName,heroSubline,heroLead,"heroPortraitUrl":heroPortrait.asset->url' + IMG_SUFFIX + ',anfangEyebrow,anfangHeadline,anfangText1,anfangText2,"anfangImageUrl":anfangImage.asset->url' + IMG_SUFFIX + ',arbeitsweiseEyebrow,arbeitsweiseHeadline,kundenEyebrow,kundenHeadline,kundenText,kundenCtaLabel,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
     '"pageLeistungen":*[_type=="pageLeistungen"][0]{heroEyebrow,heroHeadline,heroLead},' +
     '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead},' +
     '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,staticFormsApiKey,kitCardIntervalMs,bereichsLink,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"effects":*[_type=="effectSettings"][0]{heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,introVeilOpacity,kitCardIntervalMs,bentoTileScale,bentoGlassFadeMs,revealDurationMs,revealDistancePx},' +
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,staticFormsApiKey,bereichsLink,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -293,6 +294,7 @@
       var i = orderNum - 1;
       if (doc.title) map["promise." + i + ".title"] = doc.title;
       if (doc.text) map["promise." + i + ".text"] = doc.text;
+      if (doc.icon) map["promise." + i + ".icon"] = doc.icon;
     });
     // Gleiche order-basierte Zuordnung wie beim Hero (siehe oben) statt Array-Position —
     // schützt auch die 5 Leistungskacheln vor doppelten/zusätzlichen Sanity-Dokumenten.
@@ -366,21 +368,6 @@
       ].forEach(function (key) {
         if (data.settings[key]) map["settings." + key] = data.settings[key];
       });
-      if (typeof data.settings.heroAutoplayMs === "number" && data.settings.heroAutoplayMs >= 2000) {
-        map["settings.heroAutoplayMs"] = data.settings.heroAutoplayMs;
-      }
-      if (typeof data.settings.heroTransitionMs === "number" && data.settings.heroTransitionMs >= 300) {
-        map["settings.heroTransitionMs"] = data.settings.heroTransitionMs;
-      }
-      if (typeof data.settings.introDurationMs === "number" && data.settings.introDurationMs >= 500) {
-        map["settings.introDurationMs"] = data.settings.introDurationMs;
-      }
-      if (typeof data.settings.introBlurStrength === "number" && data.settings.introBlurStrength >= 0) {
-        map["settings.introBlurStrength"] = data.settings.introBlurStrength;
-      }
-      if (typeof data.settings.kitCardIntervalMs === "number" && data.settings.kitCardIntervalMs >= 2000) {
-        map["settings.kitCardIntervalMs"] = data.settings.kitCardIntervalMs;
-      }
     }
     if (data.pageImpressum && data.pageImpressum.intro) {
       map["pageImpressum.intro"] = data.pageImpressum.intro;
@@ -403,27 +390,54 @@
     return map;
   }
 
-  // Auto-Rotate-Vorschauschleife der Leistungskacheln: Zeit-Wert direkt am
-  // main.js-Timing-Global setzen (gleiches Prinzip wie heroAutoplayMs).
-  function applyKitAnimationSettings(map) {
-    if (map["settings.kitCardIntervalMs"]) {
-      window.__kitCardIntervalMs = map["settings.kitCardIntervalMs"];
+  // Zentrales Kinetik-Studio (effectSettings): alle Zeiten/Effekt-Werte werden
+  // sowohl als JS-Timing-Globals (für main.js-Intervalle/Polling) als auch als
+  // CSS-Custom-Properties auf :root injiziert (für styles.css-Transitions),
+  // damit Lars ausschließlich in Sanity dreht und die Website überall synchron
+  // reagiert. Fehlt ein Feld: der jeweilige var(...)-Fallback in styles.css
+  // bzw. der main.js-Default greift unverändert.
+  function applyEffectSettings(data) {
+    var fx = data.effects;
+    if (!fx) return;
+    var root = document.documentElement.style;
+
+    if (typeof fx.heroAutoplayMs === "number") window.__heroAutoplayMs = fx.heroAutoplayMs;
+    if (typeof fx.heroTransitionMs === "number") {
+      window.__heroTransitionMs = fx.heroTransitionMs;
+      var heroSlidesWrap = document.querySelector(".hero-slides");
+      if (heroSlidesWrap) heroSlidesWrap.style.setProperty("--hero-transition-speed", fx.heroTransitionMs + "ms");
     }
+    if (typeof fx.introDurationMs === "number") window.__introDurationMs = fx.introDurationMs;
+    if (typeof fx.introBlurStrength === "number") {
+      var glassEl = document.querySelector("[data-hero-glass-intro]");
+      if (glassEl) glassEl.style.setProperty("--intro-blur", fx.introBlurStrength + "px");
+    }
+    if (typeof fx.introVeilOpacity === "number") root.setProperty("--intro-veil-opacity", String(fx.introVeilOpacity));
+    if (typeof fx.kitCardIntervalMs === "number") window.__kitCardIntervalMs = fx.kitCardIntervalMs;
+    if (typeof fx.bentoTileScale === "number") root.setProperty("--bento-tile-scale", String(fx.bentoTileScale));
+    if (typeof fx.bentoGlassFadeMs === "number") root.setProperty("--bento-glass-fade-ms", fx.bentoGlassFadeMs + "ms");
+    if (typeof fx.revealDurationMs === "number") root.setProperty("--reveal-duration", fx.revealDurationMs + "ms");
+    if (typeof fx.revealDistancePx === "number") root.setProperty("--reveal-distance", fx.revealDistancePx + "px");
   }
 
-  // Glas-Intro (Startseite): main.js pollt window.__introDurationMs laufend selbst
-  // (siehe dort) statt auf ein eigenes Event zu warten — es reicht, den Wert hier so
-  // früh wie möglich zu setzen, sobald er aus Sanity da ist. Die Blur-Stärke wird
-  // direkt als CSS-Custom-Property auf die Glaswand geschrieben (siehe styles.css,
-  // backdrop-filter:blur(var(--intro-blur, 45px))).
-  function applyIntroSettings(map) {
-    if (map["settings.introDurationMs"]) {
-      window.__introDurationMs = map["settings.introDurationMs"];
-    }
-    if (map["settings.introBlurStrength"] || map["settings.introBlurStrength"] === 0) {
-      var glassEl = document.querySelector("[data-hero-glass-intro]");
-      if (glassEl) glassEl.style.setProperty("--intro-blur", map["settings.introBlurStrength"] + "px");
-    }
+  // "Wie ich arbeite"-Karten (ueber-mich.html): Icon-Auswahl aus promiseCard
+  // (Enum ehrlichkeit/puenktlichkeit/sauberkeit) auf das jeweilige
+  // [data-sanity-icon="promise.N"]-Element anwenden. Unbekannter/fehlender
+  // Wert: das im HTML fest hinterlegte Icon bleibt stehen.
+  var PROMISE_ICON_SVG = {
+    ehrlichkeit:
+      '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path d="M8.5 12.5l2.2 2.2 4.3-4.7"/></svg>',
+    puenktlichkeit:
+      '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg>',
+    sauberkeit:
+      '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l6.5-6.5"/><path d="M13.5 4.5c1.5-1.5 4-1.5 5.5 0l.5.5-8 8-3-3z"/><path d="M14 9l3 3"/><path d="M3 21l1.3-3.8L7 20z"/></svg>',
+  };
+  function applyPromiseIcons(map) {
+    document.querySelectorAll("[data-sanity-icon]").forEach(function (el) {
+      var value = map[el.getAttribute("data-sanity-icon") + ".icon"];
+      var svg = value && PROMISE_ICON_SVG[value];
+      if (svg) el.innerHTML = svg;
+    });
   }
 
   // Info-Banner: standardmäßig unsichtbar (siehe HTML [hidden]) — zeigt sich nur, wenn
@@ -826,10 +840,11 @@
         console.log("[sanity-content] Daten von Sanity empfangen:", data);
       }
       applyThemeColors(data.themeSettings);
+      applyEffectSettings(data);
       applyPageModules(data);
       var map = buildFieldMap(data);
       applyPatches(map);
-      applyIntroSettings(map);
+      applyPromiseIcons(map);
       if (map["settings.staticFormsApiKey"]) {
         cacheStaticFormsKey(map["settings.staticFormsApiKey"]);
       }
@@ -843,22 +858,11 @@
       applyServiceGalleries(data);
       applyEinsatzgebiet(data);
       applyLegalPages(data);
-      applyKitAnimationSettings(map);
       applyCallButtonToggle(data);
       applyVorherNachher(data);
       applyInfoBanner(data);
       if (data.settings && data.settings.logoIconUrl) {
         applyFavicon(data.settings.logoIconUrl);
-      }
-      // Reine Verhaltens-Einstellung ohne eigenes DOM-Element zum Anhängen —
-      // direkt anwenden, statt auf ein [data-sanity-field] zu warten, das es nicht gibt.
-      if (map["settings.heroTransitionMs"]) {
-        window.__heroTransitionMs = map["settings.heroTransitionMs"];
-        var heroSlidesWrap = document.querySelector(".hero-slides");
-        if (heroSlidesWrap) heroSlidesWrap.style.setProperty("--hero-transition-speed", map["settings.heroTransitionMs"] + "ms");
-      }
-      if (map["settings.heroAutoplayMs"]) {
-        window.__heroAutoplayMs = map["settings.heroAutoplayMs"];
       }
     })
     .catch(function (err) {
