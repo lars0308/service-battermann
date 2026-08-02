@@ -15,20 +15,20 @@
   var PROJECT_ID = "9bz9h1mi";
   var DATASET = "production";
 
-  // Sicherheitsnetz fürs Kontaktformular: Das accessKey-Feld trägt in
-  // kontakt.html bereits einen festen HTML-Standardwert (Lars' echter Static-
-  // Forms-Key) — das Feld ist also praktisch nie leer. Dieser Listener bleibt
-  // trotzdem als letzte Absicherung bestehen, für den unwahrscheinlichen Fall,
-  // dass der Wert durch ein Autofill-Tool oder eine künftige Änderung doch
-  // einmal leer ankommt: unabhängig vom generischen [data-sanity-field]-
-  // Patching unten und unabhängig davon, ob der große Sanity-Fetch weiter
-  // unten bereits fertig war, BEVOR abgesendet wurde.
+  // Kontaktformular: echte AJAX-Submission per fetch() statt normaler
+  // Formular-Navigation. Vorher landete jeder Absende-Klick zwangsläufig auf
+  // der nackten JSON-Antwortseite von Static Forms (auch der bisherige Code
+  // rief am Ende IMMER contactForm.submit() auf, also eine echte Navigation —
+  // "AJAX" war nie implementiert, nur das accessKey-Feld wurde vorab
+  // abgesichert). Jetzt: preventDefault() greift IMMER, die Daten gehen per
+  // fetch() raus, bei Erfolg öffnet sich das Danke-Popup mit vCard-Download.
   //
-  // Zwei Ebenen: (1) localStorage-Cache — sobald der Key auf IRGENDEINER Seite
-  // dieser Website einmal aus Sanity geladen wurde, steht er ab dann sofort
-  // synchron zur Verfügung, auch wenn kontakt.html direkt (ohne vorherigen
-  // Seitenaufruf) geöffnet und sofort abgesendet wird. (2) Bleibt der Cache
-  // leer, gezielter Nachlade-Fetch als letzter Ausweg.
+  // WICHTIG: als FormData (nicht JSON.stringify) senden und KEINEN eigenen
+  // Content-Type-Header setzen — der Browser setzt die korrekte
+  // "multipart/form-data; boundary=..."-Kopfzeile automatisch. Das ist nötig,
+  // damit der optionale Foto-Upload (<input type="file" multiple>) weiterhin
+  // funktioniert; ein JSON.stringify(new FormData(...)) würde angehängte
+  // Dateien stillschweigend verwerfen.
   var STATIC_FORMS_KEY_STORAGE = "staticFormsKey";
   function cacheStaticFormsKey(key) {
     if (!key) return;
@@ -38,20 +38,89 @@
     try { return window.localStorage.getItem(STATIC_FORMS_KEY_STORAGE); } catch (e) { return null; }
   }
 
-  var contactForm = document.querySelector('form[name="kontakt"]');
+  var contactForm = document.getElementById("contactForm");
+  var dankePopUp = document.getElementById("dankePopUp");
+  var formError = document.getElementById("formError");
+
+  function onDankeKeydown(e) {
+    if (e.key === "Escape") closeDankePopUp();
+  }
+  function openDankePopUp() {
+    if (!dankePopUp) return;
+    dankePopUp.classList.add("is-visible");
+    document.addEventListener("keydown", onDankeKeydown);
+  }
+  function closeDankePopUp() {
+    if (!dankePopUp) return;
+    dankePopUp.classList.remove("is-visible");
+    document.removeEventListener("keydown", onDankeKeydown);
+  }
+  if (dankePopUp) {
+    dankePopUp.addEventListener("click", function (e) {
+      if (e.target === dankePopUp) closeDankePopUp();
+    });
+    Array.prototype.forEach.call(dankePopUp.querySelectorAll("[data-danke-close]"), function (btn) {
+      btn.addEventListener("click", closeDankePopUp);
+    });
+  }
+
   if (contactForm) {
     contactForm.addEventListener("submit", function (e) {
-      var accessKeyInput = contactForm.querySelector('input[name="accessKey"]');
-      if (!accessKeyInput) return;
+      e.preventDefault(); // blockiert die native Weiterleitung zur nackten API-Antwortseite kompromisslos
 
-      if (!accessKeyInput.value) {
+      // Honeypot: Bots füllen versteckte Felder oft blind aus. Wert vorhanden
+      // -> so tun, als sei alles gutgegangen (kein Hinweis an Bots), aber
+      // nichts an Static Forms senden.
+      var honeypot = contactForm.querySelector('input[name="honeypot"]');
+      if (honeypot && honeypot.value) {
+        contactForm.reset();
+        openDankePopUp();
+        return;
+      }
+
+      var accessKeyInput = contactForm.querySelector('input[name="accessKey"]');
+      var submitBtn = contactForm.querySelector('button[type="submit"]');
+      var submitBtnLabel = submitBtn ? submitBtn.textContent : "";
+
+      var doSubmit = function () {
+        if (formError) formError.hidden = true;
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Wird gesendet …";
+        }
+        fetch(contactForm.action, { method: "POST", body: new FormData(contactForm) })
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            if (!data || !data.success) throw new Error("Static Forms meldete keinen Erfolg.");
+            contactForm.reset();
+            openDankePopUp();
+          })
+          .catch(function (err) {
+            if (formError) formError.hidden = false;
+            if (window.console && console.error) console.error("[Kontaktformular] Senden fehlgeschlagen:", err);
+          })
+          .then(function () {
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.textContent = submitBtnLabel;
+            }
+          });
+      };
+
+      if (accessKeyInput && !accessKeyInput.value) {
         var cachedKey = readCachedStaticFormsKey();
         if (cachedKey) accessKeyInput.value = cachedKey;
       }
 
-      if (accessKeyInput.value) return; // befüllt (HTML-Standard, Sanity-Patch oder Cache) -> ganz normal absenden
+      if (!accessKeyInput || accessKeyInput.value) {
+        doSubmit();
+        return;
+      }
 
-      e.preventDefault();
+      // Kein Key (weder HTML-Standard noch Cache) -> letzter Versuch, ihn live
+      // aus Sanity nachzuladen, dann erst senden.
       var keyQuery = encodeURIComponent('*[_type=="siteSettings"][0].staticFormsApiKey');
       var keyEndpoint =
         "https://" + PROJECT_ID + ".api.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + keyQuery;
@@ -67,15 +136,10 @@
           }
         })
         .catch(function () {
-          /* Nachlade-Versuch fehlgeschlagen -> die Anfrage geht trotzdem raus
-             (mit dem festen HTML-Standardwert, der an dieser Stelle ohnehin
-             schon greifen würde) statt den Nutzer ewig warten zu lassen. */
+          /* Nachlade-Versuch fehlgeschlagen -> trotzdem senden (mit dem festen
+             HTML-Standardwert, der an dieser Stelle ohnehin schon greift). */
         })
-        .then(function () {
-          // form.submit() statt requestSubmit(): löst KEIN erneutes "submit"-
-          // Event aus, sonst würde dieser Listener sich selbst erneut aufrufen.
-          contactForm.submit();
-        });
+        .then(doSubmit);
     });
   }
 
@@ -85,7 +149,7 @@
   // (Sanitys Bild-CDN versteht dieselben URL-Parameter wie andere Bild-CDNs).
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
-    '{"heroSettings":*[_type=="heroSettings"][0]{"heroBilder":heroBilder[]{"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot},heroSprueche,showCallButton},' +
+    '{"heroSettings":*[_type=="heroSettings"][0]{"heroBilder":heroBilder[]{"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot},"heroSprueche":heroSprueche[]{text,aktiv},showCallButton},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,shortDescription,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
@@ -623,15 +687,27 @@
     return activeReady;
   }
 
-  // Hero-Sprüche (heroSettings.heroSprueche): reines Text-Array, komplett
-  // unabhängig von den Hintergrundbildern oben. main.js pollt/nutzt
-  // window.__heroSprueche über seinen eigenen Timer (siehe dort) — hier wird
-  // nur der aktuelle Datenstand aus Sanity übernommen, sobald mindestens ein
-  // Spruch gepflegt ist (sonst bleiben die 3 lokalen Standardtexte stehen).
+  // Hero-Sprüche (heroSettings.heroSprueche): Array aus {text, aktiv}-Objekten,
+  // komplett unabhängig von den Hintergrundbildern oben. Nur Sprüche mit
+  // aktiv:true (Standard bei fehlendem Feld) gehen in die Rotation — schaltet
+  // Lars im Studio einen Satz auf "false", verschwindet er ab dem nächsten
+  // Laden der Seite automatisch aus dem Vordergrund-Text, ohne dass er
+  // gelöscht werden müsste. main.js pollt/nutzt window.__heroSprueche über
+  // seinen eigenen Timer (siehe dort) — hier wird nur der aktuelle,
+  // gefilterte Datenstand aus Sanity übernommen, sobald mindestens ein
+  // aktiver Spruch gepflegt ist (sonst bleiben die 3 lokalen Standardtexte stehen).
   function applyHeroSprueche(data) {
     var sprueche = data.heroSettings && data.heroSettings.heroSprueche;
-    if (Array.isArray(sprueche) && sprueche.length) {
-      window.__heroSprueche = sprueche;
+    if (!Array.isArray(sprueche)) return;
+    var activeTexts = sprueche
+      .filter(function (item) {
+        return item && item.text && item.aktiv !== false;
+      })
+      .map(function (item) {
+        return item.text;
+      });
+    if (activeTexts.length) {
+      window.__heroSprueche = activeTexts;
     }
   }
 

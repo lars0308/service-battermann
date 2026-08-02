@@ -148,10 +148,13 @@ separates, kostenloses CMS-Tool.
        Desktop-Bild). Beide Felder haben einen eigenen Fokuspunkt (Hotspot)
        — bei einem Klick/Ziehen im Studio-Bild wird der Bildausschnitt live
        angepasst. Die Bilder wechseln im Hintergrund per Kreuzblende durch.
-     - **Sprüche** (reines Text-Array, beliebig viele über den "+"-Knopf):
-       kurze Sätze, die im Vordergrund unabhängig von den Bildern per
-       Kreuzblende durchwechseln, z. B. „Hilft sofort bei lästigen
-       Kleinreparaturen.“ — direkt im Klartext eintippen, kein Bild nötig.
+     - **Sprüche** (Liste, beliebig viele über den "+"-Knopf): kurze Sätze,
+       die im Vordergrund unabhängig von den Bildern per Kreuzblende
+       durchwechseln, z. B. „Lackiert Türen, Zargen und Heizkörper.“ Jeder
+       Spruch hat einen eigenen Kippschalter "Spruch aktiv schalten?" — auf
+       "aus" gestellt, verschwindet er aus der Rotation, ohne dass er
+       gelöscht werden müsste (z. B. um ein Gewerk vorübergehend
+       auszublenden).
      - **"Direkt anrufen"-Button zeigen**: globaler Ein/Aus-Schalter für den
        grünen Anruf-Button im Hero.
    - **Vorteil** (4 Stück): die vier kurzen Textpunkte direkt unter dem

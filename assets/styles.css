@@ -1199,6 +1199,68 @@ section.dim{ background:var(--paper-dim); }
 }
 .form-disclaimer{ margin-top:14px; font-size:0.78rem; color:var(--ink-soft); text-align:center; }
 .form-disclaimer a{ color:var(--ink-soft); text-decoration:underline; }
+.form-error{
+  margin-top:14px; padding:12px 16px; border-radius:var(--radius-sm);
+  background:rgba(220,80,60,0.08); border:1px solid rgba(220,80,60,0.35);
+  color:#b3402a; font-size:0.85rem; text-align:center;
+}
+@media (prefers-color-scheme: dark){
+  .form-error{ color:#e88a76; }
+}
+
+/* ---------- Danke-Popup (Kontaktformular, nach erfolgreichem Absenden) ----------
+   Immer-dunkler Glas-Look wie Lightbox/Mega-Menü/Hero — bewusst unabhängig vom
+   Light/Dark-Seitenmodus, da es sich um eine kurzzeitige, immersive Bestätigung
+   handelt statt einer normalen Seitenfläche. */
+.danke-popup{
+  position:fixed; inset:0; z-index:200;
+  background:rgba(15,14,12,0.85);
+  display:flex; align-items:center; justify-content:center; padding:24px;
+  opacity:0; visibility:hidden;
+  transition:opacity 0.3s cubic-bezier(0.16,1,0.3,1), visibility 0s linear 0.3s;
+}
+.danke-popup.is-visible{ opacity:1; visibility:visible; transition:opacity 0.3s cubic-bezier(0.16,1,0.3,1); }
+.danke-popup-card{
+  position:relative; max-width:420px; width:100%;
+  background:rgba(15,15,15,0.85);
+  -webkit-backdrop-filter:blur(25px); backdrop-filter:blur(25px);
+  border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius);
+  padding:48px 36px 36px; text-align:center;
+  box-shadow:0 30px 70px -20px rgba(0,0,0,0.6);
+  transform:translateY(14px) scale(0.98);
+  transition:transform 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+.danke-popup.is-visible .danke-popup-card{ transform:translateY(0) scale(1); }
+.danke-popup-icon{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:64px; height:64px; border-radius:50%; margin-bottom:20px;
+  background:rgba(194,149,63,0.12); color:var(--accent);
+}
+.danke-popup-card h3{
+  font-family:'Archivo Black',sans-serif; font-weight:400; font-size:1.4rem;
+  color:var(--on-dark); margin:0 0 12px;
+}
+.danke-popup-card p{
+  font-family:'Plus Jakarta Sans',sans-serif; font-size:0.92rem; line-height:1.55;
+  color:var(--on-dark-soft); margin:0 0 28px;
+}
+.danke-popup-actions{ display:flex; flex-direction:column; gap:12px; align-items:center; }
+.danke-popup-actions .btn{ width:100%; justify-content:center; }
+.danke-popup-dismiss{
+  background:none; border:0; color:var(--on-dark-soft); font-family:'Montserrat',sans-serif;
+  font-size:0.85rem; text-decoration:underline; cursor:pointer; padding:4px;
+}
+.danke-popup-dismiss:hover{ color:var(--on-dark); }
+.danke-popup-close{
+  position:absolute; top:14px; right:14px;
+  width:36px; height:36px; border-radius:50%; border:1px solid rgba(244,241,233,0.4);
+  background:rgba(255,255,255,0.06); color:var(--on-dark);
+  font-family:'Archivo Black',sans-serif; font-size:1rem; line-height:1; cursor:pointer;
+}
+.danke-popup-close:hover{ background:rgba(255,255,255,0.14); }
+@media (prefers-reduced-motion: reduce){
+  .danke-popup, .danke-popup-card{ transition:none; }
+}
 
 .kontakt-portrait{
   border-radius:var(--radius); overflow:hidden; margin-top:var(--space-3);

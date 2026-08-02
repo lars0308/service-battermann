@@ -160,7 +160,7 @@
 
     <div class="reveal">
       <div class="form-card">
-        <form name="kontakt" method="POST" action="https://api.staticforms.dev/submit" enctype="multipart/form-data" aria-label="Kontaktformular">
+        <form id="contactForm" name="kontakt" method="POST" action="https://api.staticforms.dev/submit" enctype="multipart/form-data" aria-label="Kontaktformular">
           <input type="hidden" name="accessKey" value="sf_89104441b13716ed87199b14" data-sanity-field="settings.staticFormsApiKey" data-sanity-attr="value">
           <input type="hidden" name="subject" value="Neue Anfrage über service-battermann.de">
           <p class="bot-field" style="position:absolute;left:-9999px" aria-hidden="true">
@@ -198,6 +198,7 @@
           </div>
 
           <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">Absenden</button>
+          <p id="formError" class="form-error" role="alert" hidden>Beim Senden ist etwas schiefgelaufen. Bitte versuchen Sie es noch einmal oder schreiben Sie mir direkt per WhatsApp/Telefon.</p>
           <p class="form-disclaimer">Mit dem Absenden stimmen Sie unserer <a href="datenschutz.html">Datenschutzerklärung</a> zu.</p>
         </form>
       </div>
@@ -205,6 +206,21 @@
 
   </div>
 </section>
+
+<div id="dankePopUp" class="danke-popup" role="dialog" aria-modal="true" aria-label="Anfrage gesendet">
+  <div class="danke-popup-card">
+    <button type="button" class="danke-popup-close" data-danke-close aria-label="Schließen">×</button>
+    <span class="danke-popup-icon" aria-hidden="true">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+    </span>
+    <h3>Danke, Ihre Anfrage ist da!</h3>
+    <p>Ich melde mich in der Regel innerhalb von 24 Stunden bei Ihnen. Bis dahin: Speichern Sie meine Kontaktdaten direkt im Telefonbuch.</p>
+    <div class="danke-popup-actions">
+      <a href="assets/lars-battermann.vcf" download="lars-battermann.vcf" class="btn btn-primary">Kontakt speichern (vCard) ↓</a>
+      <button type="button" class="danke-popup-dismiss" data-danke-close>Schließen</button>
+    </div>
+  </div>
+</div>
 
 </main>
 
