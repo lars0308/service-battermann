@@ -149,7 +149,8 @@
   // (Sanitys Bild-CDN versteht dieselben URL-Parameter wie andere Bild-CDNs).
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
-    '{"themeSettings":*[_type=="themeSettings"][0]{"primaryGold":primaryGold.hex,"brandGreen":brandGreen.hex,"bgDark":bgDark.hex,"bgLight":bgLight.hex,"textDark":textDark.hex,"textLight":textLight.hex},' +
+    '{"themeSettings":*[_type=="themeSettings"][0]{"primaryGold":primaryGold.hex,"brandGreen":brandGreen.hex,"bgDark":bgDark.hex,"bgLight":bgLight.hex,"textDark":textDark.hex,"textLight":textLight.hex,glassOpacity,glassBlur,borderRadius},' +
+    '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type}},' +
     '"heroSettings":*[_type=="heroSettings"][0]{"heroSlides":heroSlides[]{folieName,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot,bildAktiv,spruchText,spruchAktiv},showCallButton},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,shortDescription,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
@@ -210,7 +211,7 @@
   function applyThemeColors(theme) {
     if (!theme) return;
     var root = document.documentElement;
-    var MAP = {
+    var COLOR_MAP = {
       primaryGold: "--primary-gold",
       brandGreen: "--brand-green",
       bgDark: "--bg-dark",
@@ -218,9 +219,21 @@
       textDark: "--text-dark",
       textLight: "--text-light",
     };
-    Object.keys(MAP).forEach(function (key) {
-      if (theme[key]) root.style.setProperty(MAP[key], theme[key]);
+    Object.keys(COLOR_MAP).forEach(function (key) {
+      if (theme[key]) root.style.setProperty(COLOR_MAP[key], theme[key]);
     });
+    // glassOpacity ist ein reiner 0-1-Faktor (kein px-Wert), glassBlur/
+    // borderRadius sind Pixelwerte -> "px" muss hier angehängt werden, in
+    // Sanity pflegt Lars nur die reine Zahl.
+    if (typeof theme.glassOpacity === "number") {
+      root.style.setProperty("--glass-opacity", theme.glassOpacity);
+    }
+    if (typeof theme.glassBlur === "number") {
+      root.style.setProperty("--glass-blur", theme.glassBlur + "px");
+    }
+    if (typeof theme.borderRadius === "number") {
+      root.style.setProperty("--border-radius", theme.borderRadius + "px");
+    }
   }
 
   function buildFieldMap(data) {

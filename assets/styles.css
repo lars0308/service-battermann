@@ -28,6 +28,13 @@
   --bg-light:#fcfbfa; /* Alabaster, bewusst kein reines Weiß */
   --text-dark:#F4F1E9; /* helle Schrift auf dunklem Grund */
   --text-light:#191614; /* dunkle Schrift auf hellem Grund */
+  /* Glas-/Formen-Regler (themeSettings.glassBlur/borderRadius): keine
+     einzelne Fallback-Zahl hier, jede Komponente behält ihren fein
+     abgestimmten Einzelwert als var()-Fallback (siehe jeweilige Regel) —
+     erst ein gepflegter Sanity-Wert vereinheitlicht alle auf denselben Ton.
+     glassOpacity wird bewusst NICHT hier zentral gesetzt, sondern direkt an
+     den drei großen dunklen Glas-Flächen (Mega-Menü, Hamburger-Menü,
+     Danke-Popup) verankert — aus demselben Grund. */
 
   --ink:var(--text-light);
   --ink-soft:#5B564C;
@@ -51,8 +58,10 @@
   --chip-dark: #191614; /* feste "schwarze" Fläche für Buttons/Chips, unabhängig vom Farbschema */
   --glass-bg: rgba(255,255,255,0.55);
   --glass-border: rgba(25,22,20,0.08);
-  --radius: 2px;
-  --radius-sm: 2px;
+  /* themeSettings.borderRadius (px) steuert beide zusammen — waren schon
+     immer identisch, jetzt zusätzlich per Sanity global umstellbar. */
+  --radius: var(--border-radius, 2px);
+  --radius-sm: var(--border-radius, 2px);
   --wrap: 1180px;
   --space-1: 8px;
   --space-2: 16px;
@@ -79,6 +88,16 @@
 }
 
 *, *::before, *::after{ box-sizing:border-box; }
+
+/* ---------- Startseiten-Baukasten (Sanity: pageHome.pageModules) ----------
+   display:flex + flex-direction:column verhält sich für einfach gestapelte
+   volle-Breite-Sektionen optisch identisch zum normalen Block-Fluss — der
+   einzige Unterschied ist, dass jetzt jedes Kind eine "order"-Eigenschaft
+   annehmen kann. sanity-content.js setzt ausschließlich style.order und das
+   hidden-Attribut je Block; die Elemente selbst bleiben unverändertes,
+   bereits beim ersten Rendern vorhandenes HTML (SEO/Initial-Paint
+   unberührt, keine nachträgliche DOM-Neuinjektion). */
+#page-builder-zone{ display:flex; flex-direction:column; }
 /* overflow-x allein reicht auf manchen Mobil-Browsern nicht: das off-canvas
    Menü ist per position:fixed + translateX(100%) einen vollen Viewport breit
    ausserhalb sichtbar positioniert, was die scrollbare Breite der Seite
@@ -310,8 +329,8 @@ nav.main-nav a.active{ color:var(--link); }
 .nav-item{ position:relative; display:flex; align-items:center; }
 .mega-panel{
   position:fixed; top:70px; left:0; right:0;
-  background:rgba(15,15,15,0.7);
-  -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px);
+  background:rgba(15,15,15,var(--glass-opacity, 0.7));
+  -webkit-backdrop-filter:blur(var(--glass-blur, 24px)); backdrop-filter:blur(var(--glass-blur, 24px));
   border-bottom:1px solid rgba(255,255,255,0.08);
   box-shadow:0 24px 48px -28px rgba(0,0,0,0.5);
   opacity:0; visibility:hidden; transform:translateY(-6px); pointer-events:none;
@@ -365,20 +384,25 @@ body.has-info-banner .mega-panel{ top:110px; }
      Footer) statt der theme-abhängigen Papierfarbe. */
   nav.main-nav{
     position:fixed; top:66px; right:0; left:0; height:calc(100vh - 66px);
-    background:rgba(15,15,15,0.8);
-    -webkit-backdrop-filter:blur(25px); backdrop-filter:blur(25px);
+    /* Absolut blickdicht: nichts vom Seiteninhalt darf durchscheinen. */
+    background:rgba(15,15,15,var(--glass-opacity, 0.98));
+    -webkit-backdrop-filter:blur(var(--glass-blur, 25px)); backdrop-filter:blur(var(--glass-blur, 25px));
     border-left:1px solid rgba(255,255,255,0.08);
-    flex-direction:column; align-items:flex-start; gap:0;
-    padding:24px; transform:translateX(100%); transition:transform .25s ease;
+    display:flex; flex-direction:column; align-items:flex-start; gap:26px;
+    padding:50px 24px 24px; transform:translateX(100%); transition:transform .25s ease;
     overflow-y:auto;
+    /* Muss kompromisslos über ALLEM liegen, inkl. der Hero-Buttons auf
+       z-index:10000 — sonst rutscht das geöffnete Menü optisch dahinter. */
+    z-index:999999 !important;
   }
   body.has-info-banner nav.main-nav{ top:106px; height:calc(100vh - 106px); }
   nav.main-nav.open{ transform:translateX(0); }
-  /* Größeres vertikales Padding als am Desktop: perfekte Daumen-Bedienung auf
-     dem Handy. Aktive Seite leuchtet im Logo-Goldton (--accent) statt im
-     theme-abhängigen --link-Ton, der auf dem immer-dunklen Glas kaum sichtbar wäre. */
+  /* Großzügiges vertikales Padding PLUS Gap zwischen den Links: perfekte
+     Daumen-Bedienung auf dem Handy, kein Verklicken. Aktive Seite leuchtet im
+     Logo-Goldton (--accent) statt im theme-abhängigen --link-Ton, der auf dem
+     immer-dunklen Glas kaum sichtbar wäre. */
   nav.main-nav a{
-    padding:22px 0; width:100%; border-bottom:1px solid rgba(255,255,255,0.08);
+    padding:14px 0; width:100%; border-bottom:1px solid rgba(255,255,255,0.08);
     font-size:1.05rem; color:var(--on-dark);
   }
   nav.main-nav a.active{ color:var(--accent); }
@@ -467,13 +491,24 @@ section.dark h1, section.dark h2, section.dark h3{ color:var(--on-dark); }
 section.dark p{ color:var(--on-dark-soft); }
 section.dim{ background:var(--paper-dim); }
 
-/* ---------- Hero: asymmetrisch ---------- */
+/* ---------- Hero: asymmetrisch ----------
+   .hero ohne Bild (Leistungen/Kontakt/Einsatzgebiet: reiner Text-Kopf) folgt
+   jetzt dem normalen Theme-Hintergrund statt eines fest-dunklen Balkens —
+   bisher IMMER dunkel (--surface-dark), unabhängig vom Light/Dark-Modus, was
+   auf hellen Seiten wie einen falsch platzierten schwarzen Balken direkt
+   unter dem Header wirkte. Genau wie .type-hero auf ueber-mich.html. Die
+   fotobasierte .hero-slider-Variante (Startseite) bleibt über :not()
+   ausdrücklich ausgenommen — sie ist absichtlich immer dunkel (Foto + Glas-
+   Overlay), ihre Textfarben werden bereits eigenständig gesetzt
+   (.hero-slide-h1, .hero-slide-verb, .hero-eyebrow-top). */
 .hero{
-  background:var(--surface-dark);
-  color:var(--on-dark);
   padding:calc(var(--space-6) + 20px) 0 var(--space-5);
   overflow:hidden;
   position:relative;
+}
+.hero:not(.hero-slider){
+  background:var(--paper);
+  color:var(--ink);
 }
 .hero .wrap{
   display:grid;
@@ -481,8 +516,8 @@ section.dim{ background:var(--paper-dim); }
   gap:var(--space-4);
   align-items:end;
 }
-.hero h1{ color:var(--on-dark); font-size:clamp(2.4rem, 5vw, 4.1rem); margin-bottom:var(--space-3); }
-.hero .lead{ color:var(--on-dark-soft); font-size:1.1rem; max-width:52ch; }
+.hero:not(.hero-slider) h1{ color:var(--ink); font-size:clamp(2.4rem, 5vw, 4.1rem); margin-bottom:var(--space-3); }
+.hero:not(.hero-slider) .lead{ color:var(--ink-soft); font-size:1.1rem; max-width:52ch; }
 .hero .cta-row{ display:flex; flex-wrap:wrap; gap:14px; margin-top:var(--space-3); position:relative; z-index:10000; }
 /* Zwei-Zeilen-Button-Choreografie: Zeile 1 = zwei gleich breite Kompakt-
    Buttons (WhatsApp/Anrufen), Zeile 2 = ein breiter Haupt-CTA darunter.
@@ -496,8 +531,17 @@ section.dim{ background:var(--paper-dim); }
 @media (max-width: 900px){
   .hero .wrap{ grid-template-columns:1fr; }
 }
-@media (max-width: 480px){
-  .hero-cta-row-1{ flex-direction:column; }
+@media (max-width: 768px){
+  /* WhatsApp/Anrufen bleiben auch auf schmalen Handys strikt nebeneinander
+     (Zeile 1) statt zu klobigen, gestapelten Vollbreite-Knöpfen zu werden —
+     dafür schrumpfen Innenabstand und Schrift kompakt genug, dass beide
+     Texte auf jeder Displaybreite sicher in einer Zeile bleiben. Betrifft
+     ausschließlich die 3 Hero-Buttons, der Rest der Website bleibt
+     unverändert (Desktop komplett unberührt). */
+  .hero-cta-choreo .btn{
+    padding:10px 16px; font-size:0.9rem; gap:6px;
+  }
+  .hero-cta-choreo .btn svg{ width:16px; height:16px; }
 }
 
 /* ---------- Vorteile-Karten (unter dem Hero) — schlichter shadcn-Look:
@@ -694,6 +738,23 @@ section.dim{ background:var(--paper-dim); }
   .hero-slide-dots{ right:16px; bottom:20px; }
   .hero-slider .hero-slider-content{ padding-bottom:calc(var(--space-4) + 34px); }
 }
+@media (max-width:768px){
+  /* Die goldene Dachzeile sitzt oben am Bildrand — dort war die bestehende
+     .hero-scrim praktisch durchsichtig (0.14 Deckkraft), auf hellen Fotos
+     (z. B. Hecke/Garten) verschwamm der Text. Zusätzliche, eigenständige
+     Verlaufsebene NUR für die obere Kante (erste ~14%), als zweiter
+     background-image-Layer über der bestehenden Verdunkelung. */
+  .hero-scrim{
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 14%),
+      linear-gradient(0deg, rgba(12,13,15,0.94) 0%, rgba(12,13,15,0.62) 45%, rgba(12,13,15,0.22) 78%, rgba(12,13,15,0.14) 100%);
+  }
+  /* Der Text-Kopf auf Leistungen/Kontakt/Einsatzgebiet (.hero ohne Bild) und
+     Über-mich (.type-hero) hatte auf Mobil dieselbe großzügige Desktop-
+     Polsterung (--space-6 + 20px ≈ 160px) — auf dem schmalen Screen wirkte
+     das wie gähnende Leere zwischen Header und Überschrift. */
+  .hero:not(.hero-slider), .type-hero{ padding-top:28px; }
+}
 /* ---------- Startseite: interaktive "Über mich"-Karte ----------
    Desktop: Bild links, Text rechts (per order, unabhängig von der
    DOM-Reihenfolge). Mobile: Text zuerst, Bild darunter (siehe Media Query). */
@@ -796,7 +857,7 @@ section.dim{ background:var(--paper-dim); }
 .leistung-glass-panel{
   position:absolute; width:300px;
   background:rgba(255,255,255,0.03);
-  -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(var(--glass-blur, 24px)); backdrop-filter:blur(var(--glass-blur, 24px));
   border:1px solid rgba(255,255,255,0.08);
   border-radius:var(--radius);
   padding:40px 34px;
@@ -970,7 +1031,7 @@ section.dim{ background:var(--paper-dim); }
   width:0; opacity:0; overflow:hidden; padding:0;
   display:flex; flex-direction:column; justify-content:center;
   background:rgba(255,255,255,0.03);
-  -webkit-backdrop-filter:blur(25px); backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(var(--glass-blur, 24px)); backdrop-filter:blur(var(--glass-blur, 24px));
   border-left:1px solid rgba(255,255,255,0.08);
   transition:width 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease 0.1s;
 }
@@ -1050,7 +1111,7 @@ section.dim{ background:var(--paper-dim); }
   padding:36px 30px;
   background:rgba(255,255,255,0.02);
   border:1px solid rgba(255,255,255,0.06);
-  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  backdrop-filter:blur(var(--glass-blur, 24px)); -webkit-backdrop-filter:blur(var(--glass-blur, 24px));
   border-radius:var(--radius);
   transition:transform 0.5s cubic-bezier(0.16,1,0.3,1), border-color 0.5s ease, background 0.5s ease;
 }
@@ -1197,7 +1258,7 @@ section.dim{ background:var(--paper-dim); }
 .form-card{
   background:var(--glass-bg); border:1px solid var(--glass-border);
   border-radius:var(--radius); padding:var(--space-4);
-  -webkit-backdrop-filter:blur(25px); backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(var(--glass-blur, 24px)); backdrop-filter:blur(var(--glass-blur, 24px));
   box-shadow:var(--shadow);
 }
 .field{ margin-bottom:var(--space-3); }
@@ -1256,8 +1317,8 @@ section.dim{ background:var(--paper-dim); }
 .danke-popup.is-visible{ opacity:1; visibility:visible; transition:opacity 0.3s cubic-bezier(0.16,1,0.3,1); }
 .danke-popup-card{
   position:relative; max-width:420px; width:100%;
-  background:rgba(15,15,15,0.85);
-  -webkit-backdrop-filter:blur(25px); backdrop-filter:blur(25px);
+  background:rgba(15,15,15,var(--glass-opacity, 0.85));
+  -webkit-backdrop-filter:blur(var(--glass-blur, 24px)); backdrop-filter:blur(var(--glass-blur, 24px));
   border:1px solid rgba(255,255,255,0.08); border-radius:var(--radius);
   padding:48px 36px 36px; text-align:center;
   box-shadow:0 30px 70px -20px rgba(0,0,0,0.6);
@@ -1386,7 +1447,7 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
 }
 .einsatzgebiet-popover{
   position:absolute; top:0; right:0; z-index:50; width:min(280px, 90vw);
-  background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  background:var(--glass-bg); backdrop-filter:blur(var(--glass-blur, 24px)); -webkit-backdrop-filter:blur(var(--glass-blur, 24px));
   border:1px solid var(--glass-border); border-radius:var(--radius);
   padding:18px 20px; box-shadow:var(--shadow);
   display:flex; flex-direction:column; gap:4px;

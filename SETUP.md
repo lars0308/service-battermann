@@ -201,12 +201,18 @@ separates, kostenloses CMS-Tool.
      Seite. Manueller Ein/Aus-Schalter plus optionales Ablaufdatum — nach
      Erreichen des Datums verschwindet er automatisch, ohne dass du ihn
      manuell wieder ausschalten musst.
-   - **Design & Farben** (Fach "Website-weit"): zentrale Farbsteuerung der
-     gesamten Website über den Sanity-Farbwähler — `Marken-Gold` (Slogans,
-     Dachzeile, Premium-Elemente), `Marken-Grün` (WhatsApp-Button, Fokus-
-     Ränder), `Grundton Dark-/Light-Theme` sowie `Haupttextfarbe Dark-/Light-
-     Theme`. Änderungen wirken sich sofort auf alle Unterseiten aus, ohne
-     Code-Änderung. Ohne gepflegte Werte gelten die aktuellen Standardfarben.
+   - **Design & Farben** (Fach "Website-weit"): zentrale Stilsteuerung der
+     gesamten Website, zwei Reiter im Studio-Dokument:
+     - **Farben**: Sanity-Farbwähler für `Marken-Gold` (Slogans, Dachzeile,
+       Premium-Elemente), `Marken-Grün` (WhatsApp-Button, Fokus-Ränder),
+       `Grundton Dark-/Light-Theme` sowie `Haupttextfarbe Dark-/Light-Theme`.
+     - **Glas & Formen**: `Deckkraft der dunklen Glas-Flächen` (0–1, betrifft
+       Mega-Menü/Hamburger-Menü/Danke-Popup), `Weichzeichner-Stärke` in Pixel
+       (betrifft alle Glas-Panele: Mega-Menü, Hamburger-Menü, Formular-Karte,
+       Leistungs-Glasfenster, "Drei Dinge"-Karten, Danke-Popup) und
+       `Eckenabrundung` in Pixel (Kacheln, Dialoge, Knöpfe website-weit).
+     Änderungen wirken sich sofort auf alle Unterseiten aus, ohne Code-
+     Änderung. Ohne gepflegte Werte gelten die aktuellen Standardwerte.
    - **Website-Einstellungen**:
      - Logo (Icon) — wird in Header und Footer auf allen Seiten ersetzt.
      - Die 4 Navigations-Reiter-Texte ("Leistungen", "Über mich", …).
