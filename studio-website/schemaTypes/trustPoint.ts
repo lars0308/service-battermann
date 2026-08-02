@@ -15,9 +15,16 @@ export const trustPoint = defineType({
     }),
     defineField({
       name: 'text',
-      title: 'Text',
+      title: 'Überschrift der Karte',
       type: 'string',
       validation: (rule) => rule.required().max(140),
+    }),
+    defineField({
+      name: 'detail',
+      title: 'Kurzbeschreibung unter der Überschrift',
+      type: 'string',
+      description: 'Kleiner, zweiter Textzeile in der Karte, z. B. "Lampen, Schalter, Fehlersuche".',
+      validation: (rule) => rule.max(80),
     }),
   ],
   preview: {

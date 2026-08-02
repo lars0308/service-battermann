@@ -28,6 +28,10 @@ const SINGLETONS = [
   'heroSettings',
   'themeSettings',
   'pageHome',
+  'pageUeberMich',
+  'pageLeistungen',
+  'pageKontakt',
+  'pageEinsatzgebiet',
 ]
 
 // Alle Dokumenttypen, die unten explizit einem Seiten-Fach zugeordnet sind —
@@ -96,6 +100,11 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title('Seite Leistungen (Details)')
             .items([
+              S.listItem()
+                .title('Kopfbereich (Unterzeile/Überschrift/Text)')
+                .child(
+                  S.document().schemaType('pageLeistungen').documentId('pageLeistungen').title('Seite Leistungen: Kopfbereich'),
+                ),
               S.documentTypeListItem('service').title('Leistungsbereiche (5 Stück)'),
               S.documentTypeListItem('vorherNachherProjekt').title('Vorher/Nachher-Projekte'),
             ]),
@@ -107,6 +116,11 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title('Seite Über mich')
             .items([
+              S.listItem()
+                .title('Texte (Kopfbereich, Absätze, Banner)')
+                .child(
+                  S.document().schemaType('pageUeberMich').documentId('pageUeberMich').title('Seite Über mich: Texte'),
+                ),
               S.documentTypeListItem('promiseCard').title('Versprechen-Karten (3 Stück)'),
             ]),
         ),
@@ -117,9 +131,20 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title('Seite Einsatzgebiet')
             .items([
+              S.listItem()
+                .title('Kopfbereich (Unterzeile/Überschrift/Text)')
+                .child(
+                  S.document().schemaType('pageEinsatzgebiet').documentId('pageEinsatzgebiet').title('Seite Einsatzgebiet: Kopfbereich'),
+                ),
               S.documentTypeListItem('einsatzgebietOrt').title('Orte + Anfahrtskosten'),
               S.documentTypeListItem('faqEntry').title('FAQ-Einträge'),
             ]),
+        ),
+      S.listItem()
+        .title('Seite Kontakt')
+        .icon(DocumentTextIcon)
+        .child(
+          S.document().schemaType('pageKontakt').documentId('pageKontakt').title('Seite Kontakt: Kopfbereich'),
         ),
       S.listItem()
         .title('Rechtstexte (Footer)')

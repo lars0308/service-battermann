@@ -152,7 +152,7 @@
     '{"themeSettings":*[_type=="themeSettings"][0]{"primaryGold":primaryGold.hex,"brandGreen":brandGreen.hex,"bgDark":bgDark.hex,"bgLight":bgLight.hex,"textDark":textDark.hex,"textLight":textLight.hex,glassOpacity,glassBlur,borderRadius},' +
     '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type}},' +
     '"heroSettings":*[_type=="heroSettings"][0]{"heroSlides":heroSlides[]{folieName,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot,bildAktiv,spruchText,spruchAktiv},showCallButton},' +
-    '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
+    '"trust":*[_type=="trustPoint"]|order(order asc){order,text,detail},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,shortDescription,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
     '"megaMenu":*[_type=="megaMenuLink"]|order(section asc, order asc){section,order,title,description,url},' +
@@ -163,7 +163,11 @@
     '"promise":*[_type=="promiseCard"]|order(order asc){order,icon,title,text},' +
     '"pageImpressum":*[_type=="pageImpressum"][0]{intro,body},' +
     '"pageDatenschutz":*[_type=="pageDatenschutz"][0]{intro,body},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,staticFormsApiKey,kitCardIntervalMs,bereichsLink,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"pageUeberMich":*[_type=="pageUeberMich"][0]{heroName,heroSubline,heroLead,"heroPortraitUrl":heroPortrait.asset->url' + IMG_SUFFIX + ',anfangEyebrow,anfangHeadline,anfangText1,anfangText2,"anfangImageUrl":anfangImage.asset->url' + IMG_SUFFIX + ',arbeitsweiseEyebrow,arbeitsweiseHeadline,kundenEyebrow,kundenHeadline,kundenText,kundenCtaLabel,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
+    '"pageLeistungen":*[_type=="pageLeistungen"][0]{heroEyebrow,heroHeadline,heroLead},' +
+    '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead},' +
+    '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead},' +
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,staticFormsApiKey,kitCardIntervalMs,bereichsLink,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -273,6 +277,7 @@
     var map = {};
     (data.trust || []).forEach(function (doc, i) {
       if (doc.text) map["trust." + i + ".text"] = doc.text;
+      if (doc.detail) map["trust." + i + ".detail"] = doc.detail;
     });
     // "Drei Dinge"-Karten (ueber-mich.html): order-basiert wie Hero/Leistungen,
     // damit doppelte/zusätzliche Sanity-Dokumente die restlichen 2 Karten nicht verschieben.
@@ -352,6 +357,9 @@
         "navEinsatzgebiet",
         "navKontakt",
         "heroEyebrow",
+        "bentoEyebrow",
+        "bentoHeadline",
+        "bentoIntro",
         "staticFormsApiKey",
         "logoIconUrl",
         "bereichsLink",
@@ -380,6 +388,18 @@
     if (data.pageDatenschutz && data.pageDatenschutz.intro) {
       map["pageDatenschutz.intro"] = data.pageDatenschutz.intro;
     }
+    // Seiten-Kopfbereiche/-Texte (pageUeberMich, pageLeistungen, pageKontakt,
+    // pageEinsatzgebiet): jedes einfache String-/Text-/Bild-Feld 1:1 unter
+    // "<docKey>.<feldName>" in die Map übernehmen, statt jedes Feld einzeln
+    // aufzuzählen — neue Felder in einem dieser Schemas brauchen dadurch
+    // keine weitere Änderung hier.
+    ["pageUeberMich", "pageLeistungen", "pageKontakt", "pageEinsatzgebiet"].forEach(function (docKey) {
+      var doc = data[docKey];
+      if (!doc) return;
+      Object.keys(doc).forEach(function (field) {
+        if (doc[field]) map[docKey + "." + field] = doc[field];
+      });
+    });
     return map;
   }
 

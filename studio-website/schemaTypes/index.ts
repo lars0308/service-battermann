@@ -22,6 +22,10 @@ import {
   formBlock,
 } from './pageHome'
 import {customPage} from './customPage'
+import {pageUeberMich} from './pageUeberMich'
+import {pageLeistungen} from './pageLeistungen'
+import {pageKontakt} from './pageKontakt'
+import {pageEinsatzgebiet} from './pageEinsatzgebiet'
 
 export const schemaTypes = [
   heroSettings,
@@ -46,4 +50,8 @@ export const schemaTypes = [
   mapBlock,
   formBlock,
   customPage,
+  pageUeberMich,
+  pageLeistungen,
+  pageKontakt,
+  pageEinsatzgebiet,
 ]

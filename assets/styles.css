@@ -772,8 +772,14 @@ section.dim{ background:var(--paper-dim); }
   /* Der Text-Kopf auf Leistungen/Kontakt/Einsatzgebiet (.hero ohne Bild) und
      Über-mich (.type-hero) hatte auf Mobil dieselbe großzügige Desktop-
      Polsterung (--space-6 + 20px ≈ 160px) — auf dem schmalen Screen wirkte
-     das wie gähnende Leere zwischen Header und Überschrift. */
-  .hero:not(.hero-slider), .type-hero{ padding-top:28px; }
+     das wie gähnende Leere zwischen Header und Überschrift.
+     WICHTIG: !important ist hier kein Stilbruch, sondern notwendig — die
+     Basisregel ".type-hero{padding:...}" (weiter unten in dieser Datei)
+     hat DIESELBE Selektor-Spezifität und würde ohne !important als
+     später deklarierte Shorthand-Regel diesen Wert unabhängig vom
+     Viewport wieder überschreiben (genau das ist der reale Grund, warum
+     der vorige Versuch ohne !important auf Mobil wirkungslos blieb). */
+  .hero:not(.hero-slider), .type-hero{ padding-top:24px !important; }
 }
 /* ---------- Startseite: interaktive "Über mich"-Karte ----------
    Desktop: Bild links, Text rechts (per order, unabhängig von der
