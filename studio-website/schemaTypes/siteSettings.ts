@@ -10,6 +10,7 @@ export const siteSettings = defineType({
     {name: 'general', title: 'Allgemein', default: true},
     {name: 'nav', title: 'Navigation'},
     {name: 'hero', title: 'Hero'},
+    {name: 'intro', title: 'Glas-Intro (Startseite)'},
     {name: 'forms', title: 'Formular'},
     {name: 'kit', title: 'Kit-Animationssteuerung'},
   ],
@@ -89,6 +90,25 @@ export const siteSettings = defineType({
       initialValue: 5200,
       validation: (rule) => rule.min(2000).max(15000),
       group: 'hero',
+    }),
+    defineField({
+      name: 'introDurationMs',
+      title: 'Intro: Anzeige-Dauer der Glaswand (Millisekunden)',
+      type: 'number',
+      description:
+        'Wie lange Slogan + Buttons zentriert vor der Glaswand stehen bleiben, bevor sie wegleitet. Standard: 3000 (3 Sekunden).',
+      initialValue: 3000,
+      validation: (rule) => rule.min(500).max(10000),
+      group: 'intro',
+    }),
+    defineField({
+      name: 'introBlurStrength',
+      title: 'Intro: Weichzeichner-Stärke der Glaswand (Pixel)',
+      type: 'number',
+      description: 'Stärke des Blur-Effekts, durch den das Hero-Bild hindurchschimmert. Standard: 45.',
+      initialValue: 45,
+      validation: (rule) => rule.min(0).max(100),
+      group: 'intro',
     }),
     defineField({
       name: 'staticFormsApiKey',

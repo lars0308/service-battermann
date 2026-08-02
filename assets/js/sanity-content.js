@@ -22,16 +22,39 @@
   // wurde. Ohne dieses Netz könnte ein sehr schneller Absende-Klick (oder ein
   // Autofill-Tool) das Formular mit noch leerem accessKey/apiKey abschicken,
   // während der reguläre, größere Sanity-Fetch noch unterwegs ist — Static
-  // Forms lehnt das dann mit "API key is required" ab. Der Listener prüft
-  // beim Absenden ein letztes Mal nach und holt den Key bei Bedarf gezielt
-  // (eigene, kleine Anfrage statt der großen Seiten-Query) nach, BEVOR die
-  // Anfrage tatsächlich rausgeht.
+  // Forms lehnt das dann mit "API key is required" ab.
+  //
+  // Zwei Ebenen: (1) localStorage-Cache — sobald der Key auf IRGENDEINER Seite
+  // dieser Website einmal aus Sanity geladen wurde, steht er ab dann sofort
+  // synchron zur Verfügung, auch wenn kontakt.html direkt (ohne vorherigen
+  // Seitenaufruf) geöffnet und sofort abgesendet wird. (2) Bleibt der Cache
+  // leer (allererster Aufruf dieser Sitzung überhaupt), gezielter Nachlade-
+  // Fetch als letzter Ausweg, genau wie bisher.
+  var STATIC_FORMS_KEY_STORAGE = "staticFormsKey";
+  function cacheStaticFormsKey(key) {
+    if (!key) return;
+    try { window.localStorage.setItem(STATIC_FORMS_KEY_STORAGE, key); } catch (e) {}
+  }
+  function readCachedStaticFormsKey() {
+    try { return window.localStorage.getItem(STATIC_FORMS_KEY_STORAGE); } catch (e) { return null; }
+  }
+
   var contactForm = document.querySelector('form[name="kontakt"]');
   if (contactForm) {
     contactForm.addEventListener("submit", function (e) {
       var accessKeyInput = contactForm.querySelector('input[name="accessKey"]');
       var apiKeyInput = contactForm.querySelector('input[name="apiKey"]');
-      if (!accessKeyInput || accessKeyInput.value) return; // schon befüllt -> ganz normal absenden
+      if (!accessKeyInput) return;
+
+      if (!accessKeyInput.value) {
+        var cachedKey = readCachedStaticFormsKey();
+        if (cachedKey) {
+          accessKeyInput.value = cachedKey;
+          if (apiKeyInput) apiKeyInput.value = cachedKey;
+        }
+      }
+
+      if (accessKeyInput.value) return; // befüllt (Patch oder Cache) -> ganz normal absenden
 
       e.preventDefault();
       var keyQuery = encodeURIComponent('*[_type=="siteSettings"][0].staticFormsApiKey');
@@ -46,6 +69,7 @@
           if (key) {
             accessKeyInput.value = key;
             if (apiKeyInput) apiKeyInput.value = key;
+            cacheStaticFormsKey(key);
           }
         })
         .catch(function () {
@@ -77,7 +101,7 @@
     '"infoBanner":*[_type=="infoBanner"][0]{text,active,expiresAt,zielLink},' +
     '"vorherNachher":*[_type=="vorherNachherProjekt"]{titel,beschreibung,kategorie,"vorherUrl":vorherBild.asset->url' + IMG_SUFFIX + ',vorherAlt,"nachherUrl":nachherBild.asset->url' + IMG_SUFFIX + ',nachherAlt},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,staticFormsApiKey,kitCardIntervalMs,kitActiveScale,kitInactiveOpacity,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,introDurationMs,introBlurStrength,staticFormsApiKey,kitCardIntervalMs,kitActiveScale,kitInactiveOpacity,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -233,6 +257,12 @@
       if (typeof data.settings.heroAutoplayMs === "number" && data.settings.heroAutoplayMs >= 2000) {
         map["settings.heroAutoplayMs"] = data.settings.heroAutoplayMs;
       }
+      if (typeof data.settings.introDurationMs === "number" && data.settings.introDurationMs >= 500) {
+        map["settings.introDurationMs"] = data.settings.introDurationMs;
+      }
+      if (typeof data.settings.introBlurStrength === "number" && data.settings.introBlurStrength >= 0) {
+        map["settings.introBlurStrength"] = data.settings.introBlurStrength;
+      }
       if (typeof data.settings.kitCardIntervalMs === "number" && data.settings.kitCardIntervalMs >= 500) {
         map["settings.kitCardIntervalMs"] = data.settings.kitCardIntervalMs;
       }
@@ -260,6 +290,21 @@
     }
     if (map["settings.kitInactiveOpacity"]) {
       kitContainer.style.setProperty("--kit-inactive-opacity", map["settings.kitInactiveOpacity"]);
+    }
+  }
+
+  // Glas-Intro (Startseite): main.js pollt window.__introDurationMs laufend selbst
+  // (siehe dort) statt auf ein eigenes Event zu warten — es reicht, den Wert hier so
+  // früh wie möglich zu setzen, sobald er aus Sanity da ist. Die Blur-Stärke wird
+  // direkt als CSS-Custom-Property auf die Glaswand geschrieben (siehe styles.css,
+  // backdrop-filter:blur(var(--intro-blur, 45px))).
+  function applyIntroSettings(map) {
+    if (map["settings.introDurationMs"]) {
+      window.__introDurationMs = map["settings.introDurationMs"];
+    }
+    if (map["settings.introBlurStrength"] || map["settings.introBlurStrength"] === 0) {
+      var glassEl = document.querySelector("[data-hero-glass-intro]");
+      if (glassEl) glassEl.style.setProperty("--intro-blur", map["settings.introBlurStrength"] + "px");
     }
   }
 
@@ -548,6 +593,10 @@
       }
       var map = buildFieldMap(data);
       applyPatches(map);
+      applyIntroSettings(map);
+      if (map["settings.staticFormsApiKey"]) {
+        cacheStaticFormsKey(map["settings.staticFormsApiKey"]);
+      }
       // Lade-Reveal (main.js) wartet auf dieses Event, um erst dann vom
       // zentrierten Ladezustand zum normalen Layout zu gleiten, wenn das
       // finale (ggf. Sanity-)Hero-Bild wirklich fertig geladen ist.

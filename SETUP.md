@@ -170,6 +170,12 @@ separates, kostenloses CMS-Tool.
        Hero-Bild stehen bleibt).
      - Kit-Animationssteuerung: Tempo, Skalierung und Abdunklung des
        automatischen Hervorhebungs-Effekts der 5 Leistungskacheln.
+     - Glas-Intro (Startseite): Anzeige-Dauer der Glaswand in Millisekunden
+       (Standard 3000) und Stärke des Weichzeichners in Pixel (Standard 45).
+       Das Intro läuft nur beim ersten Aufruf der Startseite in einer
+       Browser-Sitzung bzw. bei einem echten Neuladen (F5) — beim Klicken
+       zurück zur Startseite von einer Unterseite aus erscheint es kein
+       zweites Mal.
      - Rechtlicher Footer-Hinweis (der Sternchen-Text im Footer aller Seiten).
      - Static Forms API-Key — siehe Hinweis unten.
 3. Nach dem Speichern in Sanity ist die Änderung **beim nächsten Laden der
@@ -181,7 +187,11 @@ unter Website-Einstellungen ein, überschreibt er automatisch das leere
 Feld in `kontakt.html` beim Laden der Seite — der manuelle Weg aus
 Abschnitt 1a (direkt im Code eintragen) funktioniert weiterhin genauso,
 falls du Sanity dafür nicht nutzen willst. Trägst du an beiden Stellen
-etwas ein, gewinnt der Sanity-Wert.
+etwas ein, gewinnt der Sanity-Wert. Der Key wird außerdem im Browser
+zwischengespeichert (localStorage), sobald er einmal geladen wurde — ruft
+ein Besucher `kontakt.html` direkt auf und sendet sofort ab, bevor der
+Sanity-Abruf fertig ist, greift zuerst dieser Zwischenspeicher, bevor
+überhaupt ein Nachlade-Request nötig wird.
 
 **Wie das technisch funktioniert, kurz erklärt:** Die Seite lädt weiterhin
 zuerst ganz normal als statisches HTML (wichtig für Google & schnelles

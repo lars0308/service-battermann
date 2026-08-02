@@ -63,25 +63,54 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
-  // Einmaliges Frosted-Glass-Reveal-Intro (nur Startseite, nur der allererste
-  // Aufruf): Die Klasse .is-first-reveal steht von Anfang an im HTML (siehe
-  // styles.css) und zeigt den zentrierten Slogan vor einer blickdichten
-  // Glaswand (.hero-glass-intro, backdrop-filter blur). Bewusst ein FESTES
-  // 3-Sekunden-Timing statt (wie in der Vorrunde) rein bildladungsgetrieben —
-  // das ist hier explizit als inszenierte, filmische Sequenz gewünscht, nicht
-  // als reines Lade-Feedback. Trotzdem: taucht das finale Hero-Bild später als
-  // 3s auf (langsame Verbindung), wird zusätzlich darauf gewartet (max(3000ms,
-  // Bildladezeit)) — sonst würde der Vorhang ein noch unscharfes/vertauschtes
-  // Bild freigeben. Nach der 1.4s-Ausblendanimation wird die Glaswand komplett
-  // aus dem Layout entfernt (kein bleibender Fußabdruck). Bei reduzierter
-  // Bewegung entfällt die gesamte Sequenz: sofort der normale Endzustand.
+  // Einmaliges Frosted-Glass-Reveal-Intro (nur Startseite): Die Klasse
+  // .is-first-reveal steht von Anfang an im HTML (siehe styles.css) und zeigt
+  // Slogan, Kernbereiche-Subzeile und die beiden Hero-Buttons zentriert vor
+  // einer blickdichten Glaswand (.hero-glass-intro, backdrop-filter blur).
+  //
+  // NUR beim echten Erstaufruf/Neuladen der Startseite in dieser Browser-
+  // Sitzung, NICHT bei jedem internen Link-Klick zurück auf die Startseite:
+  // sessionStorage merkt sich "schon gezeigt". Ein echtes Neuladen (F5/Reload)
+  // soll die Inszenierung trotzdem erneut zeigen (z. B. um sie Lars/Kunden
+  // vorzuführen) — dafür wird zusätzlich die Navigation-Timing-API befragt,
+  // ob die aktuelle Seite gerade "reload" statt "navigate" ist; nur bei einem
+  // echten Reload wird der Sitzungs-Merker ignoriert.
   var heroSliderEl = document.querySelector(".hero-slider.is-first-reveal");
   var heroGlassEl = document.querySelector("[data-hero-glass-intro]");
+  var heroSublineEl = document.querySelector("[data-hero-intro-subline]");
   if (heroSliderEl) {
-    if (reduceMotion) {
+    var introAlreadySeen = false;
+    try {
+      var navEntries = window.performance && performance.getEntriesByType
+        ? performance.getEntriesByType("navigation")
+        : null;
+      var isHardReload = !!(navEntries && navEntries[0] && navEntries[0].type === "reload");
+      introAlreadySeen = !isHardReload && window.sessionStorage.getItem("battermannIntroShown") === "1";
+    } catch (e) {
+      // sessionStorage/Performance-API blockiert (z. B. strenger Privatmodus)
+      // -> sicherer Standard: introAlreadySeen bleibt false, Intro läuft normal.
+    }
+
+    var skipIntroCleanup = function () {
       heroSliderEl.classList.remove("is-first-reveal");
       if (heroGlassEl) heroGlassEl.style.display = "none";
+      if (heroSublineEl) heroSublineEl.style.display = "none";
+    };
+
+    if (reduceMotion || introAlreadySeen) {
+      skipIntroCleanup();
     } else {
+      try { window.sessionStorage.setItem("battermannIntroShown", "1"); } catch (e) {}
+
+      // Standardwerte, bis (falls) Sanity introSettings andere Werte liefert
+      // (siehe sanity-content.js -> window.__introDurationMs). Bewusst als
+      // Poll-Vergleich statt in einem einzigen setTimeout mit fest erfasstem
+      // Wert umgesetzt: kommt die Sanity-Antwort später als der Seitenstart,
+      // aber noch bevor der Standardwert erreicht ist, greift sie trotzdem
+      // rechtzeitig statt erst beim nächsten Seitenaufruf.
+      var DEFAULT_INTRO_DURATION_MS = 3000;
+      var introStartedAt = Date.now();
+
       var heroImageSettled = false;
       window.addEventListener(
         "hero-image-ready",
@@ -93,16 +122,22 @@
       window.setTimeout(function () { heroImageSettled = true; }, 4000);
 
       var revealHero = function () {
-        if (!heroImageSettled) {
-          window.setTimeout(revealHero, 150);
+        var configuredDuration =
+          typeof window.__introDurationMs === "number" && window.__introDurationMs >= 500
+            ? window.__introDurationMs
+            : DEFAULT_INTRO_DURATION_MS;
+        var elapsed = Date.now() - introStartedAt;
+        if (elapsed < configuredDuration || !heroImageSettled) {
+          window.setTimeout(revealHero, 100);
           return;
         }
         heroSliderEl.classList.remove("is-first-reveal");
         window.setTimeout(function () {
           if (heroGlassEl) heroGlassEl.style.display = "none";
+          if (heroSublineEl) heroSublineEl.style.display = "none";
         }, 1450);
       };
-      window.setTimeout(revealHero, 3000);
+      window.setTimeout(revealHero, 100);
     }
   }
 

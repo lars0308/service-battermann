@@ -434,7 +434,7 @@ section.dim{ background:var(--paper-dim); }
 }
 .hero h1{ color:var(--on-dark); font-size:clamp(2.4rem, 5vw, 4.1rem); margin-bottom:var(--space-3); }
 .hero .lead{ color:var(--on-dark-soft); font-size:1.1rem; max-width:52ch; }
-.hero .cta-row{ display:flex; flex-wrap:wrap; gap:14px; margin-top:var(--space-3); }
+.hero .cta-row{ display:flex; flex-wrap:wrap; gap:14px; margin-top:var(--space-3); position:relative; z-index:10000; }
 
 @media (max-width: 900px){
   .hero .wrap{ grid-template-columns:1fr; }
@@ -549,7 +549,9 @@ section.dim{ background:var(--paper-dim); }
 .hero-glass-intro{
   position:absolute; inset:0; z-index:5;
   background:rgba(15,15,15,0.65);
-  -webkit-backdrop-filter:blur(45px); backdrop-filter:blur(45px);
+  /* --intro-blur wird von sanity-content.js gesetzt (introBlurStrength aus
+     den Website-Einstellungen), 45px greift als Standard ohne Sanity-Wert. */
+  -webkit-backdrop-filter:blur(var(--intro-blur, 45px)); backdrop-filter:blur(var(--intro-blur, 45px));
   transform:translateY(0); opacity:1;
   transition:transform 1.4s cubic-bezier(0.25,1,0.5,1), opacity 1.4s cubic-bezier(0.25,1,0.5,1);
 }
@@ -560,9 +562,26 @@ section.dim{ background:var(--paper-dim); }
   transform:translateY(-28vh); text-align:center; padding-left:24px;
 }
 .hero-slider.is-first-reveal .eyebrow,
-.hero-slider.is-first-reveal .cta-row,
 .hero-slider.is-first-reveal .hero-slide-dots{
   opacity:0; pointer-events:none; transition:opacity 0.5s ease;
+}
+/* Die beiden Hero-Buttons bleiben während des Intros normal sichtbar/anklickbar
+   (kein opacity:0 mehr) — nur die Ausrichtung wechselt auf zentriert, solange
+   die Glaswand steht; verschwindet die Klasse, springt sie synchron mit dem
+   Wegleiten der Glaswand auf ihre normale linksbündige Ausrichtung zurück. */
+.hero-slider.is-first-reveal .cta-row{ justify-content:center; }
+/* Kernbereiche-Subzeile unter der Überschrift, nur während des Intros sichtbar
+   (siehe HTML: data-hero-intro-subline). Kein class-gated display:none, weil
+   sie zusammen mit Überschrift + Buttons ALS EINE EINHEIT über die vollen 1.4s
+   der Ausleit-Transition sichtbar bleiben muss (nicht schon bei Entfernen der
+   .is-first-reveal-Klasse verschwinden darf) — main.js blendet sie erst nach
+   Abschluss der Transition per display:none endgültig aus (wie die Glaswand).
+   Fehlt das Sanity-/HTML-Element ganz, greift einfach der HTML-Fallback-Text. */
+.hero-intro-subline{
+  font-family:'Plus Jakarta Sans',sans-serif; font-weight:500;
+  font-size:clamp(0.9rem, 1.6vw, 1.05rem); letter-spacing:0.01em;
+  color:rgba(244,241,233,0.78);
+  margin:calc(var(--space-2) * -1) 0 var(--space-3);
 }
 @media (prefers-reduced-motion: reduce){
   .hero-glass-intro,
