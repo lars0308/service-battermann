@@ -164,11 +164,11 @@
     '"pageImpressum":*[_type=="pageImpressum"][0]{intro,body},' +
     '"pageDatenschutz":*[_type=="pageDatenschutz"][0]{intro,body},' +
     '"pageUeberMich":*[_type=="pageUeberMich"][0]{heroEyebrow,heroName,heroSubline,heroLead,"heroPortraitUrl":heroPortrait.asset->url' + IMG_SUFFIX + ',anfangEyebrow,anfangHeadline,anfangText1,anfangText2,"anfangImageUrl":anfangImage.asset->url' + IMG_SUFFIX + ',arbeitsweiseEyebrow,arbeitsweiseHeadline,kundenEyebrow,kundenHeadline,kundenText,kundenCtaLabel,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
-    '"pageLeistungen":*[_type=="pageLeistungen"][0]{heroEyebrow,heroHeadline,heroLead},' +
+    '"pageLeistungen":*[_type=="pageLeistungen"][0]{heroEyebrow,heroHeadline,heroLead,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
     '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead},' +
-    '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead},' +
+    '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
     '"effects":*[_type=="effectSettings"][0]{heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,introVeilOpacity,kitCardIntervalMs,bentoTileScale,bentoGlassFadeMs,revealDurationMs,revealDistancePx},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,staticFormsApiKey,bereichsLink,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,staticFormsApiKey,bereichsLink,bewertungenEyebrow,bewertungenHeadline,bewertungenText,bewertungenCtaLabel,gebietEyebrow,gebietHeadline,gebietText,gebietCtaLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -365,6 +365,14 @@
         "staticFormsApiKey",
         "logoIconUrl",
         "bereichsLink",
+        "bewertungenEyebrow",
+        "bewertungenHeadline",
+        "bewertungenText",
+        "bewertungenCtaLabel",
+        "gebietEyebrow",
+        "gebietHeadline",
+        "gebietText",
+        "gebietCtaLabel",
       ].forEach(function (key) {
         if (data.settings[key]) map["settings." + key] = data.settings[key];
       });
