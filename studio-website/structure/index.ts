@@ -42,6 +42,7 @@ const EXPLICITLY_PLACED = [
   'faqEntry',
   'megaMenuLink',
   'infoBanner',
+  'customPage',
   'heroBlock',
   'vorteileBlock',
   'bentoGridBlock',
@@ -141,6 +142,13 @@ export const structure: StructureResolver = (S) =>
                     .title('Datenschutzerklärung'),
                 ),
             ]),
+        ),
+
+      S.listItem()
+        .title('Freie Unterseiten')
+        .icon(DocumentTextIcon)
+        .child(
+          S.documentTypeList('customPage').title('Freie Unterseiten'),
         ),
 
       S.divider(),

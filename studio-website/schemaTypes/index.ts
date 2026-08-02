@@ -21,6 +21,7 @@ import {
   mapBlock,
   formBlock,
 } from './pageHome'
+import {customPage} from './customPage'
 
 export const schemaTypes = [
   heroSettings,
@@ -44,4 +45,5 @@ export const schemaTypes = [
   aboutMeBlock,
   mapBlock,
   formBlock,
+  customPage,
 ]
