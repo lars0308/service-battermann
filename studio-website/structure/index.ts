@@ -92,6 +92,22 @@ export const structure: StructureResolver = (S) =>
                     .documentId('siteSettings')
                     .title('Website-Einstellungen'),
                 ),
+              S.listItem()
+                .title('Bewertungen-Sektion')
+                .child(
+                  S.document()
+                    .schemaType('siteSettings')
+                    .documentId('siteSettings')
+                    .title('Website-Einstellungen'),
+                ),
+              S.listItem()
+                .title('Einsatzgebiet (Kurzform)')
+                .child(
+                  S.document()
+                    .schemaType('siteSettings')
+                    .documentId('siteSettings')
+                    .title('Website-Einstellungen'),
+                ),
             ]),
         ),
       S.listItem()

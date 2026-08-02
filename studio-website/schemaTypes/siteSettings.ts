@@ -13,6 +13,8 @@ export const siteSettings = defineType({
     {name: 'bento', title: 'Startseite: Leistungs-Kacheln (Überschrift)'},
     {name: 'forms', title: 'Formular'},
     {name: 'werHierAnpackt', title: 'Startseite: „Wer hier anpackt"'},
+    {name: 'bewertungen', title: 'Startseite: Bewertungen'},
+    {name: 'gebietTeaser', title: 'Startseite: Einsatzgebiet (Kurzform)'},
   ],
   fields: [
     defineField({name: 'companyName', title: 'Firmenname', type: 'string', group: 'general'}),
@@ -120,6 +122,14 @@ export const siteSettings = defineType({
       initialValue: 'ueber-mich.html',
       group: 'werHierAnpackt',
     }),
+    defineField({name: 'bewertungenEyebrow', title: 'Unterzeile', type: 'string', group: 'bewertungen'}),
+    defineField({name: 'bewertungenHeadline', title: 'Überschrift', type: 'string', group: 'bewertungen'}),
+    defineField({name: 'bewertungenText', title: 'Text', type: 'text', group: 'bewertungen'}),
+    defineField({name: 'bewertungenCtaLabel', title: 'Button-Text (führt zum Kontaktformular)', type: 'string', group: 'bewertungen'}),
+    defineField({name: 'gebietEyebrow', title: 'Unterzeile', type: 'string', group: 'gebietTeaser'}),
+    defineField({name: 'gebietHeadline', title: 'Überschrift', type: 'string', group: 'gebietTeaser'}),
+    defineField({name: 'gebietText', title: 'Text', type: 'text', group: 'gebietTeaser'}),
+    defineField({name: 'gebietCtaLabel', title: 'Link-Text (führt zur Einsatzgebiet-Seite)', type: 'string', group: 'gebietTeaser'}),
   ],
   preview: {
     prepare() {
