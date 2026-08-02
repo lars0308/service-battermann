@@ -348,46 +348,36 @@
     }
   }
 
-  // Hero-Slider: Bilder + Headline wechseln synchron (reines Fade/Slide, keine Rotation)
-  // Der Text der ersten Zeile rotiert über volle Zyklen hinweg (3 Runden, dann von vorn).
-  var heroSlides = Array.prototype.slice.call(document.querySelectorAll(".hero-slide"));
-  var heroLines = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-line"));
-  var heroDots = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-dot"));
-  var heroRoundEl = document.querySelector("[data-hero-round-text]");
-  // Als window-Property statt lokaler Konstante, damit sanity-content.js die Liste
-  // live ersetzen kann (Lars pflegt die 3 Textvarianten in Sanity statt im Code).
-  window.__heroRoundTexts = ["Ihr Allround-Handwerker", "kümmert sich selbst darum", "steht für sein Wort"];
-  // Gleiches Prinzip für die Wechselgeschwindigkeit (Sanity: Website-Einstellungen → Hero,
-  // Slidertuning autoplaySpeed/transitionSpeed).
+  // Hero-Bilder und Hero-Sprüche sind komplett entkoppelt (siehe Sanity-Schema
+  // heroSettings: heroBilder / heroSprueche) — jedes läuft mit eigenem Timer,
+  // eigenem Zyklus, ohne dass eines auf das andere wartet.
   window.__heroAutoplayMs = 5000;
   window.__heroTransitionMs = 1200;
   var heroSlidesWrap = document.querySelector(".hero-slides");
   if (heroSlidesWrap) heroSlidesWrap.style.setProperty("--hero-transition-speed", window.__heroTransitionMs + "ms");
-  if (heroSlides.length && heroLines.length) {
+
+  // Bild-Zyklus (Hintergrund): reines Fade zwischen den Folien, per Klick auf
+  // einen Punkt manuell ansteuerbar.
+  var heroSlides = Array.prototype.slice.call(document.querySelectorAll(".hero-slide"));
+  var heroDots = Array.prototype.slice.call(document.querySelectorAll(".hero-slide-dot"));
+  if (heroSlides.length > 1) {
     var heroCurrent = 0;
-    var heroRound = 0;
     var heroTimer = null;
 
     var activateHeroSlide = function (index) {
-      if (index === 0 && heroCurrent === heroSlides.length - 1 && heroRoundEl) {
-        var texts = window.__heroRoundTexts;
-        heroRound = (heroRound + 1) % texts.length;
-        heroRoundEl.textContent = texts[heroRound];
-      }
       heroSlides.forEach(function (s, i) { s.classList.toggle("is-active", i === index); });
       heroDots.forEach(function (d, i) {
         d.classList.toggle("is-active", i === index);
         d.setAttribute("aria-selected", i === index ? "true" : "false");
       });
-      heroLines.forEach(function (l, i) { l.classList.toggle("is-active", i === index); });
       heroCurrent = index;
     };
 
-    var scheduleNext = function () {
+    var scheduleNextSlide = function () {
       if (reduceMotion) return;
       heroTimer = window.setTimeout(function () {
         activateHeroSlide((heroCurrent + 1) % heroSlides.length);
-        scheduleNext();
+        scheduleNextSlide();
       }, window.__heroAutoplayMs);
     };
 
@@ -395,12 +385,60 @@
       dot.addEventListener("click", function () {
         if (heroTimer) window.clearTimeout(heroTimer);
         activateHeroSlide(i);
-        scheduleNext();
+        scheduleNextSlide();
       });
     });
 
     activateHeroSlide(0);
-    scheduleNext();
+    scheduleNextSlide();
+  }
+
+  // Spruch-Zyklus (Vordergrund-Text): eigener Timer, reine Opacity-Kreuzblende
+  // (siehe .hero-slide-verb in styles.css) — Text fährt zuerst auf Opacity 0,
+  // wird dann ausgetauscht und blendet wieder auf Opacity 1, ohne sich dabei
+  // je zu bewegen. window.__heroSprueche als window-Property, damit
+  // sanity-content.js die Liste jederzeit live ersetzen kann.
+  window.__heroSprueche = [
+    "Möbelmontage & Innenausbau",
+    "Baut Küchen und Schränke auf.",
+    "Montiert Regale und Gardinenstangen.",
+    "Maler- & Ausbesserungsarbeiten",
+    "Lackiert Türen, Zargen und Heizkörper.",
+    "Spachtelt Löcher und Risse glatt.",
+    "Holz- & Bodenpflege",
+    "Schleift und ölt Holzböden.",
+    "Verlegt Laminat und Fußleisten.",
+    "Bad- & Sanitär-Kleinreparaturen",
+    "Repariert Armaturen und Siphons.",
+    "Erneuert alte Silikonfugen.",
+    "Elektro-Kleinreparaturen & Technik",
+    "Tauscht Schalter und Steckdosen aus.",
+    "Schließt Lampen und Geräte an.",
+    "Hausmeisterservice & Objektbetreuung",
+    "Pflegt Immobilien und Außenanlagen.",
+    "Kontrolliert Haustechnik und Gebäude zuverlässig."
+  ];
+  var heroSpruchEl = document.querySelector("[data-hero-spruch]");
+  if (heroSpruchEl) {
+    var heroSpruchIndex = 0;
+    var scheduleNextSpruch = function () {
+      if (reduceMotion) return;
+      window.setTimeout(function () {
+        var texts = window.__heroSprueche;
+        if (!texts || texts.length < 2) {
+          scheduleNextSpruch();
+          return;
+        }
+        heroSpruchEl.style.opacity = "0";
+        window.setTimeout(function () {
+          heroSpruchIndex = (heroSpruchIndex + 1) % texts.length;
+          heroSpruchEl.textContent = texts[heroSpruchIndex];
+          heroSpruchEl.style.opacity = "1";
+          scheduleNextSpruch();
+        }, 800);
+      }, window.__heroAutoplayMs);
+    };
+    scheduleNextSpruch();
   }
 
   // Leistungen-Akkordeon: Klick öffnet eine Zeile, alle anderen schließen automatisch

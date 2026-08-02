@@ -85,7 +85,7 @@
   // (Sanitys Bild-CDN versteht dieselben URL-Parameter wie andere Bild-CDNs).
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
-    '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,showCallButton,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot},' +
+    '{"heroSettings":*[_type=="heroSettings"][0]{"heroBilder":heroBilder[]{"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot},heroSprueche,showCallButton},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,shortDescription,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
@@ -137,49 +137,6 @@
 
   function buildFieldMap(data) {
     var map = {};
-    var hero = data.hero || [];
-    // Nicht die Array-Position nach der Sortierung als Slide-Index nehmen (bricht bei
-    // doppelten/zusätzlichen heroSlide-Dokumenten im Studio, z. B. aus Versehen zweimal
-    // "+ Neu" geklickt — verschiebt dann ALLE nachfolgenden Bilder auf falsche Indizes).
-    // Stattdessen das feste "order"-Feld (1-4) verwenden, das bleibt stabil.
-    var heroByOrder = {};
-    hero.forEach(function (doc) {
-      if (typeof doc.order === "number" && doc.order >= 1 && doc.order <= 4 && !heroByOrder[doc.order]) {
-        heroByOrder[doc.order] = doc;
-      }
-    });
-    [1, 2, 3, 4].forEach(function (orderNum) {
-      var doc = heroByOrder[orderNum];
-      if (!doc) return;
-      var i = orderNum - 1;
-      if (doc.verb) map["hero." + i + ".verb"] = doc.verb;
-      if (doc.desktopBaseUrl) map["hero." + i + ".desktopUrl"] = heroImageUrl(doc.desktopBaseUrl, 1920);
-      // Kein eigenes Handy-Bild gepflegt? Dann fällt <source> einfach weg und
-      // der Browser nimmt automatisch das <img>-Desktop-Bild (siehe HTML) —
-      // funktioniert wie bisher, nur ohne die frühere object-position-85%-
-      // Krücke, die ein Querformat-Bild auf einem Hochformat-Screen zurechtbog.
-      if (doc.mobileBaseUrl) map["hero." + i + ".mobileUrl"] = heroImageUrl(doc.mobileBaseUrl, 1080);
-      // Gleiches Prinzip wie bei den Leistungskacheln (siehe applyCardFocalPoints):
-      // Sanitys Hotspot ist ein relativer 0-1-Wert, deckt sich 1:1 mit CSS
-      // object-position in Prozent — funktioniert bei jeder Bildschirmgröße,
-      // ohne dass Desktop- und Mobile-Bild denselben Fokuspunkt teilen müssten
-      // (sie sind ja jetzt zwei unterschiedliche Fotos/Zuschnitte).
-      if (doc.desktopHotspot && typeof doc.desktopHotspot.x === "number" && typeof doc.desktopHotspot.y === "number") {
-        map["hero." + i + ".desktopPosition"] =
-          (doc.desktopHotspot.x * 100).toFixed(2) + "% " + (doc.desktopHotspot.y * 100).toFixed(2) + "%";
-      }
-      if (doc.mobileHotspot && typeof doc.mobileHotspot.x === "number" && typeof doc.mobileHotspot.y === "number") {
-        map["hero." + i + ".mobilePosition"] =
-          (doc.mobileHotspot.x * 100).toFixed(2) + "% " + (doc.mobileHotspot.y * 100).toFixed(2) + "%";
-      }
-    });
-    var heroFirst = heroByOrder[1];
-    if (heroFirst && Array.isArray(heroFirst.roundTexts) && heroFirst.roundTexts.length) {
-      map["hero.0.roundTexts"] = heroFirst.roundTexts;
-    }
-    if (heroFirst && typeof heroFirst.showCallButton === "boolean") {
-      map["hero.0.showCallButton"] = heroFirst.showCallButton;
-    }
     (data.trust || []).forEach(function (doc, i) {
       if (doc.text) map["trust." + i + ".text"] = doc.text;
     });
@@ -422,14 +379,6 @@
   function applyPatches(map) {
     fields.forEach(function (el) {
       var field = el.getAttribute("data-sanity-field");
-
-      // Sonderfälle: Werte, die main.js selbst weiterverarbeitet statt sie
-      // direkt ins DOM zu schreiben (siehe dort).
-      if (field === "hero.0.roundTexts") {
-        if (map[field]) window.__heroRoundTexts = map[field];
-        return;
-      }
-
       var value = map[field];
       if (!value) return; // kein Sanity-Wert -> statischer HTML-Inhalt bleibt stehen
 
@@ -625,21 +574,38 @@
     });
   }
 
-  // Jede Folie ist jetzt ein <picture> mit eigenem Desktop-<img> und optionaler
-  // Mobile-<source> (siehe HTML) statt eines einzelnen background-image-<div>.
-  // Beide Bilder werden unabhängig voneinander vorgeladen und getauscht.
-  function patchHeroBackgrounds(map) {
+  // Hero-Hintergrundbilder (heroSettings.heroBilder): komplett unabhängig von
+  // den Sprüchen (siehe applyHeroSprueche unten) — beide haben seit dieser
+  // Entkopplung keine gemeinsame Sanity-Struktur mehr. Bis zu 4 Bilder werden
+  // anhand ihrer Position im Array in die 4 statischen Hero-Folien im HTML
+  // gepatcht (gleiches Fallback-Prinzip wie überall: kein Sanity-Bild an
+  // dieser Position -> das lokale Standardbild bleibt einfach stehen). Jede
+  // Folie ist ein <picture> mit eigenem Desktop-<img> und optionaler
+  // Mobile-<source>; beide Bilder werden unabhängig voneinander vorgeladen.
+  function applyHeroBackgrounds(heroBilder) {
     var slides = document.querySelectorAll(".hero-slide[data-hero-slide-index]");
+    var bilder = heroBilder || [];
     var activeReady = Promise.resolve();
     slides.forEach(function (slideEl) {
-      var i = slideEl.getAttribute("data-hero-slide-index");
+      var i = Number(slideEl.getAttribute("data-hero-slide-index"));
+      var bild = bilder[i];
+      if (!bild) return;
       var isActive = slideEl.classList.contains("is-active");
-      var imgEl = slideEl.querySelector("[data-hero-img]");
-      var sourceEl = slideEl.querySelector("[data-hero-mobile-src]");
-      var desktopUrl = map["hero." + i + ".desktopUrl"];
-      var mobileUrl = map["hero." + i + ".mobileUrl"];
-      var desktopPos = map["hero." + i + ".desktopPosition"];
-      var mobilePos = map["hero." + i + ".mobilePosition"];
+      var imgEl = slideEl.querySelector("img");
+      var sourceEl = slideEl.querySelector("source");
+      var desktopUrl = bild.desktopBaseUrl ? heroImageUrl(bild.desktopBaseUrl, 1920) : null;
+      var mobileUrl = bild.mobileBaseUrl ? heroImageUrl(bild.mobileBaseUrl, 1080) : null;
+      // Gleiches Prinzip wie bei den Leistungskacheln (siehe applyCardFocalPoints):
+      // Sanitys Hotspot ist ein relativer 0-1-Wert, deckt sich 1:1 mit CSS
+      // object-position in Prozent.
+      var desktopPos =
+        bild.desktopHotspot && typeof bild.desktopHotspot.x === "number" && typeof bild.desktopHotspot.y === "number"
+          ? (bild.desktopHotspot.x * 100).toFixed(2) + "% " + (bild.desktopHotspot.y * 100).toFixed(2) + "%"
+          : null;
+      var mobilePos =
+        bild.mobileHotspot && typeof bild.mobileHotspot.x === "number" && typeof bild.mobileHotspot.y === "number"
+          ? (bild.mobileHotspot.x * 100).toFixed(2) + "% " + (bild.mobileHotspot.y * 100).toFixed(2) + "%"
+          : null;
 
       var tasks = [];
       if (desktopUrl && imgEl) {
@@ -671,10 +637,22 @@
     return activeReady;
   }
 
-  // Der grüne "Direkt anrufen"-Button ist nicht pro Slide vorhanden (ein Button für
-  // den ganzen Slider) — der Schalter im ersten Hero-Slide-Dokument steuert ihn global.
-  function applyCallButtonToggle(map) {
-    if (map["hero.0.showCallButton"] !== false) return; // Default (kein Feld / true) = sichtbar, unverändert
+  // Hero-Sprüche (heroSettings.heroSprueche): reines Text-Array, komplett
+  // unabhängig von den Hintergrundbildern oben. main.js pollt/nutzt
+  // window.__heroSprueche über seinen eigenen Timer (siehe dort) — hier wird
+  // nur der aktuelle Datenstand aus Sanity übernommen, sobald mindestens ein
+  // Spruch gepflegt ist (sonst bleiben die 3 lokalen Standardtexte stehen).
+  function applyHeroSprueche(data) {
+    var sprueche = data.heroSettings && data.heroSettings.heroSprueche;
+    if (Array.isArray(sprueche) && sprueche.length) {
+      window.__heroSprueche = sprueche;
+    }
+  }
+
+  // Der grüne "Direkt anrufen"-Button ist nicht pro Bild vorhanden (ein Button
+  // für den ganzen Hero) — ein einzelner globaler Schalter in heroSettings steuert ihn.
+  function applyCallButtonToggle(data) {
+    if (!data.heroSettings || data.heroSettings.showCallButton !== false) return; // Default (kein Feld / true) = sichtbar, unverändert
     var btn = document.querySelector("[data-hero-call-btn]");
     if (btn) btn.style.display = "none";
   }
@@ -709,15 +687,16 @@
       // Lade-Reveal (main.js) wartet auf dieses Event, um erst dann vom
       // zentrierten Ladezustand zum normalen Layout zu gleiten, wenn das
       // finale (ggf. Sanity-)Hero-Bild wirklich fertig geladen ist.
-      patchHeroBackgrounds(map).then(function () {
+      applyHeroBackgrounds(data.heroSettings && data.heroSettings.heroBilder).then(function () {
         window.dispatchEvent(new Event("hero-image-ready"));
       });
+      applyHeroSprueche(data);
       applyCardFocalPoints(map);
       applyServiceGalleries(data);
       applyEinsatzgebiet(data);
       applyLegalPages(data);
       applyKitAnimationSettings(map);
-      applyCallButtonToggle(map);
+      applyCallButtonToggle(data);
       applyVorherNachher(data);
       applyInfoBanner(data);
       if (data.settings && data.settings.logoIconUrl) {

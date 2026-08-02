@@ -1,4 +1,4 @@
-import {heroSlide} from './heroSlide'
+import {heroSettings} from './heroSettings'
 import {trustPoint} from './trustPoint'
 import {service} from './service'
 import {siteSettings} from './siteSettings'
@@ -13,7 +13,7 @@ import {pageImpressum} from './pageImpressum'
 import {pageDatenschutz} from './pageDatenschutz'
 
 export const schemaTypes = [
-  heroSlide,
+  heroSettings,
   trustPoint,
   service,
   siteSettings,

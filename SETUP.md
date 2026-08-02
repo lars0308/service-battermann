@@ -138,18 +138,22 @@ separates, kostenloses CMS-Tool.
    nur an der Stelle im Studio sichtbar, wo er auf der Website auch wirklich
    erscheint.
 3. Dort bearbeitbar:
-   - **Hero-Slide** (4 Stück): Text je Bildwechsel ganz oben, plus die
-     3 rotierenden Sätze für das allererste Bild ("Ihr Allround-Handwerker"
-     / "kümmert sich selbst darum" / "steht für sein Wort"), und PRO SLIDE
-     zwei getrennte Bildfelder:
-     - **Hintergrundbild Desktop (16:9 Querformat)**: für PC/Tablet, Pflicht.
-     - **Hintergrundbild Smartphone (9:16 Hochformat)**: eigenes, hochkant
-       fotografiertes Bild fürs Handy — verhindert, dass ein breites
-       Querformat-Foto auf einem schmalen Screen unscharf zugeschnitten
-       wird. Optional: bleibt das Feld leer, nutzt das Handy automatisch
-       das Desktop-Bild (wie bisher).
-     Beide Felder haben einen eigenen Fokuspunkt (Hotspot) — bei einem
-     Klick/Ziehen im Studio-Bild wird der Bildausschnitt live angepasst.
+   - **Hero-Bereich** (Fach "Startseite (Home)", ein Dokument): Bilder und
+     Sprüche sind bewusst komplett voneinander getrennt, keine feste 1:1-
+     Kopplung mehr zwischen einem bestimmten Bild und einem bestimmten Text:
+     - **Hintergrundbilder** (Array, bis zu 4 werden auf der Website
+       verwendet): pro Bild zwei getrennte Bildfelder — **Desktop (16:9
+       Querformat)**, Pflicht, und **Smartphone (9:16 Hochformat)**,
+       optional (bleibt das Feld leer, nutzt das Handy automatisch das
+       Desktop-Bild). Beide Felder haben einen eigenen Fokuspunkt (Hotspot)
+       — bei einem Klick/Ziehen im Studio-Bild wird der Bildausschnitt live
+       angepasst. Die Bilder wechseln im Hintergrund per Kreuzblende durch.
+     - **Sprüche** (reines Text-Array, beliebig viele über den "+"-Knopf):
+       kurze Sätze, die im Vordergrund unabhängig von den Bildern per
+       Kreuzblende durchwechseln, z. B. „Hilft sofort bei lästigen
+       Kleinreparaturen.“ — direkt im Klartext eintippen, kein Bild nötig.
+     - **"Direkt anrufen"-Button zeigen**: globaler Ein/Aus-Schalter für den
+       grünen Anruf-Button im Hero.
    - **Vorteil** (4 Stück): die vier kurzen Textpunkte direkt unter dem
      Hero-Bild.
    - **Leistungsbereich** (5 Stück): steuert BEIDE Seiten aus einem

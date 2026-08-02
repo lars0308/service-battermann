@@ -20,13 +20,12 @@ import {PinIcon} from '@sanity/icons/Pin'
 // siteSettings, contactInfo, pageImpressum, pageDatenschutz sind Singletons:
 // es soll jeweils nur ein Dokument geben, an eine feste _id gebunden, damit
 // die Website nicht versehentlich mehrere Instanzen bekommt.
-const SINGLETONS = ['siteSettings', 'contactInfo', 'pageImpressum', 'pageDatenschutz']
+const SINGLETONS = ['siteSettings', 'contactInfo', 'pageImpressum', 'pageDatenschutz', 'heroSettings']
 
 // Alle Dokumenttypen, die unten explizit einem Seiten-Fach zugeordnet sind —
 // dient nur der "Sonstiges"-Sicherheitsnetz-Liste ganz unten, falls künftig
 // ein neuer Dokumenttyp hinzukommt und vergessen wird, ihn einzusortieren.
 const EXPLICITLY_PLACED = [
-  'heroSlide',
   'trustPoint',
   'service',
   'vorherNachherProjekt',
@@ -49,7 +48,11 @@ export const structure: StructureResolver = (S) =>
           S.list()
             .title('Startseite (Home)')
             .items([
-              S.documentTypeListItem('heroSlide').title('Hero-Slider (Bilder + Überschriften)'),
+              S.listItem()
+                .title('Hero-Bereich (Bilder + Sprüche)')
+                .child(
+                  S.document().schemaType('heroSettings').documentId('heroSettings').title('Hero-Bereich (Startseite)'),
+                ),
               S.documentTypeListItem('trustPoint').title('Vorteile-Karten (4 Stück)'),
               S.documentTypeListItem('service').title('Leistungs-Kacheln (Bento-Grid „Was ich mache")'),
             ]),
