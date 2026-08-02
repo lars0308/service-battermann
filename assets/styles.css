@@ -696,18 +696,34 @@ section.dim{ background:var(--paper-dim); }
    unten) — steht damit klar unter dem weißen Nav-Balken auf dem Foto, statt
    mit im bodenständigen Textblock zu hängen. */
 .hero-eyebrow-top{
-  position:absolute; top:24px; left:clamp(24px, 5vw, 72px);
-  /* Vorher spannte left+right ohne width die Box unsichtbar über die volle
-     Bildbreite. Jetzt: width:fit-content lässt die Glas-Pille eng am Text
-     anliegen, max-width verhindert nur ein Überlaufen auf schmalen Screens. */
-  width:fit-content; max-width:calc(100% - clamp(24px, 5vw, 72px) - 24px);
+  position:absolute; top:0; left:0; right:0;
+  width:100% !important;
   z-index:10000; margin:0;
-  padding:9px 18px;
+  padding:14px clamp(24px, 5vw, 72px);
   background:rgba(255,255,255,0.08);
-  border:1px solid rgba(255,255,255,0.16);
-  border-radius:999px;
+  border:none;
+  border-bottom:1px solid rgba(255,255,255,0.14);
+  border-radius:0;
   -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
-  box-shadow:0 6px 20px -10px rgba(0,0,0,0.45);
+  box-shadow:0 6px 20px -10px rgba(0,0,0,0.3);
+  /* Bleibt während des 1.5s-Glasintros unbeweglich stehen: kein Transform
+     hier oder auf .hero-slider.is-first-reveal .hero-eyebrow-top — nur die
+     Glaswand selbst (.hero-glass-intro) blendet per Opacity/Blur aus. */
+}
+@media (max-width:768px){
+  .hero-eyebrow-top{
+    font-size:11px !important;
+    letter-spacing:0.02em;
+    /* Kein white-space:nowrap: der volle Text ("HAUSMEISTERSERVICE ·
+       OBJEKTBETREUUNG · ALLROUND-HANDWERK") passt bei lesbarer Schriftgröße
+       erst ab ~430px Breite in eine Zeile (getestet). Erzwungenes nowrap
+       darunter hätte die Seite horizontal scrollbar gemacht — exakt der
+       Bug, der zuvor schon einmal separat gefixt wurde (touch-action:pan-y
+       + overflow-x). Auf den meisten aktuellen Phones (ab ~400px) reicht
+       diese Größe für eine Zeile, auf sehr schmalen Geräten bricht sie
+       kontrolliert auf zwei Zeilen um statt zu überlaufen. */
+    padding:10px clamp(16px, 4vw, 24px);
+  }
 }
 @media (min-width:901px){
   .hero-eyebrow-top{ font-size:0.85rem; }
