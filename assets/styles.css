@@ -9,6 +9,7 @@
   --paper-dim:#EFEBE1;
   --surface-dark:#1A1E24;
   --surface-dark-2:#232933;
+  --surface-deep:#0f0f0f; /* eigener, noch tieferer Ton für die Glasmorphismus-Flächen (Intro, Premium-Karten) */
   --on-dark:#F4F1E9;
   --on-dark-soft:#AFB3B8;
   --accent:#C2953F;
@@ -854,7 +855,8 @@ section.dim{ background:var(--paper-dim); }
 }
 
 .service-list{ border-top:1px solid var(--line); margin-top:32px; }
-.service-row{ border-bottom:1px solid var(--line); scroll-margin-top:90px; }
+.service-row{ border-bottom:1px solid var(--line); scroll-margin-top:90px; position:relative; }
+.service-row-bg{ display:none; } /* nur auf Mobile als Kachel-Hintergrund sichtbar, siehe Media Query unten */
 .service-row:nth-child(1){ transition-delay:0.05s; }
 .service-row:nth-child(2){ transition-delay:0.12s; }
 .service-row:nth-child(3){ transition-delay:0.19s; }
@@ -910,11 +912,53 @@ section.dim{ background:var(--paper-dim); }
 }
 .service-row-gallery img:hover{ transform:scale(1.02); }
 @media (max-width:600px){
-  .service-row-detail{ padding-left:0; }
-  .service-row-title{ font-size:1.05rem; }
-  .service-row-vn{ max-width:none; }
-  .service-row-gallery{ max-width:none; }
-  .service-row-gallery figure{ min-width:100px; }
+  /* Mobiles Leistungs-Akkordeon: dunkle Foto-Kachel statt weißer Liste. Beim
+     Antippen schiebt sich das Hintergrundfoto nach links, während von rechts
+     ein durchsichtiges Glas-Textfenster hereingleitet (Breite + Kachel-Höhe
+     animieren gemeinsam über cubic-bezier, kein max-height:0->480px-Sprung
+     der Desktop-Variante mehr). Keine Nummern mehr, kein blaues Antipp-
+     Aufblitzen (siehe html{-webkit-tap-highlight-color:transparent}). */
+  .service-list{ border-top:none; margin-top:24px; display:flex; flex-direction:column; gap:14px; }
+  .service-row{
+    border-bottom:none; overflow:hidden; border-radius:var(--radius);
+    background:var(--surface-deep);
+    max-height:120px; transition:max-height 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+  .service-row.is-open{ max-height:340px; }
+  .service-row-bg{
+    display:block; position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; z-index:1;
+    transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  }
+  .service-row.is-open .service-row-bg{ transform:translateX(-16%) scale(1.08); }
+  .service-row::after{
+    content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
+    background:linear-gradient(90deg, rgba(15,15,15,0.88) 0%, rgba(15,15,15,0.4) 55%, rgba(15,15,15,0.08) 100%);
+  }
+  .service-row-toggle{
+    position:relative; z-index:3; padding:0 20px; height:120px; border-left:none;
+  }
+  .service-row-num{ display:none; }
+  .service-row-title{ color:#fff; font-size:1.05rem; }
+  .service-row.is-open .service-row-title{ color:#fff; }
+  .service-row-verb{ color:var(--accent); }
+  .service-row-icon{ color:var(--accent); }
+  .service-row-detail{
+    position:absolute; top:0; right:0; bottom:0; z-index:4;
+    width:0; max-height:none; opacity:0; overflow:hidden; padding:0; padding-left:0;
+    display:flex; flex-direction:column; justify-content:center;
+    background:rgba(255,255,255,0.06);
+    -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
+    border-left:1px solid rgba(255,255,255,0.1);
+    transition:width 0.6s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease 0.1s;
+  }
+  .service-row.is-open .service-row-detail{ width:74%; opacity:1; padding:18px 16px; }
+  .service-row-detail p{ color:rgba(244,241,233,0.85); font-size:0.85rem; padding-bottom:10px; max-width:none; }
+  .service-row-detail .inline-cta{ color:var(--accent); }
+  .service-row-vn, .service-row-gallery{ display:none; } /* kein Platz im schmalen Glas-Fenster */
+}
+@media (max-width:600px) and (prefers-reduced-motion: reduce){
+  .service-row, .service-row-bg, .service-row-detail{ transition:none; }
 }
 
 /* ---------- Lightbox ---------- */
@@ -957,25 +1001,46 @@ section.dim{ background:var(--paper-dim); }
 }
 
 
-/* ---------- Versetztes Timeline-Layout (statt starrem Kartenraster) ---------- */
-.timeline{ position:relative; }
-.timeline-item{
-  display:grid; grid-template-columns:140px 1fr; gap:40px;
-  align-items:start; padding:44px 0; border-top:1px solid var(--line);
+/* ---------- "Drei Dinge"-Sektion: Bento-Glass-Look statt Timeline ----------
+   Tiefdunkler Premium-Hintergrund (--surface-deep) mit drei freischwebenden
+   Frosted-Glass-Karten, keine Nummerierung mehr — die Karten tragen sich
+   über Icon + Titel statt über eine Zählung. */
+.promise-section{ background:var(--surface-deep); }
+.promise-section .eyebrow{ color:var(--accent); }
+.promise-section h2{ color:var(--on-dark); }
+.promise-grid{
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:24px;
 }
-.timeline-item:last-child{ border-bottom:1px solid var(--line); }
-.timeline-item:nth-child(even){ grid-template-columns:1fr 140px; }
-.timeline-item:nth-child(even) .timeline-num{ order:2; text-align:right; }
-.timeline-item:nth-child(even) .timeline-content{ order:1; text-align:right; margin-left:auto; }
-.timeline-num{
-  font-family:'Archivo Black', sans-serif; font-size:clamp(2.6rem,5vw,4rem);
-  color:var(--accent); line-height:0.9;
+.promise-card{
+  padding:36px 30px;
+  background:rgba(255,255,255,0.02);
+  border:1px solid rgba(255,255,255,0.06);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-radius:var(--radius);
+  transition:transform 0.5s cubic-bezier(0.16,1,0.3,1), border-color 0.5s ease, background 0.5s ease;
 }
-.timeline-content{ max-width:52ch; }
-.timeline-content h3{ margin-top:0; font-size:1.3rem; }
+.promise-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(194,149,63,0.35);
+  background:rgba(255,255,255,0.04);
+}
+.promise-icon{
+  display:flex; align-items:center; justify-content:center;
+  width:52px; height:52px; margin-bottom:22px;
+  border-radius:50%; color:var(--accent);
+  background:rgba(194,149,63,0.1); border:1px solid rgba(194,149,63,0.25);
+}
+.promise-card h3{
+  font-family:'Archivo Black', sans-serif; font-weight:400;
+  color:var(--on-dark); font-size:1.15rem; margin:0 0 12px;
+}
+.promise-card p{
+  font-family:'Plus Jakarta Sans', sans-serif; color:var(--on-dark-soft);
+  font-size:0.95rem; line-height:1.6; margin:0;
+}
 @media (max-width:700px){
-  .timeline-item, .timeline-item:nth-child(even){ grid-template-columns:1fr; gap:12px; padding:32px 0; }
-  .timeline-item:nth-child(even) .timeline-num, .timeline-item:nth-child(even) .timeline-content{ order:0; text-align:left; margin-left:0; }
+  .promise-grid{ grid-template-columns:1fr; gap:16px; }
+  .promise-card{ padding:28px 24px; }
 }
 
 /* ---------- Split-Sektion (Bild + Text versetzt) ---------- */
@@ -1176,6 +1241,46 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
 .badge-list span{
   font-family:'Montserrat',sans-serif; font-weight:600; font-size:0.8rem;
   background:var(--paper-dim); border:1px solid var(--line); border-radius:999px; padding:6px 14px;
+}
+
+/* ---------- Einsatzgebiet: interaktive Orts-Pillen + Anfahrtskosten-Glaspanel ---------- */
+.einsatzgebiet-interactive{ position:relative; }
+.einsatzgebiet-pill{
+  font-family:'Montserrat',sans-serif; font-weight:600; font-size:0.8rem;
+  background:var(--paper-dim); border:1px solid var(--line); border-radius:999px; padding:6px 14px;
+  cursor:pointer; color:var(--ink); transition:background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+.einsatzgebiet-pill:hover{ border-color:var(--accent); }
+.einsatzgebiet-pill.is-active{
+  background:#25D366; border-color:#25D366; color:#0b2a17;
+}
+.einsatzgebiet-popover{
+  position:absolute; top:0; right:0; z-index:50; width:min(280px, 90vw);
+  background:rgba(20,20,20,0.55); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.12); border-radius:var(--radius);
+  padding:18px 20px; box-shadow:var(--shadow);
+  display:flex; flex-direction:column; gap:4px;
+  opacity:0; transform:translateY(-8px); pointer-events:none;
+  transition:opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+.einsatzgebiet-popover:not([hidden]){ opacity:1; transform:translateY(0); pointer-events:auto; }
+.einsatzgebiet-popover-ort{
+  font-family:'Archivo Black', sans-serif; color:#fff; font-size:1rem;
+}
+.einsatzgebiet-popover-kosten{
+  font-family:'Plus Jakarta Sans', sans-serif; color:rgba(244,241,233,0.8); font-size:0.9rem;
+}
+.einsatzgebiet-popover-close{
+  position:absolute; top:8px; right:10px; background:none; border:none; color:rgba(255,255,255,0.6);
+  font-size:1.2rem; line-height:1; cursor:pointer; padding:4px;
+}
+.einsatzgebiet-popover-close:hover{ color:#fff; }
+@media (max-width:700px){
+  .einsatzgebiet-popover{ position:static; margin:12px 0 20px; transform:none; width:100%; }
+  .einsatzgebiet-popover:not([hidden]){ transform:none; }
+}
+@media (prefers-reduced-motion: reduce){
+  .einsatzgebiet-popover{ transition:none; }
 }
 .announce-bar{ background:var(--accent); color:var(--accent-ink); text-align:center; padding:10px 16px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.85rem; }
 

@@ -149,6 +149,13 @@ separates, kostenloses CMS-Tool.
      Startseite. So pflegst du jeden Bereich nur an einer Stelle statt
      doppelt für beide Seiten.
    - **FAQ-Eintrag** (7 Stück): Frage und Antwort auf `einsatzgebiet-faq.html`.
+   - **Einsatzgebiet-Ort** (beliebig viele): Ortsname + Anfahrtskosten je Ort
+     (z. B. „Kostenlose Anfahrt“ oder „25,- € Pauschale“). Erscheinen als
+     anklickbare Pillen über der Anfahrtskarte auf `einsatzgebiet-faq.html` —
+     ein Klick zeigt die hinterlegten Kosten in einem Glas-Popover. Ohne
+     eigene Sanity-Einträge bleiben die 6 statischen Fallback-Pillen
+     (Lindhorst, Stadthagen, Bückeburg, Bad Nenndorf, Beckedorf,
+     Barsinghausen) stehen.
    - **Kontaktdaten**: Telefonnummer, WhatsApp-Link, E-Mail, Erreichbarkeit
      — wirkt sich auf Footer, Mega-Menü und den "Direkt anrufen"-Button im
      Hero auf allen Seiten aus.

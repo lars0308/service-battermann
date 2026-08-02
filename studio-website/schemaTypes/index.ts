@@ -7,6 +7,7 @@ import {vorherNachherProjekt} from './vorherNachherProjekt'
 import {faqEntry} from './faqEntry'
 import {megaMenuLink} from './megaMenuLink'
 import {infoBanner} from './infoBanner'
+import {einsatzgebietOrt} from './einsatzgebietOrt'
 
 export const schemaTypes = [
   heroSlide,
@@ -18,4 +19,5 @@ export const schemaTypes = [
   faqEntry,
   megaMenuLink,
   infoBanner,
+  einsatzgebietOrt,
 ]

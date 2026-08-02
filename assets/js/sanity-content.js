@@ -101,6 +101,7 @@
     '"infoBanner":*[_type=="infoBanner"][0]{text,active,expiresAt,zielLink},' +
     '"vorherNachher":*[_type=="vorherNachherProjekt"]{titel,beschreibung,kategorie,"vorherUrl":vorherBild.asset->url' + IMG_SUFFIX + ',vorherAlt,"nachherUrl":nachherBild.asset->url' + IMG_SUFFIX + ',nachherAlt},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
+    '"einsatzgebiet":*[_type=="einsatzgebietOrt"]|order(order asc){order,name,anfahrtskosten},' +
     '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,introDurationMs,introBlurStrength,staticFormsApiKey,kitCardIntervalMs,kitActiveScale,kitInactiveOpacity,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
@@ -477,6 +478,33 @@
     });
   }
 
+  // Einsatzgebiet-Orte (einsatzgebiet-faq.html): die Pillen-Liste wird komplett
+  // aus Sanity neu aufgebaut, sobald mindestens ein einsatzgebietOrt-Dokument
+  // existiert — Lars kann Orte frei hinzufügen/entfernen, ohne dass sich die
+  // Liste an feste HTML-Positionen halten müsste (anders als z. B. die 5
+  // Leistungen, deren Reihenfolge/Anzahl im HTML fest verankert ist). Ohne
+  // Sanity-Daten bleiben die 6 statischen HTML-Pillen als Fallback stehen. Der
+  // Klick-Handler in main.js hängt nur an data-Attributen, nicht an der
+  // Erzeugung der Buttons — funktioniert also unverändert für neu gebaute wie
+  // für die statischen Fallback-Pillen.
+  function applyEinsatzgebiet(data) {
+    var orte = data.einsatzgebiet || [];
+    if (!orte.length) return;
+    var wrap = document.querySelector("[data-einsatzgebiet-pills]");
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    orte.forEach(function (ort) {
+      if (!ort || !ort.name) return;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "einsatzgebiet-pill";
+      btn.setAttribute("data-ort", ort.name);
+      btn.setAttribute("data-kosten", ort.anfahrtskosten || "Anfahrtskosten auf Anfrage");
+      btn.textContent = ort.name;
+      wrap.appendChild(btn);
+    });
+  }
+
   // Hero-Hintergrundbilder: Bild wird VOR dem Einsetzen im Hintergrund vorgeladen,
   // damit nie eine leere/graue Fläche aufblitzt, während das neue Bild lädt.
   //
@@ -605,6 +633,7 @@
       });
       applyCardFocalPoints(map);
       applyServiceGalleries(data);
+      applyEinsatzgebiet(data);
       applyKitAnimationSettings(map);
       applyCallButtonToggle(map);
       applyVorherNachher(data);

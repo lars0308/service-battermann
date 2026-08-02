@@ -601,6 +601,37 @@
     } catch (e) {}
   }
 
+  // Einsatzgebiet: Orts-Pillen zeigen per Klick die Anfahrtskosten im Glas-
+  // Popover. Nur eine Pille gleichzeitig aktiv; nochmaliges Klicken derselben
+  // Pille schließt das Popover wieder. Inhalte (Ortsname + Kosten) stehen als
+  // data-Attribute an jeder Pille (siehe HTML/sanity-content.js), kein Sanity-
+  // Fetch hier nötig.
+  var einsatzgebietPillsWrap = document.querySelector("[data-einsatzgebiet-pills]");
+  var einsatzgebietPopover = document.querySelector("[data-einsatzgebiet-popover]");
+  if (einsatzgebietPillsWrap && einsatzgebietPopover) {
+    var popoverOrtEl = einsatzgebietPopover.querySelector("[data-einsatzgebiet-popover-ort]");
+    var popoverKostenEl = einsatzgebietPopover.querySelector("[data-einsatzgebiet-popover-kosten]");
+    var closeEinsatzgebietPopover = function () {
+      einsatzgebietPopover.hidden = true;
+      einsatzgebietPillsWrap.querySelectorAll(".einsatzgebiet-pill.is-active").forEach(function (el) {
+        el.classList.remove("is-active");
+      });
+    };
+    einsatzgebietPillsWrap.addEventListener("click", function (e) {
+      var pill = e.target.closest(".einsatzgebiet-pill");
+      if (!pill) return;
+      var wasActive = pill.classList.contains("is-active");
+      closeEinsatzgebietPopover();
+      if (wasActive) return; // erneuter Klick auf dieselbe Pille -> nur schließen
+      pill.classList.add("is-active");
+      popoverOrtEl.textContent = pill.getAttribute("data-ort") || "";
+      popoverKostenEl.textContent = pill.getAttribute("data-kosten") || "";
+      einsatzgebietPopover.hidden = false;
+    });
+    var closeBtn = einsatzgebietPopover.querySelector("[data-einsatzgebiet-close]");
+    if (closeBtn) closeBtn.addEventListener("click", closeEinsatzgebietPopover);
+  }
+
   // Datei-Upload: Dateinamen anzeigen
   var fileInput = document.querySelector('input[type="file"]');
   if (fileInput) {
