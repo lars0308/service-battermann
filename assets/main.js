@@ -109,7 +109,7 @@
       // Wert umgesetzt: kommt die Sanity-Antwort später als der Seitenstart,
       // aber noch bevor der Standardwert erreicht ist, greift sie trotzdem
       // rechtzeitig statt erst beim nächsten Seitenaufruf.
-      var DEFAULT_INTRO_DURATION_MS = 3000;
+      var DEFAULT_INTRO_DURATION_MS = 1500;
       var introStartedAt = Date.now();
 
       var heroImageSettled = false;
@@ -133,11 +133,11 @@
           return;
         }
         heroSliderEl.classList.remove("is-first-reveal");
-        // 1.5s Auflöse-Transition (siehe styles.css) + kleiner Puffer, bevor
+        // 0.8s Auflöse-Transition (siehe styles.css) + kleiner Puffer, bevor
         // die Glaswand komplett aus dem Layout entfernt wird.
         window.setTimeout(function () {
           if (heroGlassEl) heroGlassEl.style.display = "none";
-        }, 1550);
+        }, 850);
       };
       window.setTimeout(revealHero, 100);
     }

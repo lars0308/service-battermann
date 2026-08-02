@@ -38,6 +38,8 @@ export const heroSettings = defineType({
               title: 'Bild Desktop (16:9 Querformat)',
               type: 'image',
               options: {hotspot: true},
+              description:
+                'Leer gelassen: NICHT "kein Bild", sondern das aktuell auf der Website fest hinterlegte Foto für genau diese Folie bleibt stehen (siehe interner Titel oben, dort steht der Dateiname). Erst ein hier hochgeladenes Bild ersetzt es.',
             }),
             defineField({
               name: 'bildMobile',
@@ -89,10 +91,30 @@ export const heroSettings = defineType({
         },
       ],
       initialValue: [
-        {folieName: 'Lars persönlich', spruchText: 'Ihr Allround-Handwerker', bildAktiv: true, spruchAktiv: true},
-        {folieName: 'Gewerk Garten', spruchText: 'Pflegt Garten & Außenanlagen', bildAktiv: true, spruchAktiv: true},
-        {folieName: 'Gewerk Montage', spruchText: 'Montiert Möbel & Regale', bildAktiv: true, spruchAktiv: true},
-        {folieName: 'Gewerk Elektro', spruchText: 'Behebt Elektro-Kleinreparaturen', bildAktiv: true, spruchAktiv: true},
+        {
+          folieName: 'Lars persönlich (aktuelles Standardbild: portrait-lars-hero.jpg)',
+          spruchText: 'Ihr Allround-Handwerker',
+          bildAktiv: true,
+          spruchAktiv: true,
+        },
+        {
+          folieName: 'Gewerk Garten (aktuelles Standardbild: arbeit-garten.jpg)',
+          spruchText: 'Pflegt Garten & Außenanlagen',
+          bildAktiv: true,
+          spruchAktiv: true,
+        },
+        {
+          folieName: 'Gewerk Montage (aktuelles Standardbild: arbeit-montage.jpg)',
+          spruchText: 'Montiert Möbel & Regale',
+          bildAktiv: true,
+          spruchAktiv: true,
+        },
+        {
+          folieName: 'Gewerk Elektro (aktuelles Standardbild: elektro-fehlersuche.jpg)',
+          spruchText: 'Behebt Elektro-Kleinreparaturen',
+          bildAktiv: true,
+          spruchAktiv: true,
+        },
       ],
       validation: (rule) => rule.min(1),
     }),

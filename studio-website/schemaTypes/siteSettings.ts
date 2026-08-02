@@ -128,8 +128,8 @@ export const siteSettings = defineType({
       title: 'Intro: Anzeige-Dauer der Glaswand (Millisekunden)',
       type: 'number',
       description:
-        'Wie lange Slogan + Buttons zentriert vor der Glaswand stehen bleiben, bevor sie wegleitet. Standard: 3000 (3 Sekunden).',
-      initialValue: 3000,
+        'Wie lange Slogan + Buttons zentriert vor der Glaswand stehen bleiben, bevor sie wegleitet. Standard: 1500 (1,5 Sekunden).',
+      initialValue: 1500,
       validation: (rule) => rule.min(500).max(10000),
       group: 'intro',
     }),

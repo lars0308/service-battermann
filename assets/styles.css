@@ -556,11 +556,12 @@ section.dim{ background:var(--paper-dim); }
     height:42px !important; padding:0 12px !important;
     font-size:14px; font-weight:500; gap:6px;
     display:inline-flex; align-items:center; justify-content:center;
+    border-radius:8px !important;
   }
   .hero-cta-choreo .btn svg{ width:15px; height:15px; flex-shrink:0; }
   /* Dicke, harte Rahmen weg — stattdessen hauchdünne, farblich passende
      Lichtkanten statt des massiven 2px-Standardrahmens aus der Basis-.btn. */
-  .hero-cta-choreo .btn-hero-primary{ border:1px solid rgba(212,175,55,0.3); }
+  .hero-cta-choreo .btn-hero-primary{ border:1px solid rgba(212,175,55,0.25); }
   .hero-cta-choreo .btn-whatsapp{ border:1px solid rgba(37,211,102,0.35); }
 }
 
@@ -647,7 +648,7 @@ section.dim{ background:var(--paper-dim); }
      Bild startet leicht vergrößert/weichgezeichnet und schärft sich synchron
      zur auflösenden Glaswand auf volle Größe/Schärfe. */
   transform:scale(1); filter:blur(0);
-  transition:transform 1.5s cubic-bezier(0.16,1,0.3,1), filter 1.5s cubic-bezier(0.16,1,0.3,1);
+  transition:transform 0.8s cubic-bezier(0.16,1,0.3,1), filter 0.8s cubic-bezier(0.16,1,0.3,1);
 }
 @media (max-width:768px){
   .hero-slide img{ object-position:var(--hero-mobile-pos, var(--hero-desktop-pos, center 30%)); }
@@ -700,7 +701,7 @@ section.dim{ background:var(--paper-dim); }
    finalen Position (kein Transform mehr auf .hero-slider-content/.hero-eyebrow-
    top) — nur die Glaswand löst sich per Opacity/Blur an Ort und Stelle auf,
    während das Hero-Bild dahinter synchron von Skalierung+Weichzeichnung auf
-   volle Schärfe übergeht (siehe .hero-slide img oben). Nach Ablauf der 1.5s-
+   volle Schärfe übergeht (siehe .hero-slide img oben). Nach Ablauf der 0.8s-
    Transition setzt main.js zusätzlich display:none auf die Glaswand — danach
    exakt das normale, unveränderte Layout, keine bleibende CSS-Abweichung. */
 .hero-glass-intro{
@@ -710,7 +711,7 @@ section.dim{ background:var(--paper-dim); }
      den Website-Einstellungen), 45px greift als Standard ohne Sanity-Wert. */
   -webkit-backdrop-filter:blur(var(--intro-blur, 45px)); backdrop-filter:blur(var(--intro-blur, 45px));
   opacity:1;
-  transition:opacity 1.5s cubic-bezier(0.16,1,0.3,1), -webkit-backdrop-filter 1.5s cubic-bezier(0.16,1,0.3,1), backdrop-filter 1.5s cubic-bezier(0.16,1,0.3,1);
+  transition:opacity 0.8s cubic-bezier(0.16,1,0.3,1), -webkit-backdrop-filter 0.8s cubic-bezier(0.16,1,0.3,1), backdrop-filter 0.8s cubic-bezier(0.16,1,0.3,1);
 }
 .hero-slider:not(.is-first-reveal) .hero-glass-intro{
   opacity:0; pointer-events:none;
