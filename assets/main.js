@@ -732,12 +732,17 @@
     try { ack = localStorage.getItem(COOKIE_KEY); } catch (e) { ack = null; }
     if (!ack) {
       banner.hidden = false;
+      // Solange das fixierte Banner sichtbar ist, überlagert es den unteren
+      // Bildrand — .hero-slide-dots (Hero-Slider) rücken per CSS so lange
+      // sichtbar nach oben, damit sie klickbar bleiben (siehe styles.css).
+      document.body.classList.add("has-cookie-banner");
     }
     var acceptBtn = banner.querySelector("[data-cookie-accept]");
     if (acceptBtn) {
       acceptBtn.addEventListener("click", function () {
         try { localStorage.setItem(COOKIE_KEY, "1"); } catch (e) {}
         banner.hidden = true;
+        document.body.classList.remove("has-cookie-banner");
       });
     }
   }
