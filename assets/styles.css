@@ -518,6 +518,11 @@ section.dim{ background:var(--paper-dim); }
      weil Desktop- und Mobile-Bild jetzt zwei unterschiedliche Fotos mit
      potenziell unterschiedlichem Fokuspunkt sein können. */
   object-position:var(--hero-desktop-pos, center 30%);
+  /* Tiefen-Reveal beim Erstaufruf (siehe .hero-slider.is-first-reveal unten):
+     Bild startet leicht vergrößert/weichgezeichnet und schärft sich synchron
+     zur auflösenden Glaswand auf volle Größe/Schärfe. */
+  transform:scale(1); filter:blur(0);
+  transition:transform 1.5s cubic-bezier(0.16,1,0.3,1), filter 1.5s cubic-bezier(0.16,1,0.3,1);
 }
 @media (max-width:768px){
   .hero-slide img{ object-position:var(--hero-mobile-pos, var(--hero-desktop-pos, center 30%)); }
@@ -531,62 +536,54 @@ section.dim{ background:var(--paper-dim); }
   transition:background 1s cubic-bezier(0.16,1,0.3,1);
 }
 .hero-slider .hero-slider-content{
-  display:block; position:relative; z-index:6;
+  display:block; position:relative; z-index:10000;
   padding-bottom:calc(var(--space-5) + 10px);
   max-width:none; margin:0;
   padding-left:clamp(24px, 5vw, 72px); padding-right:24px;
-  transform:translateY(0); transition:transform 1.4s cubic-bezier(0.25,1,0.5,1);
+}
+/* Goldene Dachzeile: bewusst AUS dem bodenständigen .hero-slider-content-Block
+   herausgelöst und direkt an der Oberkante des Hero-Bildes verankert (relativ
+   zum umschließenden .hero-slider, nicht zur Überschrift/den Buttons weiter
+   unten) — steht damit klar unter dem weißen Nav-Balken auf dem Foto, statt
+   mit im bodenständigen Textblock zu hängen. */
+.hero-eyebrow-top{
+  position:absolute; top:20px; left:clamp(24px, 5vw, 72px); right:24px;
+  z-index:10000; margin:0;
 }
 
-/* ---------- Frosted-Glass-Reveal-Intro (nur beim allerersten Seitenaufruf) ----------
+/* ---------- Tiefen-Reveal-Intro (nur beim allerersten Seitenaufruf) ----------
    Die Klasse .is-first-reveal steht von Anfang an im HTML (kein FOUC-Risiko: der
    "ladende" Look IST der erste gemalte Zustand). main.js hält sie für exakt 3s
-   (inszenierte Sequenz, siehe main.js), entfernt sie dann — CSS übernimmt das
-   Wegleiten der Glaswand + das synchrone Gleiten des Slogans in die Endposition.
-   Nach Ablauf der 1.4s-Transition setzt main.js zusätzlich display:none auf die
-   Glaswand (siehe .hero-glass-intro) — danach exakt das normale, unveränderte
-   Layout, keine bleibende CSS-Abweichung. transform/opacity statt Layout-
-   Umschaltung, weil sich nur das sauber animieren lässt. */
+   (bzw. den in Sanity hinterlegten Wert), entfernt sie dann. Text (goldene
+   Dachzeile, Überschrift, Buttons) steht die GANZE Zeit unbeweglich an seiner
+   finalen Position (kein Transform mehr auf .hero-slider-content/.hero-eyebrow-
+   top) — nur die Glaswand löst sich per Opacity/Blur an Ort und Stelle auf,
+   während das Hero-Bild dahinter synchron von Skalierung+Weichzeichnung auf
+   volle Schärfe übergeht (siehe .hero-slide img oben). Nach Ablauf der 1.5s-
+   Transition setzt main.js zusätzlich display:none auf die Glaswand — danach
+   exakt das normale, unveränderte Layout, keine bleibende CSS-Abweichung. */
 .hero-glass-intro{
-  position:absolute; inset:0; z-index:5;
+  position:absolute; inset:0; z-index:9998;
   background:rgba(15,15,15,0.65);
   /* --intro-blur wird von sanity-content.js gesetzt (introBlurStrength aus
      den Website-Einstellungen), 45px greift als Standard ohne Sanity-Wert. */
   -webkit-backdrop-filter:blur(var(--intro-blur, 45px)); backdrop-filter:blur(var(--intro-blur, 45px));
-  transform:translateY(0); opacity:1;
-  transition:transform 1.4s cubic-bezier(0.25,1,0.5,1), opacity 1.4s cubic-bezier(0.25,1,0.5,1);
+  opacity:1;
+  transition:opacity 1.5s cubic-bezier(0.16,1,0.3,1), -webkit-backdrop-filter 1.5s cubic-bezier(0.16,1,0.3,1), backdrop-filter 1.5s cubic-bezier(0.16,1,0.3,1);
 }
 .hero-slider:not(.is-first-reveal) .hero-glass-intro{
-  transform:translateY(100%); opacity:0; pointer-events:none;
+  opacity:0; pointer-events:none;
+  -webkit-backdrop-filter:blur(0); backdrop-filter:blur(0);
 }
-.hero-slider.is-first-reveal .hero-slider-content{
-  transform:translateY(-28vh); text-align:center; padding-left:24px;
-}
-.hero-slider.is-first-reveal .eyebrow,
 .hero-slider.is-first-reveal .hero-slide-dots{
   opacity:0; pointer-events:none; transition:opacity 0.5s ease;
 }
-/* Die beiden Hero-Buttons bleiben während des Intros normal sichtbar/anklickbar
-   (kein opacity:0 mehr) — nur die Ausrichtung wechselt auf zentriert, solange
-   die Glaswand steht; verschwindet die Klasse, springt sie synchron mit dem
-   Wegleiten der Glaswand auf ihre normale linksbündige Ausrichtung zurück. */
-.hero-slider.is-first-reveal .cta-row{ justify-content:center; }
-/* Kernbereiche-Subzeile unter der Überschrift, nur während des Intros sichtbar
-   (siehe HTML: data-hero-intro-subline). Kein class-gated display:none, weil
-   sie zusammen mit Überschrift + Buttons ALS EINE EINHEIT über die vollen 1.4s
-   der Ausleit-Transition sichtbar bleiben muss (nicht schon bei Entfernen der
-   .is-first-reveal-Klasse verschwinden darf) — main.js blendet sie erst nach
-   Abschluss der Transition per display:none endgültig aus (wie die Glaswand).
-   Fehlt das Sanity-/HTML-Element ganz, greift einfach der HTML-Fallback-Text. */
-.hero-intro-subline{
-  font-family:'Plus Jakarta Sans',sans-serif; font-weight:500;
-  font-size:clamp(0.9rem, 1.6vw, 1.05rem); letter-spacing:0.01em;
-  color:rgba(244,241,233,0.78);
-  margin:calc(var(--space-2) * -1) 0 var(--space-3);
+.hero-slider.is-first-reveal .hero-slide img{
+  transform:scale(1.06); filter:blur(15px);
 }
 @media (prefers-reduced-motion: reduce){
   .hero-glass-intro,
-  .hero-slider.is-first-reveal .hero-slider-content{ transition:none; }
+  .hero-slide img{ transition:none; }
 }
 .hero-slide-heading-wrap{ position:relative; margin-bottom:var(--space-3); }
 .hero-slide-h1{ position:relative; margin:0; display:grid; }

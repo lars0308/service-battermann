@@ -63,10 +63,13 @@
     revealEls.forEach(function (el) { io.observe(el); });
   }
 
-  // Einmaliges Frosted-Glass-Reveal-Intro (nur Startseite): Die Klasse
-  // .is-first-reveal steht von Anfang an im HTML (siehe styles.css) und zeigt
-  // Slogan, Kernbereiche-Subzeile und die beiden Hero-Buttons zentriert vor
-  // einer blickdichten Glaswand (.hero-glass-intro, backdrop-filter blur).
+  // Einmaliger Tiefen-Reveal (nur Startseite): Text (goldene Dachzeile,
+  // Überschrift, beide Buttons) steht von der allerersten Millisekunde an
+  // unbeweglich an seiner finalen Position (siehe styles.css, kein Transform
+  // mehr auf .hero-slider-content) — bewegt wird NUR die Glaswand (Opacity-
+  // Auflösung) und dahinter das Hero-Bild (Skalierung/Weichzeichner-Übergang
+  // auf volle Schärfe). Die Klasse .is-first-reveal steht von Anfang an im
+  // HTML (siehe styles.css) und hält beides fest, bis main.js sie entfernt.
   //
   // NUR beim echten Erstaufruf/Neuladen der Startseite in dieser Browser-
   // Sitzung, NICHT bei jedem internen Link-Klick zurück auf die Startseite:
@@ -77,7 +80,6 @@
   // echten Reload wird der Sitzungs-Merker ignoriert.
   var heroSliderEl = document.querySelector(".hero-slider.is-first-reveal");
   var heroGlassEl = document.querySelector("[data-hero-glass-intro]");
-  var heroSublineEl = document.querySelector("[data-hero-intro-subline]");
   if (heroSliderEl) {
     var introAlreadySeen = false;
     try {
@@ -94,7 +96,6 @@
     var skipIntroCleanup = function () {
       heroSliderEl.classList.remove("is-first-reveal");
       if (heroGlassEl) heroGlassEl.style.display = "none";
-      if (heroSublineEl) heroSublineEl.style.display = "none";
     };
 
     if (reduceMotion || introAlreadySeen) {
@@ -132,10 +133,11 @@
           return;
         }
         heroSliderEl.classList.remove("is-first-reveal");
+        // 1.5s Auflöse-Transition (siehe styles.css) + kleiner Puffer, bevor
+        // die Glaswand komplett aus dem Layout entfernt wird.
         window.setTimeout(function () {
           if (heroGlassEl) heroGlassEl.style.display = "none";
-          if (heroSublineEl) heroSublineEl.style.display = "none";
-        }, 1450);
+        }, 1550);
       };
       window.setTimeout(revealHero, 100);
     }
