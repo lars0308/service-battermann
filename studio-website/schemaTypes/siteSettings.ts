@@ -11,9 +11,7 @@ export const siteSettings = defineType({
     {name: 'nav', title: 'Navigation'},
     {name: 'hero', title: 'Hero'},
     {name: 'bento', title: 'Startseite: Leistungs-Kacheln (Überschrift)'},
-    {name: 'intro', title: 'Glas-Intro (Startseite)'},
     {name: 'forms', title: 'Formular'},
-    {name: 'kit', title: 'Auto-Rotate-Vorschauschleife'},
     {name: 'werHierAnpackt', title: 'Startseite: „Wer hier anpackt"'},
   ],
   fields: [
@@ -85,24 +83,6 @@ export const siteSettings = defineType({
       group: 'hero',
     }),
     defineField({
-      name: 'heroAutoplayMs',
-      title: 'Slidertuning: autoplaySpeed – Standzeit je Bild (Millisekunden)',
-      type: 'number',
-      description: 'Wie lange ein Hero-Bild stehen bleibt, bevor zum nächsten gewechselt wird. Standard: 5000.',
-      initialValue: 5000,
-      validation: (rule) => rule.min(2000).max(15000),
-      group: 'hero',
-    }),
-    defineField({
-      name: 'heroTransitionMs',
-      title: 'Slidertuning: transitionSpeed – Dauer der Kreuzblende (Millisekunden)',
-      type: 'number',
-      description: 'Wie lange die Überblendung zwischen zwei Hero-Bildern dauert. Standard: 1200.',
-      initialValue: 1200,
-      validation: (rule) => rule.min(300).max(4000),
-      group: 'hero',
-    }),
-    defineField({
       name: 'bentoEyebrow',
       title: 'Unterzeile (über der Überschrift)',
       type: 'string',
@@ -124,41 +104,12 @@ export const siteSettings = defineType({
       group: 'bento',
     }),
     defineField({
-      name: 'introDurationMs',
-      title: 'Intro: Anzeige-Dauer der Glaswand (Millisekunden)',
-      type: 'number',
-      description:
-        'Wie lange Slogan + Buttons zentriert vor der Glaswand stehen bleiben, bevor sie wegleitet. Standard: 1500 (1,5 Sekunden).',
-      initialValue: 1500,
-      validation: (rule) => rule.min(500).max(10000),
-      group: 'intro',
-    }),
-    defineField({
-      name: 'introBlurStrength',
-      title: 'Intro: Weichzeichner-Stärke der Glaswand (Pixel)',
-      type: 'number',
-      description: 'Stärke des Blur-Effekts, durch den das Hero-Bild hindurchschimmert. Standard: 45.',
-      initialValue: 45,
-      validation: (rule) => rule.min(0).max(100),
-      group: 'intro',
-    }),
-    defineField({
       name: 'staticFormsApiKey',
       title: 'Static Forms API-Key (Kontaktformular)',
       type: 'string',
       description:
         'Ohne diesen Key nimmt das Kontaktformular auf kontakt.html keine Anfragen entgegen. Key von staticforms.dev, siehe SETUP.md.',
       group: 'forms',
-    }),
-    defineField({
-      name: 'kitCardIntervalMs',
-      title: 'Auto-Rotate-Vorschauschleife: Zeit pro Kachel (Millisekunden)',
-      type: 'number',
-      description:
-        'Steuert, wie lange jede der 5 Leistungskacheln im Ruhezustand automatisch im Fokus steht (Bild schiebt links, Glasfenster öffnet), bevor zur nächsten weitergeschaltet wird. Pausiert sofort bei Hover/Tap. Standard: 5000.',
-      initialValue: 5000,
-      validation: (rule) => rule.min(2000).max(10000),
-      group: 'kit',
     }),
     defineField({
       name: 'bereichsLink',

@@ -27,6 +27,7 @@ const SINGLETONS = [
   'pageDatenschutz',
   'heroSettings',
   'themeSettings',
+  'effectSettings',
   'pageHome',
   'pageUeberMich',
   'pageLeistungen',
@@ -194,6 +195,14 @@ export const structure: StructureResolver = (S) =>
                 .title('Design & Farben')
                 .child(
                   S.document().schemaType('themeSettings').documentId('themeSettings').title('Design & Farben'),
+                ),
+              S.listItem()
+                .title('Kinetik-Studio (Zeiten & Effekte)')
+                .child(
+                  S.document()
+                    .schemaType('effectSettings')
+                    .documentId('effectSettings')
+                    .title('Kinetik-Studio (Zeiten & Effekte)'),
                 ),
               S.listItem()
                 .title('Kontaktdaten')

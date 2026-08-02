@@ -18,7 +18,7 @@ function marker(name: string, title: string) {
     title,
     fields: [
       defineField({
-        name: '_placeholder',
+        name: 'placeholder',
         type: 'string',
         hidden: true,
       }),
