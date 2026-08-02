@@ -357,8 +357,12 @@
   // Als window-Property statt lokaler Konstante, damit sanity-content.js die Liste
   // live ersetzen kann (Lars pflegt die 3 Textvarianten in Sanity statt im Code).
   window.__heroRoundTexts = ["Ihr Allround-Handwerker", "kümmert sich selbst darum", "steht für sein Wort"];
-  // Gleiches Prinzip für die Wechselgeschwindigkeit (Sanity: Website-Einstellungen → Hero).
-  window.__heroAutoplayMs = 5200;
+  // Gleiches Prinzip für die Wechselgeschwindigkeit (Sanity: Website-Einstellungen → Hero,
+  // Slidertuning autoplaySpeed/transitionSpeed).
+  window.__heroAutoplayMs = 5000;
+  window.__heroTransitionMs = 1200;
+  var heroSlidesWrap = document.querySelector(".hero-slides");
+  if (heroSlidesWrap) heroSlidesWrap.style.setProperty("--hero-transition-speed", window.__heroTransitionMs + "ms");
   if (heroSlides.length && heroLines.length) {
     var heroCurrent = 0;
     var heroRound = 0;

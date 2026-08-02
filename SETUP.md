@@ -127,7 +127,17 @@ separates, kostenloses CMS-Tool.
 
 1. `https://service-battermann.sanity.studio` öffnen und mit deinem
    Sanity-Konto anmelden (Projekt-ID `9bz9h1mi`, Dataset `production`).
-2. Dort bearbeitbar:
+2. Das Studio ist links strikt nach den echten Webseiten sortiert (nicht
+   nach Dokumenttypen): eigene Fächer für "Startseite (Home)", "Seite
+   Leistungen (Details)", "Seite Über mich", "Seite Einsatzgebiet",
+   "Rechtstexte (Footer)" und ganz unten "Website-weit" für alles, was auf
+   mehreren Seiten gleichzeitig wirkt (Navigation, Kontaktdaten, Formular-
+   Key). Inhalte, die auf zwei Seiten erscheinen (z. B. ein Leistungsbereich:
+   Kachel auf der Startseite UND ausführlicher Bereich auf der Leistungs-
+   seite), tauchen bewusst in beiden Fächern auf — es ist derselbe Datensatz,
+   nur an der Stelle im Studio sichtbar, wo er auf der Website auch wirklich
+   erscheint.
+3. Dort bearbeitbar:
    - **Hero-Slide** (4 Stück): Text je Bildwechsel ganz oben, plus die
      3 rotierenden Sätze für das allererste Bild ("Ihr Allround-Handwerker"
      / "kümmert sich selbst darum" / "steht für sein Wort"), und PRO SLIDE
@@ -143,10 +153,13 @@ separates, kostenloses CMS-Tool.
    - **Vorteil** (4 Stück): die vier kurzen Textpunkte direkt unter dem
      Hero-Bild.
    - **Leistungsbereich** (5 Stück): steuert BEIDE Seiten aus einem
-     Dokument — Titel, Verb, Kurzbeschreibung, CTA-Text/-Link und die
-     echten Projektbilder (Galerie) im Akkordeon auf `leistungen.html`,
-     außerdem Titel und Kartenbild der fünf Leistungs-Kacheln auf der
-     Startseite. So pflegst du jeden Bereich nur an einer Stelle statt
+     Dokument, mit zwei klar benannten Textfeldern für zwei Orte:
+     „Kurztext für Startseiten-Kachel (max. 2 Sätze)“ erscheint im
+     Glasfenster der Bento-Kachel auf der Startseite, „Ausführlicher
+     Detailtext für Leistungsseite“ im Glasfenster der Kachel auf
+     `leistungen.html` — keine Verwechslungsgefahr mehr zwischen den beiden.
+     Dazu Titel, Verb, CTA-Text/-Link und das Kartenbild (auf beiden Seiten
+     verwendet). So pflegst du jeden Bereich nur an einer Stelle statt
      doppelt für beide Seiten.
    - **FAQ-Eintrag** (7 Stück): Frage und Antwort auf `einsatzgebiet-faq.html`.
    - **Einsatzgebiet-Ort** (beliebig viele): Ortsname + Anfahrtskosten je Ort
@@ -165,6 +178,14 @@ separates, kostenloses CMS-Tool.
      — die 3 Kontakt-Links im Menü ziehen ihre Werte direkt aus
      "Kontaktdaten", damit Telefonnummer/E-Mail nicht doppelt gepflegt
      werden müssen.
+   - **Versprechen-Karte** (3 Stück, Fach "Seite Über mich"): Icon-Auswahl,
+     Überschrift und Text der drei Glas-Karten unter "Drei Dinge, auf die
+     Sie sich verlassen können".
+   - **Impressum / Datenschutzerklärung** (Fach "Rechtstexte (Footer)"):
+     der komplette Rechtstext beider Seiten als Rich Text (Überschriften,
+     Absätze, Aufzählungen, Links) direkt im Studio editierbar — kein
+     Code-Zugriff mehr nötig für Textänderungen. Name/Anschrift/Telefon/
+     E-Mail bleiben zentral unter Kontaktdaten/Website-Einstellungen gepflegt.
    - **Info-Banner**: optionaler schmaler Hinweisbalken ganz oben auf jeder
      Seite. Manueller Ein/Aus-Schalter plus optionales Ablaufdatum — nach
      Erreichen des Datums verschwindet er automatisch, ohne dass du ihn
@@ -173,8 +194,9 @@ separates, kostenloses CMS-Tool.
      - Logo (Icon) — wird in Header und Footer auf allen Seiten ersetzt.
      - Die 4 Navigations-Reiter-Texte ("Leistungen", "Über mich", …).
      - Hero-Unterzeile (die kleine Zeile über der Hero-Überschrift).
-     - Hero-Wechselgeschwindigkeit in Millisekunden (wie lange ein
-       Hero-Bild stehen bleibt).
+     - Slidertuning: `autoplaySpeed` — wie lange ein Hero-Bild stehen bleibt
+       (Standard 5000ms) — und `transitionSpeed` — Dauer der Kreuzblende
+       beim Bildwechsel (Standard 1200ms).
      - Kit-Animationssteuerung: Tempo, Skalierung und Abdunklung des
        automatischen Hervorhebungs-Effekts der 5 Leistungskacheln.
      - Glas-Intro (Startseite): Anzeige-Dauer der Glaswand in Millisekunden
@@ -185,7 +207,7 @@ separates, kostenloses CMS-Tool.
        zweites Mal.
      - Rechtlicher Footer-Hinweis (der Sternchen-Text im Footer aller Seiten).
      - Static Forms API-Key — siehe Hinweis unten.
-3. Nach dem Speichern in Sanity ist die Änderung **beim nächsten Laden der
+4. Nach dem Speichern in Sanity ist die Änderung **beim nächsten Laden der
    Seite sofort sichtbar** — kein Netlify-Rebuild nötig, anders als beim
    Vorher/Nachher-Bereich (Abschnitt 3).
 

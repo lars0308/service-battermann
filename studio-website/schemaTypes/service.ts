@@ -6,6 +6,10 @@ export const service = defineType({
   title: 'Leistungsbereich',
   type: 'document',
   icon: DocumentTextIcon,
+  groups: [
+    {name: 'startseite', title: 'Startseite (Kachel)', default: true},
+    {name: 'leistungenSeite', title: 'Seite Leistungen (Detail)'},
+  ],
   fields: [
     defineField({
       name: 'order',
@@ -42,33 +46,48 @@ export const service = defineType({
       initialValue: false,
     }),
     defineField({
-      name: 'description',
-      title: 'Kurzbeschreibung',
+      name: 'shortDescription',
+      title: 'Kurztext für Startseiten-Kachel (max. 2 Sätze)',
       type: 'text',
+      description:
+        'Erscheint im Glasfenster, das beim Antippen/Hover der Bento-Kachel auf der Startseite aufblendet. Kurz halten — hier ist kaum Platz.',
+      group: 'startseite',
+      validation: (rule) => rule.max(160),
+    }),
+    defineField({
+      name: 'description',
+      title: 'Ausführlicher Detailtext für Leistungsseite',
+      type: 'text',
+      description: 'Erscheint im Glasfenster der Leistungs-Kachel auf leistungen.html.',
+      group: 'leistungenSeite',
     }),
     defineField({
       name: 'cardImage',
-      title: 'Kartenbild (Startseite)',
+      title: 'Kartenbild (Startseite & Leistungsseite)',
       type: 'image',
       options: {hotspot: true},
       description:
-        'Einzelnes Bild für die Bild-Karte auf der Startseite (dunkles Overlay wird per CSS gelegt).',
+        'Einzelnes Bild, randlos als Kachel-Hintergrund auf Startseite UND Leistungsseite (dunkles Overlay wird per CSS gelegt).',
+      group: 'startseite',
     }),
     defineField({
       name: 'gallery',
-      title: 'Echte Projektbilder (Detailseite)',
+      title: 'Echte Projektbilder (ungenutzt im kompakten Kachel-Design)',
       type: 'array',
       of: [{type: 'image', options: {hotspot: true}}],
+      group: 'leistungenSeite',
     }),
     defineField({
       name: 'ctaLabel',
       title: 'CTA-Text (optional)',
       type: 'string',
+      group: 'leistungenSeite',
     }),
     defineField({
       name: 'ctaUrl',
       title: 'CTA-Link (optional)',
       type: 'url',
+      group: 'leistungenSeite',
     }),
   ],
   preview: {

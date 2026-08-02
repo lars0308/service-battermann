@@ -84,11 +84,20 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'heroAutoplayMs',
-      title: 'Hero-Wechselgeschwindigkeit (Millisekunden)',
+      title: 'Slidertuning: autoplaySpeed – Standzeit je Bild (Millisekunden)',
       type: 'number',
-      description: 'Wie lange ein Hero-Bild stehen bleibt, bevor zum nächsten gewechselt wird. Standard: 5200.',
-      initialValue: 5200,
+      description: 'Wie lange ein Hero-Bild stehen bleibt, bevor zum nächsten gewechselt wird. Standard: 5000.',
+      initialValue: 5000,
       validation: (rule) => rule.min(2000).max(15000),
+      group: 'hero',
+    }),
+    defineField({
+      name: 'heroTransitionMs',
+      title: 'Slidertuning: transitionSpeed – Dauer der Kreuzblende (Millisekunden)',
+      type: 'number',
+      description: 'Wie lange die Überblendung zwischen zwei Hero-Bildern dauert. Standard: 1200.',
+      initialValue: 1200,
+      validation: (rule) => rule.min(300).max(4000),
       group: 'hero',
     }),
     defineField({

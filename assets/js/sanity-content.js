@@ -87,14 +87,17 @@
   var QUERY =
     '{"hero":*[_type=="heroSlide"]|order(order asc){order,prefix,verb,roundTexts,dotLabel,showCallButton,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text},' +
-    '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
+    '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,shortDescription,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
     '"megaMenu":*[_type=="megaMenuLink"]|order(section asc, order asc){section,order,title,description,url},' +
     '"infoBanner":*[_type=="infoBanner"][0]{text,active,expiresAt,zielLink},' +
     '"vorherNachher":*[_type=="vorherNachherProjekt"]{titel,beschreibung,kategorie,"vorherUrl":vorherBild.asset->url' + IMG_SUFFIX + ',vorherAlt,"nachherUrl":nachherBild.asset->url' + IMG_SUFFIX + ',nachherAlt},' +
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
     '"einsatzgebiet":*[_type=="einsatzgebietOrt"]|order(order asc){order,name,anfahrtskosten},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,introDurationMs,introBlurStrength,staticFormsApiKey,kitCardIntervalMs,kitActiveScale,kitInactiveOpacity,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"promise":*[_type=="promiseCard"]|order(order asc){order,icon,title,text},' +
+    '"pageImpressum":*[_type=="pageImpressum"][0]{intro,body},' +
+    '"pageDatenschutz":*[_type=="pageDatenschutz"][0]{intro,body},' +
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,staticFormsApiKey,kitCardIntervalMs,kitActiveScale,kitInactiveOpacity,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -180,6 +183,21 @@
     (data.trust || []).forEach(function (doc, i) {
       if (doc.text) map["trust." + i + ".text"] = doc.text;
     });
+    // "Drei Dinge"-Karten (ueber-mich.html): order-basiert wie Hero/Leistungen,
+    // damit doppelte/zusätzliche Sanity-Dokumente die restlichen 2 Karten nicht verschieben.
+    var promiseByOrder = {};
+    (data.promise || []).forEach(function (doc) {
+      if (typeof doc.order === "number" && doc.order >= 1 && doc.order <= 3 && !promiseByOrder[doc.order]) {
+        promiseByOrder[doc.order] = doc;
+      }
+    });
+    [1, 2, 3].forEach(function (orderNum) {
+      var doc = promiseByOrder[orderNum];
+      if (!doc) return;
+      var i = orderNum - 1;
+      if (doc.title) map["promise." + i + ".title"] = doc.title;
+      if (doc.text) map["promise." + i + ".text"] = doc.text;
+    });
     // Gleiche order-basierte Zuordnung wie beim Hero (siehe oben) statt Array-Position —
     // schützt auch die 5 Leistungskacheln vor doppelten/zusätzlichen Sanity-Dokumenten.
     var servicesByOrder = {};
@@ -194,6 +212,7 @@
       var i = orderNum - 1;
       if (doc.title) map["services." + i + ".title"] = doc.title;
       if (doc.verb) map["services." + i + ".verb"] = doc.verb;
+      if (doc.shortDescription) map["services." + i + ".shortDescription"] = doc.shortDescription;
       if (doc.description) map["services." + i + ".description"] = doc.description;
       if (doc.ctaLabel) map["services." + i + ".ctaLabel"] = doc.ctaLabel;
       if (doc.ctaUrl) map["services." + i + ".ctaUrl"] = doc.ctaUrl;
@@ -250,6 +269,9 @@
       if (typeof data.settings.heroAutoplayMs === "number" && data.settings.heroAutoplayMs >= 2000) {
         map["settings.heroAutoplayMs"] = data.settings.heroAutoplayMs;
       }
+      if (typeof data.settings.heroTransitionMs === "number" && data.settings.heroTransitionMs >= 300) {
+        map["settings.heroTransitionMs"] = data.settings.heroTransitionMs;
+      }
       if (typeof data.settings.introDurationMs === "number" && data.settings.introDurationMs >= 500) {
         map["settings.introDurationMs"] = data.settings.introDurationMs;
       }
@@ -265,6 +287,12 @@
       if (typeof data.settings.kitInactiveOpacity === "number" && data.settings.kitInactiveOpacity > 0) {
         map["settings.kitInactiveOpacity"] = data.settings.kitInactiveOpacity;
       }
+    }
+    if (data.pageImpressum && data.pageImpressum.intro) {
+      map["pageImpressum.intro"] = data.pageImpressum.intro;
+    }
+    if (data.pageDatenschutz && data.pageDatenschutz.intro) {
+      map["pageDatenschutz.intro"] = data.pageDatenschutz.intro;
     }
     return map;
   }
@@ -497,6 +525,67 @@
     });
   }
 
+  // Rechtstexte (impressum.html/datenschutz.html): minimaler Portable-Text-
+  // Renderer für genau die Bausteine, die diese beiden Seiten tatsächlich
+  // brauchen (Überschriften h2/h3, Absätze, Aufzählungen, fett, Links) — kein
+  // vollständiger Portable-Text-Renderer, absichtlich schlank statt einer
+  // externen Abhängigkeit. Ohne gepflegten Sanity-Text bleibt der statische
+  // HTML-Rechtstext (bereits im Quellcode vorhanden) unverändert stehen.
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+  function renderPortableSpans(spans, markDefs) {
+    return (spans || [])
+      .map(function (span) {
+        var text = escapeHtml(span.text || "");
+        (span.marks || []).forEach(function (mark) {
+          if (mark === "strong") {
+            text = "<strong>" + text + "</strong>";
+          } else {
+            var def = (markDefs || []).filter(function (d) { return d._key === mark; })[0];
+            if (def && def._type === "link" && def.href) {
+              var external = /^https?:\/\//.test(def.href) ? ' target="_blank" rel="noopener"' : "";
+              text = '<a href="' + escapeHtml(def.href) + '"' + external + ">" + text + "</a>";
+            }
+          }
+        });
+        return text;
+      })
+      .join("");
+  }
+  function renderPortableText(blocks) {
+    var html = "";
+    var i = 0;
+    while (i < blocks.length) {
+      var block = blocks[i];
+      if (block._type !== "block") { i++; continue; }
+      if (block.listItem === "bullet") {
+        var items = "";
+        while (i < blocks.length && blocks[i].listItem === "bullet") {
+          items += "<li>" + renderPortableSpans(blocks[i].children, blocks[i].markDefs) + "</li>";
+          i++;
+        }
+        html += "<ul>" + items + "</ul>";
+        continue;
+      }
+      var tag = block.style === "h2" ? "h2" : block.style === "h3" ? "h3" : "p";
+      html += "<" + tag + ">" + renderPortableSpans(block.children, block.markDefs) + "</" + tag + ">";
+      i++;
+    }
+    return html;
+  }
+  function applyLegalPages(data) {
+    ["pageImpressum", "pageDatenschutz"].forEach(function (key) {
+      var doc = data[key];
+      if (!doc || !Array.isArray(doc.body) || !doc.body.length) return;
+      var container = document.querySelector('[data-sanity-richtext="' + key + '"]');
+      if (container) container.innerHTML = renderPortableText(doc.body);
+    });
+  }
+
   // Hero-Hintergrundbilder: Bild wird VOR dem Einsetzen im Hintergrund vorgeladen,
   // damit nie eine leere/graue Fläche aufblitzt, während das neue Bild lädt.
   //
@@ -626,6 +715,7 @@
       applyCardFocalPoints(map);
       applyServiceGalleries(data);
       applyEinsatzgebiet(data);
+      applyLegalPages(data);
       applyKitAnimationSettings(map);
       applyCallButtonToggle(map);
       applyVorherNachher(data);
@@ -635,6 +725,11 @@
       }
       // Reine Verhaltens-Einstellung ohne eigenes DOM-Element zum Anhängen —
       // direkt anwenden, statt auf ein [data-sanity-field] zu warten, das es nicht gibt.
+      if (map["settings.heroTransitionMs"]) {
+        window.__heroTransitionMs = map["settings.heroTransitionMs"];
+        var heroSlidesWrap = document.querySelector(".hero-slides");
+        if (heroSlidesWrap) heroSlidesWrap.style.setProperty("--hero-transition-speed", map["settings.heroTransitionMs"] + "ms");
+      }
       if (map["settings.heroAutoplayMs"]) {
         window.__heroAutoplayMs = map["settings.heroAutoplayMs"];
       }

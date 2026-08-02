@@ -2,19 +2,24 @@
    Schriften: Archivo Black / Montserrat (Überschriften), Plus Jakarta Sans (Fließtext)
    Layout: bewusst asymmetrisch, keine starren Raster. */
 
-/* ---------- Premium-Dark-Theme (fest, kein Umschalten mehr) ----------
-   Die Seite lief zuvor hell mit optionalem OS-Dark-Mode; jetzt ist der
-   tiefdunkle Ton (#0f0f0f, identisch zu --surface-deep/den Glasmorphismus-
-   Flächen) auf der ganzen Website fest verankert — kein heller Zustand mehr,
-   auch nicht bei hellem OS-Farbschema. Die frühere @media(prefers-color-
-   scheme:dark)-Variante lieferte bereits passende helle Textfarben/Ränder für
-   dunkle Flächen und ist hier einfach zum festen Standard geworden, statt die
-   Farbwerte neu zu erfinden. */
+/* ---------- Automatisches Premium-Theme (Light/Dark) ----------
+   Die "normalen" Seitenflächen (Papier/Nav/Formulare) folgen automatisch dem
+   Farbschema des Betriebssystems — hell per Default, dunkel bei
+   prefers-color-scheme:dark, kein manueller Schalter. Die bereits dunklen
+   Akzent-Sektionen (Hero, Footer, "Drei Dinge", Leistungen-Fotokacheln,
+   CTA-Bänder — alles über --surface-dark/--surface-deep/--on-dark) bleiben in
+   BEIDEN Modi unverändert dunkel, das sind bewusst gesetzte Foto-/Premium-
+   Flächen, kein Seitenhintergrund. --glass-bg/--glass-border sind die
+   theme-abhängigen Frosted-Glass-Werte für Panels, die auf der normalen
+   Seitenfläche sitzen (Kontaktformular, Einsatzgebiet-Popover, Kartenrahmen);
+   Glas-Flächen auf den immer-dunklen Akzent-Sektionen (Intro-Glaswand,
+   "Drei Dinge"-Karten, Leistungs-Kachel-Textfenster) bleiben bewusst beim
+   dunklen Weißton-auf-Dunkel-Look, unabhängig vom Seitenmodus. */
 :root{
-  --ink:#F2EEE3;
-  --ink-soft:#C7C0AF;
-  --paper:#0f0f0f;
-  --paper-dim:#161616;
+  --ink:#191614;
+  --ink-soft:#5B564C;
+  --paper:#fcfbfa; /* Alabaster, bewusst kein reines Weiß */
+  --paper-dim:#f5f4f0; /* mattes Sand-Grau */
   --surface-dark:#1A1E24;
   --surface-dark-2:#232933;
   --surface-deep:#0f0f0f; /* eigener, noch tieferer Ton für die Glasmorphismus-Flächen (Intro, Premium-Karten) */
@@ -23,13 +28,15 @@
   --accent:#C2953F;
   --accent-hover:#A67B2E;
   --accent-ink:#191614;
-  --link:#DDB268;
-  --line:#39352B;
+  --link:#745925; /* WCAG AA-konformer Textton der Akzentfarbe auf hellem Grund (6:1) */
+  --line:#E4E0D4;
   --line-dark:#333A45;
-  --shadow: 0 20px 50px -28px rgba(0,0,0,0.6);
-  --header-bg: rgba(15,15,15,0.85);
-  --field-bg: #1c1c1a;
-  --chip-dark: #2A251C; /* etwas heller als die dunkle Seitenfläche, damit Buttons sich weiter abheben */
+  --shadow: 0 20px 50px -28px rgba(25,22,20,0.14);
+  --header-bg: rgba(252,251,250,0.85);
+  --field-bg: #ffffff;
+  --chip-dark: #191614; /* feste "schwarze" Fläche für Buttons/Chips, unabhängig vom Farbschema */
+  --glass-bg: rgba(255,255,255,0.55);
+  --glass-border: rgba(25,22,20,0.08);
   --radius: 2px;
   --radius-sm: 2px;
   --wrap: 1180px;
@@ -39,6 +46,22 @@
   --space-4: 48px;
   --space-5: 88px;
   --space-6: 140px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ink:#F2EEE3;
+    --ink-soft:#C7C0AF;
+    --paper:#0f0f0f;
+    --paper-dim:#161616;
+    --link:#DDB268;
+    --line:#39352B;
+    --shadow: 0 20px 50px -28px rgba(0,0,0,0.6);
+    --header-bg: rgba(15,15,15,0.85);
+    --field-bg: #1c1c1a;
+    --chip-dark: #2A251C; /* etwas heller als die dunkle Seitenfläche, damit Buttons sich weiter abheben */
+    --glass-bg: rgba(255,255,255,0.03);
+    --glass-border: rgba(255,255,255,0.08);
+  }
 }
 
 *, *::before, *::after{ box-sizing:border-box; }
@@ -206,7 +229,7 @@ section.dark .eyebrow, .hero .eyebrow{ color:var(--accent); }
   display:none;
   height:40px; padding:0 16px;
   align-items:center; justify-content:center; gap:8px;
-  background:var(--ink); color:var(--on-dark);
+  background:var(--chip-dark); color:var(--on-dark);
   font-family:'Montserrat',sans-serif; font-weight:600; font-size:0.85rem;
   letter-spacing:0.01em; text-align:center;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
@@ -494,7 +517,9 @@ section.dim{ background:var(--paper-dim); }
   display:block; position:absolute; inset:0;
   opacity:0;
   will-change:opacity;
-  transition:opacity 1.4s cubic-bezier(0.16,1,0.3,1);
+  /* --hero-transition-speed wird von sanity-content.js aus den Website-
+     Einstellungen gesetzt (Slidertuning: transitionSpeed), 1400ms Standard. */
+  transition:opacity var(--hero-transition-speed, 1400ms) cubic-bezier(0.16,1,0.3,1);
 }
 .hero-slide.is-active{ opacity:1; }
 .hero-slide img{
@@ -545,13 +570,18 @@ section.dim{ background:var(--paper-dim); }
 /* Kleiner runder vCard-Download-Button neben den Hero-CTAs (siehe HTML:
    <a download href="assets/lars-battermann.vcf">) — speichert Lars direkt
    im Telefonbuch statt nur eine Telefonnummer zu hinterlassen. */
+/* Standard (auf normaler, themenabhängiger Seitenfläche wie kontakt.html):
+   folgt --ink/--line, damit der Button in beiden Farbschemata sichtbar
+   bleibt. Im immer-dunklen Hero (siehe .hero-slider .vcard-btn unten)
+   bleibt er dagegen fest hell, unabhängig vom Seitenmodus. */
 .vcard-btn{
   display:inline-flex; align-items:center; justify-content:center;
   width:44px; height:44px; flex-shrink:0; border-radius:50%;
-  border:1px solid rgba(244,241,233,0.35); color:var(--on-dark);
+  border:1px solid var(--line); color:var(--ink);
   transition:border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 .vcard-btn:hover{ border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
+.hero-slider .vcard-btn{ border-color:rgba(244,241,233,0.35); color:var(--on-dark); }
 
 /* ---------- Tiefen-Reveal-Intro (nur beim allerersten Seitenaufruf) ----------
    Die Klasse .is-first-reveal steht von Anfang an im HTML (kein FOUC-Risiko: der
@@ -1131,30 +1161,30 @@ section.dim{ background:var(--paper-dim); }
 
 /* ---------- Formular: Frosted-Glass-Panel, shadcn-transparente Felder ---------- */
 .form-card{
-  background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08);
+  background:var(--glass-bg); border:1px solid var(--glass-border);
   border-radius:var(--radius); padding:var(--space-4);
   -webkit-backdrop-filter:blur(25px); backdrop-filter:blur(25px);
   box-shadow:var(--shadow);
 }
 .field{ margin-bottom:var(--space-3); }
-.field label{ display:block; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.85rem; margin-bottom:8px; color:rgba(244,241,233,0.7); }
+.field label{ display:block; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.85rem; margin-bottom:8px; color:var(--ink-soft); }
 .field input, .field textarea{
-  width:100%; padding:11px 2px; border:none; border-bottom:1px solid rgba(244,241,233,0.22);
+  width:100%; padding:11px 2px; border:none; border-bottom:1px solid var(--line);
   border-radius:0; font-family:'Plus Jakarta Sans', sans-serif; font-size:0.98rem;
-  background:transparent; color:#fff;
+  background:transparent; color:var(--ink);
   transition:border-color 0.25s ease;
 }
-.field input::placeholder, .field textarea::placeholder{ color:rgba(244,241,233,0.35); }
+.field input::placeholder, .field textarea::placeholder{ color:var(--ink-soft); opacity:0.55; }
 .field input:focus, .field textarea:focus{ outline:none; border-bottom-color:#25D366; }
 .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:var(--space-3); }
 @media (max-width:640px){ .field-row{ grid-template-columns:1fr; } }
-.field small{ display:block; color:var(--on-dark-soft); margin-top:6px; font-size:0.82rem; }
+.field small{ display:block; color:var(--ink-soft); margin-top:6px; font-size:0.82rem; }
 
 .upload-trigger{
   display:inline-flex; align-items:center; gap:10px;
-  padding:12px 18px; border:1px dashed rgba(244,241,233,0.25); border-radius:var(--radius-sm);
+  padding:12px 18px; border:1px dashed var(--line); border-radius:var(--radius-sm);
   cursor:pointer; font-family:'Montserrat',sans-serif; font-weight:600; font-size:0.88rem;
-  color:rgba(244,241,233,0.7); background:transparent;
+  color:var(--ink-soft); background:transparent;
   transition:border-color 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s cubic-bezier(0.16,1,0.3,1);
 }
 .upload-trigger:hover{ border-color:var(--accent); color:var(--accent); }
@@ -1167,12 +1197,12 @@ section.dim{ background:var(--paper-dim); }
 .upload-trigger:has(+ .file-input-hidden:focus-visible){
   outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--radius-sm);
 }
-.form-disclaimer{ margin-top:14px; font-size:0.78rem; color:rgba(244,241,233,0.45); text-align:center; }
-.form-disclaimer a{ color:rgba(244,241,233,0.6); }
+.form-disclaimer{ margin-top:14px; font-size:0.78rem; color:var(--ink-soft); text-align:center; }
+.form-disclaimer a{ color:var(--ink-soft); text-decoration:underline; }
 
 .kontakt-portrait{
   border-radius:var(--radius); overflow:hidden; margin-top:var(--space-3);
-  border:1px solid rgba(244,241,233,0.12); max-width:360px;
+  border:1px solid var(--line); max-width:360px;
 }
 .kontakt-portrait img{ display:block; width:100%; aspect-ratio:4/5; object-fit:cover; }
 
@@ -1220,10 +1250,10 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
 /* Scharf begrenzter Rahmen für die Karte (Zustimmungs-Hinweis wie geladene
    Karte gleichermaßen) — hauchdünne, edle Trennlinie statt eines unbegrenzten
    Blocks mitten auf dunkler Fläche. */
-.map-frame{ border:1px solid rgba(255,255,255,0.1); border-radius:var(--radius); overflow:hidden; }
+.map-frame{ border:1px solid var(--glass-border); border-radius:var(--radius); overflow:hidden; }
 .map-frame iframe{ display:block; }
 .map-consent{
-  background:rgba(255,255,255,0.03); padding:var(--space-4); text-align:center;
+  background:var(--glass-bg); padding:var(--space-4); text-align:center;
 }
 .badge-list{ display:flex; flex-wrap:wrap; gap:10px; margin-top:var(--space-2); }
 
@@ -1240,8 +1270,8 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
 }
 .einsatzgebiet-popover{
   position:absolute; top:0; right:0; z-index:50; width:min(280px, 90vw);
-  background:rgba(255,255,255,0.05); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
-  border:1px solid rgba(255,255,255,0.12); border-radius:var(--radius);
+  background:var(--glass-bg); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-border); border-radius:var(--radius);
   padding:18px 20px; box-shadow:var(--shadow);
   display:flex; flex-direction:column; gap:4px;
   opacity:0; transform:translateY(-8px); pointer-events:none;
@@ -1249,16 +1279,16 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
 }
 .einsatzgebiet-popover:not([hidden]){ opacity:1; transform:translateY(0); pointer-events:auto; }
 .einsatzgebiet-popover-ort{
-  font-family:'Archivo Black', sans-serif; color:#fff; font-size:1rem;
+  font-family:'Archivo Black', sans-serif; color:var(--ink); font-size:1rem;
 }
 .einsatzgebiet-popover-kosten{
-  font-family:'Plus Jakarta Sans', sans-serif; color:rgba(244,241,233,0.8); font-size:0.9rem;
+  font-family:'Plus Jakarta Sans', sans-serif; color:var(--ink-soft); font-size:0.9rem;
 }
 .einsatzgebiet-popover-close{
-  position:absolute; top:8px; right:10px; background:none; border:none; color:rgba(255,255,255,0.6);
+  position:absolute; top:8px; right:10px; background:none; border:none; color:var(--ink-soft);
   font-size:1.2rem; line-height:1; cursor:pointer; padding:4px;
 }
-.einsatzgebiet-popover-close:hover{ color:#fff; }
+.einsatzgebiet-popover-close:hover{ color:var(--ink); }
 @media (max-width:700px){
   .einsatzgebiet-popover{ position:static; margin:12px 0 20px; transform:none; width:100%; }
   .einsatzgebiet-popover:not([hidden]){ transform:none; }

@@ -8,6 +8,9 @@ import {faqEntry} from './faqEntry'
 import {megaMenuLink} from './megaMenuLink'
 import {infoBanner} from './infoBanner'
 import {einsatzgebietOrt} from './einsatzgebietOrt'
+import {promiseCard} from './promiseCard'
+import {pageImpressum} from './pageImpressum'
+import {pageDatenschutz} from './pageDatenschutz'
 
 export const schemaTypes = [
   heroSlide,
@@ -20,4 +23,7 @@ export const schemaTypes = [
   megaMenuLink,
   infoBanner,
   einsatzgebietOrt,
+  promiseCard,
+  pageImpressum,
+  pageDatenschutz,
 ]
