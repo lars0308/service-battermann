@@ -97,7 +97,7 @@
     '"promise":*[_type=="promiseCard"]|order(order asc){order,icon,title,text},' +
     '"pageImpressum":*[_type=="pageImpressum"][0]{intro,body},' +
     '"pageDatenschutz":*[_type=="pageDatenschutz"][0]{intro,body},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,staticFormsApiKey,kitCardIntervalMs,kitActiveScale,kitInactiveOpacity,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,staticFormsApiKey,kitCardIntervalMs,bereichsLink,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -220,6 +220,7 @@
         "heroEyebrow",
         "staticFormsApiKey",
         "logoIconUrl",
+        "bereichsLink",
       ].forEach(function (key) {
         if (data.settings[key]) map["settings." + key] = data.settings[key];
       });
@@ -235,14 +236,8 @@
       if (typeof data.settings.introBlurStrength === "number" && data.settings.introBlurStrength >= 0) {
         map["settings.introBlurStrength"] = data.settings.introBlurStrength;
       }
-      if (typeof data.settings.kitCardIntervalMs === "number" && data.settings.kitCardIntervalMs >= 500) {
+      if (typeof data.settings.kitCardIntervalMs === "number" && data.settings.kitCardIntervalMs >= 2000) {
         map["settings.kitCardIntervalMs"] = data.settings.kitCardIntervalMs;
-      }
-      if (typeof data.settings.kitActiveScale === "number" && data.settings.kitActiveScale >= 1) {
-        map["settings.kitActiveScale"] = data.settings.kitActiveScale;
-      }
-      if (typeof data.settings.kitInactiveOpacity === "number" && data.settings.kitInactiveOpacity > 0) {
-        map["settings.kitInactiveOpacity"] = data.settings.kitInactiveOpacity;
       }
     }
     if (data.pageImpressum && data.pageImpressum.intro) {
@@ -254,20 +249,11 @@
     return map;
   }
 
-  // Kit-Fokus-Impuls-Parameter: Zeit-Wert direkt am main.js-Timing-Global setzen (gleiches
-  // Prinzip wie heroAutoplayMs), Skalierung/Abdunklung als CSS-Custom-Properties übergeben,
-  // da main.js sie nicht selbst berechnet, sondern nur die CSS-Klassen umschaltet.
+  // Auto-Rotate-Vorschauschleife der Leistungskacheln: Zeit-Wert direkt am
+  // main.js-Timing-Global setzen (gleiches Prinzip wie heroAutoplayMs).
   function applyKitAnimationSettings(map) {
     if (map["settings.kitCardIntervalMs"]) {
       window.__kitCardIntervalMs = map["settings.kitCardIntervalMs"];
-    }
-    var kitContainer = document.querySelector(".leistung-cards");
-    if (!kitContainer) return;
-    if (map["settings.kitActiveScale"]) {
-      kitContainer.style.setProperty("--kit-active-scale", map["settings.kitActiveScale"]);
-    }
-    if (map["settings.kitInactiveOpacity"]) {
-      kitContainer.style.setProperty("--kit-inactive-opacity", map["settings.kitInactiveOpacity"]);
     }
   }
 

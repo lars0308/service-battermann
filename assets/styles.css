@@ -200,7 +200,8 @@ section.dark .eyebrow, .hero .eyebrow{ color:var(--accent); }
 .btn-ghost-dark:hover{ border-color:var(--accent); color:var(--accent); transform:translateY(-2px) scale(1.015); }
 .btn-ghost{ border-color:var(--ink); color:var(--ink); }
 .btn-ghost:hover{ border-color:var(--link); color:var(--link); transform:translateY(-2px) scale(1.015); }
-.btn-whatsapp{ background:#25D366; color:#0b2a17; }
+.btn-whatsapp{ background:#25D366; color:#0b2a17; display:inline-flex; align-items:center; gap:8px; }
+.btn-whatsapp svg{ flex-shrink:0; }
 .btn-whatsapp:hover{ background:#1ebe5b; transform:translateY(-2px) scale(1.015); box-shadow:0 10px 24px -12px rgba(37,211,102,0.5); }
 .btn-call{ background:#25D366; color:#0b2a17; }
 .btn-call:hover{ background:#1ebe5b; transform:translateY(-2px) scale(1.015); box-shadow:0 10px 24px -12px rgba(37,211,102,0.5); }
@@ -336,15 +337,28 @@ body.has-info-banner .mega-panel{ top:110px; }
 
 @media (max-width: 900px){
   header.site .bar{ gap:16px; justify-content:space-between; }
+  /* Luxus-Glas-Look: das mobile Menü ist eine immer-dunkle Frosted-Glass-Fläche
+     (unabhängig vom Light/Dark-Seitenmodus, gleiches Prinzip wie Mega-Menü/Hero/
+     Footer) statt der theme-abhängigen Papierfarbe. */
   nav.main-nav{
-    position:fixed; top:66px; right:0; left:0; height:calc(100vh - 66px); background:var(--paper);
+    position:fixed; top:66px; right:0; left:0; height:calc(100vh - 66px);
+    background:rgba(15,15,15,0.8);
+    -webkit-backdrop-filter:blur(25px); backdrop-filter:blur(25px);
+    border-left:1px solid rgba(255,255,255,0.08);
     flex-direction:column; align-items:flex-start; gap:0;
     padding:24px; transform:translateX(100%); transition:transform .25s ease;
     overflow-y:auto;
   }
   body.has-info-banner nav.main-nav{ top:106px; height:calc(100vh - 106px); }
   nav.main-nav.open{ transform:translateX(0); }
-  nav.main-nav a{ padding:16px 0; width:100%; border-bottom:1px solid var(--line); font-size:1.05rem; }
+  /* Größeres vertikales Padding als am Desktop: perfekte Daumen-Bedienung auf
+     dem Handy. Aktive Seite leuchtet im Logo-Goldton (--accent) statt im
+     theme-abhängigen --link-Ton, der auf dem immer-dunklen Glas kaum sichtbar wäre. */
+  nav.main-nav a{
+    padding:22px 0; width:100%; border-bottom:1px solid rgba(255,255,255,0.08);
+    font-size:1.05rem; color:var(--on-dark);
+  }
+  nav.main-nav a.active{ color:var(--accent); }
   .nav-item{ width:100%; display:block; }
   .nav-item .mega-panel{ display:none; }
   nav.main-nav a.nav-mobile-cta{
@@ -567,13 +581,11 @@ section.dim{ background:var(--paper-dim); }
   .hero-eyebrow-top{ font-size:0.85rem; }
 }
 
-/* Kleiner runder vCard-Download-Button neben den Hero-CTAs (siehe HTML:
-   <a download href="assets/lars-battermann.vcf">) — speichert Lars direkt
-   im Telefonbuch statt nur eine Telefonnummer zu hinterlassen. */
-/* Standard (auf normaler, themenabhängiger Seitenfläche wie kontakt.html):
-   folgt --ink/--line, damit der Button in beiden Farbschemata sichtbar
-   bleibt. Im immer-dunklen Hero (siehe .hero-slider .vcard-btn unten)
-   bleibt er dagegen fest hell, unabhängig vom Seitenmodus. */
+/* Kleiner runder vCard-Download-Button (siehe HTML: <a download
+   href="assets/lars-battermann.vcf">), z. B. neben "Direkter Draht" auf
+   kontakt.html — speichert Lars direkt im Telefonbuch statt nur eine
+   Telefonnummer zu hinterlassen. Folgt --ink/--line, damit er in beiden
+   Farbschemata sichtbar bleibt. */
 .vcard-btn{
   display:inline-flex; align-items:center; justify-content:center;
   width:44px; height:44px; flex-shrink:0; border-radius:50%;
@@ -581,7 +593,6 @@ section.dim{ background:var(--paper-dim); }
   transition:border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
 }
 .vcard-btn:hover{ border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
-.hero-slider .vcard-btn{ border-color:rgba(244,241,233,0.35); color:var(--on-dark); }
 
 /* ---------- Tiefen-Reveal-Intro (nur beim allerersten Seitenaufruf) ----------
    Die Klasse .is-first-reveal steht von Anfang an im HTML (kein FOUC-Risiko: der
@@ -847,15 +858,6 @@ section.dim{ background:var(--paper-dim); }
 }
 .leistung-card:hover img{ transform:scale(1.06); }
 
-/* "Kit-Fokus-Impuls": einmaliger, sequenzieller Hervorhebungs-Impuls beim Erreichen der
-   Sektion (siehe assets/main.js) — dezent, kein Loop, respektiert prefers-reduced-motion.
-   Skalierung/Abdunklung als CSS-Variable mit Fallback, damit sanity-content.js sie live
-   per style.setProperty() überschreiben kann (Website-Einstellungen → Kit-Animationssteuerung). */
-.leistung-cards.is-sequencing .leistung-card{ opacity:var(--kit-inactive-opacity, 0.5); }
-.leistung-cards.is-sequencing .leistung-card.is-focus-active{
-  opacity:1; transform:scale(var(--kit-active-scale, 1.05)); z-index:1;
-  box-shadow:0 24px 40px -22px rgba(15,14,12,0.65);
-}
 .leistung-card-scrim{
   position:absolute; inset:0;
   background:linear-gradient(0deg, rgba(15,14,12,0.88) 0%, rgba(15,14,12,0.5) 55%, rgba(15,14,12,0.05) 100%);
@@ -1203,6 +1205,26 @@ section.dim{ background:var(--paper-dim); }
   border:1px solid var(--line); max-width:360px;
 }
 .kontakt-portrait img{ display:block; width:100%; aspect-ratio:4/5; object-fit:cover; }
+.kontakt-portrait-caption{ display:none; }
+/* Exklusiv Smartphone: das große Quadrat-Portrait schrumpft zu einem kompakten,
+   kreisrunden Avatar direkt neben einer kurzen Namens-/Rollenangabe, statt als
+   großer Block den Textfluss zu unterbrechen. Am PC bleibt es unverändert groß. */
+@media (max-width:768px){
+  .kontakt-portrait{
+    display:flex; align-items:center; gap:14px;
+    border:none; border-radius:0; overflow:visible; max-width:none;
+  }
+  .kontakt-portrait img{
+    width:90px; height:90px; aspect-ratio:1/1; border-radius:50%;
+    flex-shrink:0; border:1px solid var(--line);
+  }
+  .kontakt-portrait-caption{
+    display:flex; flex-direction:column; gap:2px;
+    font-family:'Plus Jakarta Sans',sans-serif;
+  }
+  .kontakt-portrait-caption strong{ font-family:'Montserrat',sans-serif; font-size:0.95rem; color:var(--ink); }
+  .kontakt-portrait-caption small{ font-size:0.8rem; color:var(--ink-soft); }
+}
 
 /* ---------- Footer ---------- */
 footer.site{ background:var(--surface-dark); color:var(--on-dark-soft); padding:var(--space-4) 0 var(--space-3); }

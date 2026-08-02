@@ -201,8 +201,10 @@ separates, kostenloses CMS-Tool.
      - Slidertuning: `autoplaySpeed` — wie lange ein Hero-Bild stehen bleibt
        (Standard 5000ms) — und `transitionSpeed` — Dauer der Kreuzblende
        beim Bildwechsel (Standard 1200ms).
-     - Kit-Animationssteuerung: Tempo, Skalierung und Abdunklung des
-       automatischen Hervorhebungs-Effekts der 5 Leistungskacheln.
+     - Auto-Rotate-Vorschauschleife: Zeit pro Kachel (Standard 5000ms), mit
+       der die 5 Leistungskacheln im Ruhezustand nacheinander automatisch den
+       vollen Hover-Effekt zeigen (Bild schiebt links, Glasfenster öffnet).
+       Pausiert sofort bei Hover/Tap, läuft nach kurzem Delay weiter.
      - Glas-Intro (Startseite): Anzeige-Dauer der Glaswand in Millisekunden
        (Standard 3000) und Stärke des Weichzeichners in Pixel (Standard 45).
        Das Intro läuft nur beim ersten Aufruf der Startseite in einer

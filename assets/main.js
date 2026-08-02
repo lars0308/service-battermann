@@ -143,12 +143,14 @@
     }
   }
 
-  // "Kit-Fokus-Impuls" (Ruhezustand) + Split-Screen-Glasfenster (manuelle Interaktion):
-  // Im Ruhezustand läuft ein sehr langsamer Endlos-Loop, der die 5 Kacheln nacheinander
-  // dezent anhebt — reine Einladung, OHNE das Glasfenster zu öffnen. Sobald der Nutzer
-  // selbst hovert/tippt, pausiert der Loop sofort, die Kachel schiebt sich links ins
-  // Bild vor, das Glasfenster öffnet sich. Verlässt die Maus die Kacheln, startet der
-  // Loop wieder von vorn.
+  // Auto-Rotate-Vorschauschleife (Ruhezustand) + Split-Screen-Glasfenster (manuelle
+  // Interaktion) für die 5 Leistungskacheln: im Ruhezustand triggert der Autolauf reihum
+  // GENAU denselben Effekt wie ein echter Hover — Bild schiebt sich links ins Bild vor,
+  // das Glasfenster öffnet sich rechts mit dem Kurztext (showCardInGlass unten wird für
+  // beide Fälle verwendet, kein separater "dezenter" Pulse-Zustand mehr). Sobald der
+  // Nutzer selbst hovert/tippt, friert der Auto-Timer sofort ein — erst wenn die Maus
+  // die GESAMTE Kachel-Sektion verlässt, läuft die Schleife nach einem kurzen Delay
+  // wieder von vorn an.
   var kitContainer = document.querySelector(".leistung-cards");
   var kitCards = Array.prototype.slice.call(document.querySelectorAll(".leistung-cards .leistung-card"));
   var glassSplit = document.querySelector(".leistung-split");
@@ -156,62 +158,57 @@
   var glassTitle = document.querySelector("[data-leistung-glass-title]");
   var glassDesc = document.querySelector("[data-leistung-glass-desc]");
   // Als window-Property statt lokaler Konstante, damit sanity-content.js sie live
-  // ersetzen kann (Lars pflegt Tempo/Skalierung/Abdunklung in Sanity statt im Code).
-  window.__kitCardIntervalMs = 3000;
+  // ersetzen kann (Lars pflegt das Tempo in Sanity statt im Code).
+  window.__kitCardIntervalMs = 5000;
+  var KIT_RESUME_DELAY_MS = 1200;
 
   if (kitContainer && kitCards.length) {
-    var kitTimers = [];
     var kitPaused = false;
     var kitLoopStarted = false;
+    var kitTimer = null;
+    var kitResumeTimer = null;
+    var kitIndex = 0;
 
     var clearKitTimers = function () {
-      kitTimers.forEach(function (t) { window.clearTimeout(t); });
-      kitTimers = [];
-    };
-    var clearAutoClasses = function () {
-      kitContainer.classList.remove("is-sequencing");
-      kitCards.forEach(function (c) { c.classList.remove("is-focus-active"); });
+      if (kitTimer) window.clearTimeout(kitTimer);
+      if (kitResumeTimer) window.clearTimeout(kitResumeTimer);
+      kitTimer = null;
+      kitResumeTimer = null;
     };
 
-    var runPulseCycle = function () {
+    var scheduleNextAuto = function () {
       if (kitPaused || reduceMotion) return;
-      var stepMs = window.__kitCardIntervalMs;
-      kitContainer.classList.add("is-sequencing");
-      kitCards.forEach(function (card, i) {
-        kitTimers.push(
-          window.setTimeout(function () {
-            if (kitPaused) return;
-            kitCards.forEach(function (c) { c.classList.remove("is-focus-active"); });
-            card.classList.add("is-focus-active");
-          }, i * stepMs)
-        );
-      });
-      // Nach einer vollen Runde: kurz zurücksetzen, dann von vorn — echter Loop,
-      // solange der Nutzer nicht pausiert hat.
-      kitTimers.push(
-        window.setTimeout(function () {
-          if (kitPaused) return;
-          clearAutoClasses();
-          kitTimers.push(window.setTimeout(runPulseCycle, stepMs * 0.5));
-        }, kitCards.length * stepMs)
-      );
+      kitTimer = window.setTimeout(function () {
+        if (kitPaused) return;
+        kitIndex = (kitIndex + 1) % kitCards.length;
+        showCardInGlass(kitCards[kitIndex]);
+        scheduleNextAuto();
+      }, window.__kitCardIntervalMs);
     };
 
     var startLoop = function () {
       if (kitLoopStarted || reduceMotion) return;
       kitLoopStarted = true;
-      runPulseCycle();
+      showCardInGlass(kitCards[kitIndex]);
+      scheduleNextAuto();
     };
     var pauseLoop = function () {
       kitPaused = true;
       clearKitTimers();
-      clearAutoClasses();
     };
-    var resumeLoop = function () {
+    // Nicht sofort resumen: eine kurze Atempause, bevor der Autolauf nach einer
+    // manuellen Interaktion wieder übernimmt (siehe kontainerweites mouseleave unten).
+    var resumeLoopAfterDelay = function () {
       if (!kitLoopStarted) return;
-      kitPaused = false;
-      clearKitTimers();
-      runPulseCycle();
+      if (kitResumeTimer) window.clearTimeout(kitResumeTimer);
+      kitResumeTimer = window.setTimeout(function () {
+        kitPaused = false;
+        // "von vorn": nicht erst nach einem weiteren vollen Intervall wieder
+        // sichtbar werden, sondern sofort bei Kachel 1 neu einsteigen.
+        kitIndex = 0;
+        showCardInGlass(kitCards[kitIndex]);
+        scheduleNextAuto();
+      }, KIT_RESUME_DELAY_MS);
     };
 
     // Positioniert UND größt das Glasfenster passend zur Zielgröße der gehoverten
@@ -222,8 +219,8 @@
     // WICHTIG: offsetWidth/offsetHeight/offsetLeft/offsetTop statt
     // getBoundingClientRect() — die Box-Modell-Maße sind komplett transform-
     // unabhängig. getBoundingClientRect() hätte hier gelegentlich eine falsche
-    // "natürliche" Größe geliefert, wenn die Kachel gerade erst vom Kit-Fokus-
-    // Impuls-Autolauf (eigene, unabhängige scale-Transition) zurückgesetzt wurde
+    // "natürliche" Größe geliefert, wenn die Kachel gerade erst vom Auto-Rotate-
+    // Loop (eigene, unabhängige scale-Transition) zurückgesetzt wurde
     // und dessen 0.8s-Transition noch nicht fertig war. Die skalierte Zielgröße
     // wird rechnerisch vorhergesagt (Skalierung um die Mitte + der feste
     // translateX-Versatz aus dem CSS), damit Glasfenster und Kachel synchron zur
@@ -301,14 +298,14 @@
       if (glassPanel) glassPanel.classList.remove("is-floating-visible");
     };
 
-    kitCards.forEach(function (card) {
-      card.addEventListener("mouseenter", function () { pauseLoop(); showCardInGlass(card); });
-      card.addEventListener("focus", function () { pauseLoop(); showCardInGlass(card); });
-      card.addEventListener("touchstart", function () { pauseLoop(); showCardInGlass(card); }, { passive: true });
+    kitCards.forEach(function (card, i) {
+      card.addEventListener("mouseenter", function () { pauseLoop(); kitIndex = i; showCardInGlass(card); });
+      card.addEventListener("focus", function () { pauseLoop(); kitIndex = i; showCardInGlass(card); });
+      card.addEventListener("touchstart", function () { pauseLoop(); kitIndex = i; showCardInGlass(card); }, { passive: true });
     });
     kitContainer.addEventListener("mouseleave", function () {
       resetGlass();
-      resumeLoop();
+      resumeLoopAfterDelay();
     });
 
     if (!reduceMotion && "IntersectionObserver" in window) {
