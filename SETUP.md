@@ -283,6 +283,36 @@ nicht "mal eben" im CMS. Alles andere (Hero, Vorteile, Leistungen, FAQ,
 Vorher/Nachher, Logo, Navigation, Kontaktdaten, Footer-Rechtstext) ist
 vollständig über Sanity Studio pflegbar.
 
+## 6. Startseite umsortieren & eigene Unterseiten anlegen
+
+**Startseiten-Baukasten** (Fach "Startseite (Home)" → "Block-Reihenfolge
+(Baukasten)"): steuert Reihenfolge und Sichtbarkeit von sechs Startseiten-
+Blöcken — Hero, Vorteile-Streifen, Leistungen (Bento-Grid), "Wer hier
+anpackt", Einsatzgebiet-Karte und Kontaktformular. Mit "+ Element
+hinzufügen" einen Block ergänzen, per Drag-Handle die Reihenfolge ändern,
+per Papierkorb-Symbol einen Block ausblenden. Die eigentlichen Inhalte
+pflegst du weiterhin an ihrer gewohnten Stelle (Hero-Bereich, Vorteil,
+Leistungsbereich, …) — hier bestimmst du nur, in welcher Reihenfolge und
+ob sie auf der Startseite erscheinen. Bleibt das Dokument komplett leer,
+zeigt die Startseite unverändert die vier ursprünglichen Blöcke in ihrer
+bisherigen Reihenfolge.
+
+**Freie Unterseiten** (eigenes Fach im Studio): legt komplett neue
+Unterseiten an, die im festen Menü nicht vorgesehen sind (z. B.
+"Notdienst" oder "Winterdienst"). Benötigt:
+- **Seitentitel** — erscheint als Überschrift und im Browsertab.
+- **URL-Endung** — wird aus dem Titel erzeugt, z. B. "notdienst" ergibt
+  `service-battermann.de/notdienst`.
+- **Einleitungssatz** (optional) und **Seiteninhalt** als Rich Text
+  (Absätze, Überschriften, Aufzählungen, Links, Bilder).
+
+Header (inklusive Apple-Mega-Menü) und Footer sehen auf jeder so
+angelegten Seite automatisch genauso aus wie auf allen anderen Seiten —
+dafür sorgt ein gemeinsames Gerüst (`page.html`), das den passenden
+Inhalt anhand der aufgerufenen Adresse selbst nachlädt. Ein Eintrag ist
+sofort nach dem Veröffentlichen unter seiner Adresse erreichbar, ganz
+ohne neuen Netlify-Build.
+
 ## Warum kein WordPress?
 
 Der ursprüngliche Wunsch war "bevorzugt WordPress". Für eine reine
