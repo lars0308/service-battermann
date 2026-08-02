@@ -143,19 +143,24 @@
       <h2>Lieber gleich anrufen oder schreiben?</h2>
       <p>Das Formular ist der kürzeste Weg, muss aber nicht sein. Telefon, WhatsApp und E-Mail funktionieren genauso direkt, ohne Callcenter dazwischen.</p>
       <div class="cta-row" style="margin-top:24px">
-        <a href="tel:+4915567467763" class="btn btn-ghost">+49 155 / 674 677 63</a>
+        <a href="tel:+4915567467763" class="btn btn-ghost-dark">+49 155 / 674 677 63</a>
         <a href="https://wa.me/4915567467763" class="btn btn-whatsapp">WhatsApp</a>
+        <a href="assets/lars-battermann.vcf" download="lars-battermann.vcf" class="vcard-btn" aria-label="Lars Battermann als Kontakt speichern (vCard)" title="Als Kontakt speichern">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M5 17c0-2 2-3 4-3s4 1 4 3"/><path d="M16 8h3"/><path d="M17.5 6.5v3"/></svg>
+        </a>
       </div>
       <p style="margin-top:28px"><strong>E-Mail:</strong> <a href="mailto:service.battermann@gmx.de">service.battermann@gmx.de</a><br>
       <strong>Erreichbarkeit:</strong> Mo–Sa, 09:00–20:00 Uhr</p>
       <p style="margin-top:20px;font-size:0.9rem">Für Hausverwaltungen und Firmen: gerne auch für die laufende Betreuung mehrerer Objekte. Sprechen Sie mich einfach an.</p>
+      <div class="kontakt-portrait">
+        <img src="images/portrait-lars-hero.jpg" alt="Lars Battermann bei der Arbeit" loading="lazy">
+      </div>
     </div>
 
     <div class="reveal">
       <div class="form-card">
         <form name="kontakt" method="POST" action="https://api.staticforms.dev/submit" enctype="multipart/form-data" aria-label="Kontaktformular">
-          <input type="hidden" name="accessKey" value="" data-sanity-field="settings.staticFormsApiKey" data-sanity-attr="value">
-          <input type="hidden" name="apiKey" value="" data-sanity-field="settings.staticFormsApiKey" data-sanity-attr="value">
+          <input type="hidden" name="accessKey" value="sf_89104441b13716ed87199b14" data-sanity-field="settings.staticFormsApiKey" data-sanity-attr="value">
           <input type="hidden" name="subject" value="Neue Anfrage über service-battermann.de">
           <p class="bot-field" style="position:absolute;left:-9999px" aria-hidden="true">
             <label>Bitte leer lassen: <input name="honeypot"></label>
@@ -191,12 +196,8 @@
             <small data-file-label></small>
           </div>
 
-          <div class="field" style="display:flex;gap:10px;align-items:flex-start">
-            <input type="checkbox" id="dsgvo" name="Datenschutz bestätigt" required style="width:auto;margin-top:5px">
-            <label for="dsgvo" style="font-weight:400;margin:0">Ich habe die <a href="datenschutz.html">Datenschutzerklärung</a> gelesen und bin mit der Verarbeitung meiner Angaben zur Bearbeitung meiner Anfrage einverstanden.</label>
-          </div>
-
           <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px">Absenden</button>
+          <p class="form-disclaimer">Mit dem Absenden stimmen Sie unserer <a href="datenschutz.html">Datenschutzerklärung</a> zu.</p>
         </form>
       </div>
     </div>

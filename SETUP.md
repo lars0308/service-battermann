@@ -57,24 +57,24 @@ sondern über den externen Dienst Static Forms — Einrichtung siehe Abschnitt
 ## 1a. Kontaktformular über Static Forms freischalten
 
 Das Formular auf `/kontakt.html` sendet seine Daten an Static Forms
-(staticforms.dev). **Ohne API-Key passiert nichts Kaputtes** — das Formular
-zeigt einfach eine Fehlermeldung des Dienstes, statt Anfragen zuzustellen,
-bis der Key eingetragen ist.
+(staticforms.dev). Der API-Key steht bereits fest im HTML-Quellcode
+(`<input type="hidden" name="accessKey" value="sf_...">`) — das Formular
+funktioniert damit sofort, ohne weitere Einrichtung. Ändert sich der Key
+(z. B. bei einem neuen Static-Forms-Konto), gibt es zwei Wege, ihn
+auszutauschen:
 
-1. Auf [staticforms.dev](https://www.staticforms.dev) ein Konto anlegen.
-2. Ein neues Formular für `service-battermann.de` anlegen und den
-   angezeigten **API-Key** kopieren.
-3. In `kontakt.html` das Feld `<input type="hidden" name="accessKey" value="">`
-   suchen und deinen Key zwischen die Anführungszeichen eintragen (dasselbe
-   nochmal im direkt darunterstehenden `apiKey`-Feld — beide Felder tragen
-   sicherheitshalber denselben Wert, falls sich der von Static Forms
-   erwartete Feldname mal ändert).
-4. **Wichtig für den Foto-Upload:** Der kostenlose Tarif von Static Forms
+1. **Über Sanity** (empfohlen, kein Code-Zugriff nötig): Neuen Key unter
+   Website-Einstellungen → Static Forms API-Key eintragen — überschreibt
+   automatisch den festen HTML-Wert beim Laden der Seite.
+2. **Direkt im Code:** In `kontakt.html` das Feld
+   `<input type="hidden" name="accessKey" value="...">` suchen und den neuen
+   Key zwischen die Anführungszeichen eintragen.
+3. **Wichtig für den Foto-Upload:** Der kostenlose Tarif von Static Forms
    unterstützt keine Datei-Anhänge. Der "Foto anhängen"-Button im Formular
    funktioniert nur zuverlässig mit einem Pro- oder Agency-Tarif. Ohne
    Bezahltarif kommen Textnachrichten trotzdem an, angehängte Fotos werden
    aber nicht mitgeschickt.
-5. Benachrichtigungen (E-Mail bei neuer Anfrage) richtest du im
+4. Benachrichtigungen (E-Mail bei neuer Anfrage) richtest du im
    Static-Forms-Dashboard unter den Formular-Einstellungen ein.
 
 ## 2. Vorher/Nachher-Bilder pflegen
@@ -190,9 +190,9 @@ separates, kostenloses CMS-Tool.
    Vorher/Nachher-Bereich (Abschnitt 3).
 
 **Static-Forms-Key jetzt auch über Sanity pflegbar:** Trägst du den Key
-unter Website-Einstellungen ein, überschreibt er automatisch das leere
-Feld in `kontakt.html` beim Laden der Seite — der manuelle Weg aus
-Abschnitt 1a (direkt im Code eintragen) funktioniert weiterhin genauso,
+unter Website-Einstellungen ein, überschreibt er automatisch den festen
+HTML-Standardwert in `kontakt.html` beim Laden der Seite — der manuelle Weg
+aus Abschnitt 1a (direkt im Code eintragen) funktioniert weiterhin genauso,
 falls du Sanity dafür nicht nutzen willst. Trägst du an beiden Stellen
 etwas ein, gewinnt der Sanity-Wert. Der Key wird außerdem im Browser
 zwischengespeichert (localStorage), sobald er einmal geladen wurde — ruft

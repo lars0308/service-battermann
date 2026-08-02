@@ -15,21 +15,20 @@
   var PROJECT_ID = "9bz9h1mi";
   var DATASET = "production";
 
-  // Sicherheitsnetz fürs Kontaktformular: unabhängig vom generischen
-  // [data-sanity-field]-Patching unten (das bricht komplett ab, wenn diese
-  // Seite z. B. mal keine solchen Attribute mehr hätte) und unabhängig davon,
-  // ob der große Sanity-Fetch weiter unten bereits fertig war, BEVOR abgesendet
-  // wurde. Ohne dieses Netz könnte ein sehr schneller Absende-Klick (oder ein
-  // Autofill-Tool) das Formular mit noch leerem accessKey/apiKey abschicken,
-  // während der reguläre, größere Sanity-Fetch noch unterwegs ist — Static
-  // Forms lehnt das dann mit "API key is required" ab.
+  // Sicherheitsnetz fürs Kontaktformular: Das accessKey-Feld trägt in
+  // kontakt.html bereits einen festen HTML-Standardwert (Lars' echter Static-
+  // Forms-Key) — das Feld ist also praktisch nie leer. Dieser Listener bleibt
+  // trotzdem als letzte Absicherung bestehen, für den unwahrscheinlichen Fall,
+  // dass der Wert durch ein Autofill-Tool oder eine künftige Änderung doch
+  // einmal leer ankommt: unabhängig vom generischen [data-sanity-field]-
+  // Patching unten und unabhängig davon, ob der große Sanity-Fetch weiter
+  // unten bereits fertig war, BEVOR abgesendet wurde.
   //
   // Zwei Ebenen: (1) localStorage-Cache — sobald der Key auf IRGENDEINER Seite
   // dieser Website einmal aus Sanity geladen wurde, steht er ab dann sofort
   // synchron zur Verfügung, auch wenn kontakt.html direkt (ohne vorherigen
   // Seitenaufruf) geöffnet und sofort abgesendet wird. (2) Bleibt der Cache
-  // leer (allererster Aufruf dieser Sitzung überhaupt), gezielter Nachlade-
-  // Fetch als letzter Ausweg, genau wie bisher.
+  // leer, gezielter Nachlade-Fetch als letzter Ausweg.
   var STATIC_FORMS_KEY_STORAGE = "staticFormsKey";
   function cacheStaticFormsKey(key) {
     if (!key) return;
@@ -43,18 +42,14 @@
   if (contactForm) {
     contactForm.addEventListener("submit", function (e) {
       var accessKeyInput = contactForm.querySelector('input[name="accessKey"]');
-      var apiKeyInput = contactForm.querySelector('input[name="apiKey"]');
       if (!accessKeyInput) return;
 
       if (!accessKeyInput.value) {
         var cachedKey = readCachedStaticFormsKey();
-        if (cachedKey) {
-          accessKeyInput.value = cachedKey;
-          if (apiKeyInput) apiKeyInput.value = cachedKey;
-        }
+        if (cachedKey) accessKeyInput.value = cachedKey;
       }
 
-      if (accessKeyInput.value) return; // befüllt (Patch oder Cache) -> ganz normal absenden
+      if (accessKeyInput.value) return; // befüllt (HTML-Standard, Sanity-Patch oder Cache) -> ganz normal absenden
 
       e.preventDefault();
       var keyQuery = encodeURIComponent('*[_type=="siteSettings"][0].staticFormsApiKey');
@@ -68,16 +63,13 @@
           var key = json && json.result;
           if (key) {
             accessKeyInput.value = key;
-            if (apiKeyInput) apiKeyInput.value = key;
             cacheStaticFormsKey(key);
           }
         })
         .catch(function () {
-          /* Absichtlich kein Fallback-Wert im Code (wäre ein öffentlich
-             sichtbares Geheimnis im Seitenquelltext) — schlägt der Nachlade-
-             Versuch fehl, geht die Anfrage trotzdem raus und Static Forms
-             liefert die reale, zutreffende Fehlermeldung zurück, statt dass
-             der Nutzer denkt, seine Anfrage sei angekommen. */
+          /* Nachlade-Versuch fehlgeschlagen -> die Anfrage geht trotzdem raus
+             (mit dem festen HTML-Standardwert, der an dieser Stelle ohnehin
+             schon greifen würde) statt den Nutzer ewig warten zu lassen. */
         })
         .then(function () {
           // form.submit() statt requestSubmit(): löst KEIN erneutes "submit"-

@@ -538,6 +538,20 @@ section.dim{ background:var(--paper-dim); }
   position:absolute; top:20px; left:clamp(24px, 5vw, 72px); right:24px;
   z-index:10000; margin:0;
 }
+@media (min-width:901px){
+  .hero-eyebrow-top{ font-size:0.85rem; }
+}
+
+/* Kleiner runder vCard-Download-Button neben den Hero-CTAs (siehe HTML:
+   <a download href="assets/lars-battermann.vcf">) — speichert Lars direkt
+   im Telefonbuch statt nur eine Telefonnummer zu hinterlassen. */
+.vcard-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:44px; height:44px; flex-shrink:0; border-radius:50%;
+  border:1px solid rgba(244,241,233,0.35); color:var(--on-dark);
+  transition:border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+.vcard-btn:hover{ border-color:var(--accent); color:var(--accent); transform:translateY(-2px); }
 
 /* ---------- Tiefen-Reveal-Intro (nur beim allerersten Seitenaufruf) ----------
    Die Klasse .is-first-reveal steht von Anfang an im HTML (kein FOUC-Risiko: der
@@ -1115,30 +1129,35 @@ section.dim{ background:var(--paper-dim); }
 .faq-item[open] summary::after{ content:'–'; }
 .faq-item .a{ padding:0 0 22px; color:var(--ink-soft); max-width:70ch; }
 
-/* ---------- Formular ---------- */
+/* ---------- Formular: Frosted-Glass-Panel, shadcn-transparente Felder ---------- */
 .form-card{
-  background:var(--paper); border:1px solid var(--line); border-radius:var(--radius);
-  padding:var(--space-4); box-shadow:var(--shadow);
+  background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08);
+  border-radius:var(--radius); padding:var(--space-4);
+  -webkit-backdrop-filter:blur(25px); backdrop-filter:blur(25px);
+  box-shadow:var(--shadow);
 }
 .field{ margin-bottom:var(--space-3); }
-.field label{ display:block; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.85rem; margin-bottom:8px; }
+.field label{ display:block; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.85rem; margin-bottom:8px; color:rgba(244,241,233,0.7); }
 .field input, .field textarea{
-  width:100%; padding:13px 14px; border:1px solid var(--line); border-radius:var(--radius-sm);
-  font-family:'Plus Jakarta Sans', sans-serif; font-size:0.98rem; background:var(--field-bg); color:var(--ink);
+  width:100%; padding:11px 2px; border:none; border-bottom:1px solid rgba(244,241,233,0.22);
+  border-radius:0; font-family:'Plus Jakarta Sans', sans-serif; font-size:0.98rem;
+  background:transparent; color:#fff;
+  transition:border-color 0.25s ease;
 }
-.field input:focus, .field textarea:focus{ outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent); }
+.field input::placeholder, .field textarea::placeholder{ color:rgba(244,241,233,0.35); }
+.field input:focus, .field textarea:focus{ outline:none; border-bottom-color:#25D366; }
 .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:var(--space-3); }
 @media (max-width:640px){ .field-row{ grid-template-columns:1fr; } }
-.field small{ display:block; color:var(--ink-soft); margin-top:6px; font-size:0.82rem; }
+.field small{ display:block; color:var(--on-dark-soft); margin-top:6px; font-size:0.82rem; }
 
 .upload-trigger{
   display:inline-flex; align-items:center; gap:10px;
-  padding:12px 18px; border:1px dashed var(--line); border-radius:var(--radius-sm);
+  padding:12px 18px; border:1px dashed rgba(244,241,233,0.25); border-radius:var(--radius-sm);
   cursor:pointer; font-family:'Montserrat',sans-serif; font-weight:600; font-size:0.88rem;
-  color:var(--ink-soft); background:var(--field-bg);
+  color:rgba(244,241,233,0.7); background:transparent;
   transition:border-color 0.2s cubic-bezier(0.16,1,0.3,1), color 0.2s cubic-bezier(0.16,1,0.3,1);
 }
-.upload-trigger:hover{ border-color:var(--accent); color:var(--link); }
+.upload-trigger:hover{ border-color:var(--accent); color:var(--accent); }
 .upload-trigger svg{ flex-shrink:0; }
 .field input.file-input-hidden, input[type="file"].file-input-hidden{
   position:absolute !important; width:1px !important; height:1px !important; margin:-1px; padding:0 !important;
@@ -1148,6 +1167,14 @@ section.dim{ background:var(--paper-dim); }
 .upload-trigger:has(+ .file-input-hidden:focus-visible){
   outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--radius-sm);
 }
+.form-disclaimer{ margin-top:14px; font-size:0.78rem; color:rgba(244,241,233,0.45); text-align:center; }
+.form-disclaimer a{ color:rgba(244,241,233,0.6); }
+
+.kontakt-portrait{
+  border-radius:var(--radius); overflow:hidden; margin-top:var(--space-3);
+  border:1px solid rgba(244,241,233,0.12); max-width:360px;
+}
+.kontakt-portrait img{ display:block; width:100%; aspect-ratio:4/5; object-fit:cover; }
 
 /* ---------- Footer ---------- */
 footer.site{ background:var(--surface-dark); color:var(--on-dark-soft); padding:var(--space-4) 0 var(--space-3); }

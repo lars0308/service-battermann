@@ -1,0 +1,9 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Battermann;Lars;;;
+FN:Lars Battermann
+ORG:Objekt- & Reparaturservice Battermann
+TEL;TYPE=CELL,VOICE:+4915567467763
+EMAIL;TYPE=INTERNET:service.battermann@gmx.de
+URL:https://service-battermann.de
+END:VCARD
