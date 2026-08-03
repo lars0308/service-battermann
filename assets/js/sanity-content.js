@@ -150,7 +150,7 @@
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
     '{"themeSettings":*[_type=="themeSettings"][0]{"primaryGold":primaryGold.hex,"brandGreen":brandGreen.hex,"bgDark":bgDark.hex,"bgLight":bgLight.hex,"textDark":textDark.hex,"textLight":textLight.hex,glassOpacity,glassBlur,borderRadius},' +
-    '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type},aboutEyebrow,aboutLead,aboutFact1Title,aboutFact1Text,aboutFact2Title,aboutFact2Text,aboutFact3Title,aboutFact3Text,aboutCardCtaLabel,aboutDownloadLabel,bereichsLink,heroWhatsappLabel,heroCallLabel,heroPrimaryCtaLabel,bentoEyebrow,bentoHeadline,bentoIntro,servicesAllCtaLabel,mapEyebrow,mapHeadline,formEyebrow,formHeadline,"aboutPortraitUrl":aboutPortrait.asset->url' + IMG_SUFFIX + '},' +
+    '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type},heroEyebrow,aboutEyebrow,aboutLead,aboutFact1Title,aboutFact1Text,aboutFact2Title,aboutFact2Text,aboutFact3Title,aboutFact3Text,aboutCardCtaLabel,aboutDownloadLabel,bereichsLink,heroWhatsappLabel,heroCallLabel,heroPrimaryCtaLabel,bentoEyebrow,bentoHeadline,bentoIntro,servicesAllCtaLabel,mapEyebrow,mapHeadline,formEyebrow,formHeadline,bewertungenEyebrow,bewertungenHeadline,bewertungenText,bewertungenCtaLabel,gebietEyebrow,gebietHeadline,gebietText,gebietCtaLabel,"aboutPortraitUrl":aboutPortrait.asset->url' + IMG_SUFFIX + ',heroDesign,werHierAnpacktDesign,werHierAnpacktLayout,leistungenExtraDesign,mapBlockDesign,formBlockDesign,bewertungenDesign,gebietTeaserDesign},' +
     '"customPages":*[_type=="customPage" && showInNav==true]|order(navOrder asc){title,"slug":slug.current,navOrder},' +
     '"heroSettings":*[_type=="heroSettings"][0]{"heroSlides":heroSlides[]{folieName,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot,bildAktiv,spruchText,spruchTextsWeitere,spruchAktiv},showCallButton},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text,detail},' +
@@ -162,14 +162,14 @@
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
     '"einsatzgebiet":*[_type=="einsatzgebietOrt"]|order(order asc){order,name,anfahrtskosten},' +
     '"promise":*[_type=="promiseCard"]|order(order asc){order,icon,title,text},' +
-    '"pageImpressum":*[_type=="pageImpressum"][0]{eyebrow,heading,intro,body},' +
-    '"pageDatenschutz":*[_type=="pageDatenschutz"][0]{eyebrow,heading,intro,body},' +
-    '"pageUeberMich":*[_type=="pageUeberMich"][0]{heroEyebrow,heroName,heroSubline,heroLead,"heroPortraitUrl":heroPortrait.asset->url' + IMG_SUFFIX + ',anfangEyebrow,anfangHeadline,anfangText1,anfangText2,"anfangImageUrl":anfangImage.asset->url' + IMG_SUFFIX + ',arbeitsweiseEyebrow,arbeitsweiseHeadline,kundenEyebrow,kundenHeadline,kundenText,kundenCtaLabel,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
-    '"pageLeistungen":*[_type=="pageLeistungen"][0]{heroEyebrow,heroHeadline,heroLead,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
-    '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead,contactEyebrow,contactHeadline,contactIntro,emailLabelPrefix,erreichbarkeitLabelPrefix,contactNote,"portraitUrl":portrait.asset->url' + IMG_SUFFIX + ',portraitName,portraitRole},' +
-    '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead,faqEyebrow,faqHeadline,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
+    '"pageImpressum":*[_type=="pageImpressum"][0]{eyebrow,heading,intro,body,design},' +
+    '"pageDatenschutz":*[_type=="pageDatenschutz"][0]{eyebrow,heading,intro,body,design},' +
+    '"pageUeberMich":*[_type=="pageUeberMich"][0]{heroEyebrow,heroName,heroSubline,heroLead,"heroPortraitUrl":heroPortrait.asset->url' + IMG_SUFFIX + ',anfangEyebrow,anfangHeadline,anfangText1,anfangText2,"anfangImageUrl":anfangImage.asset->url' + IMG_SUFFIX + ',arbeitsweiseEyebrow,arbeitsweiseHeadline,kundenEyebrow,kundenHeadline,kundenText,kundenCtaLabel,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel,heroDesign,anfangDesign,anfangLayout,arbeitsweiseDesign,kundenDesign,ctaBandDesign},' +
+    '"pageLeistungen":*[_type=="pageLeistungen"][0]{heroEyebrow,heroHeadline,heroLead,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel,heroDesign,ctaBandDesign},' +
+    '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead,contactEyebrow,contactHeadline,contactIntro,emailLabelPrefix,erreichbarkeitLabelPrefix,contactNote,"portraitUrl":portrait.asset->url' + IMG_SUFFIX + ',portraitName,portraitRole,heroDesign,direkterDrahtDesign},' +
+    '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead,faqEyebrow,faqHeadline,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel,heroDesign,faqDesign,ctaBandDesign},' +
     '"effects":*[_type=="effectSettings"][0]{heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,introVeilOpacity,kitCardIntervalMs,bentoTileScale,bentoGlassFadeMs,trustMarqueeSpeedMs,revealDurationMs,revealDistancePx},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,navOrderHome,navOrderLeistungen,navOrderUeberMich,navOrderEinsatzgebiet,navOrderKontakt,heroEyebrow,staticFormsApiKey,bewertungenEyebrow,bewertungenHeadline,bewertungenText,bewertungenCtaLabel,gebietEyebrow,gebietHeadline,gebietText,gebietCtaLabel,navStartseite,navCtaLabel,megaAllLeistungen,megaAllUeberMich,megaAllEinsatzgebiet,megaAllKontakt,megaKontaktAnrufenLabel,megaKontaktWhatsappLabel,megaKontaktWhatsappDesc,megaKontaktEmailLabel,footerIntro,footerNavHeading,footerContactHeading,copyrightText,footerImpressumLabel,footerDatenschutzLabel,footerBackHomeLabel,cookieText,cookieLinkLabel,cookieAcceptLabel,fabLongLabel,fabShortLabel,dankeHeadline,dankeText,dankeVcardLabel,dankeCloseLabel,formNameLabel,formOrtLabel,formOrtPlaceholder,formKontaktwegLabel,formKontaktPlaceholder,formAnliegenLabel,formAnliegenPlaceholder,formFotoLabel,formSubmitLabel,formErrorText,formDisclaimerPre,formDisclaimerPost,mapConsentTitle,mapConsentText,mapConsentLinkLabel,mapConsentButtonLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,navOrderHome,navOrderLeistungen,navOrderUeberMich,navOrderEinsatzgebiet,navOrderKontakt,staticFormsApiKey,navStartseite,navCtaLabel,megaAllLeistungen,megaAllUeberMich,megaAllEinsatzgebiet,megaAllKontakt,megaKontaktAnrufenLabel,megaKontaktWhatsappLabel,megaKontaktWhatsappDesc,megaKontaktEmailLabel,footerIntro,footerNavHeading,footerContactHeading,copyrightText,footerImpressumLabel,footerDatenschutzLabel,footerBackHomeLabel,cookieText,cookieLinkLabel,cookieAcceptLabel,fabLongLabel,fabShortLabel,dankeHeadline,dankeText,dankeVcardLabel,dankeCloseLabel,formNameLabel,formOrtLabel,formOrtPlaceholder,formKontaktwegLabel,formKontaktPlaceholder,formAnliegenLabel,formAnliegenPlaceholder,formFotoLabel,formSubmitLabel,formErrorText,formDisclaimerPre,formDisclaimerPost,mapConsentTitle,mapConsentText,mapConsentLinkLabel,mapConsentButtonLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -425,6 +425,7 @@
       if (!doc) return;
       Object.keys(doc).forEach(function (field) {
         if (field === "pageModules" || field === "body") return; // eigene Struktur, kein Text-Feld
+        if (/Design$/.test(field) || /Layout$/.test(field)) return; // eigene Struktur, siehe design-controls.js
         if (doc[field]) map[docKey + "." + field] = doc[field];
       });
     });
@@ -577,14 +578,14 @@
   // fehlschlägt — die Seite soll nie leer/kaputt aussehen). Bei bewusst
   // optionalen Absätzen wie dem Bewertungen-Text will Lars aber, dass ein
   // Löschen im Studio den Absatz auf der Website wirklich verschwinden lässt.
-  // Nur hier anwendbar, weil "data.settings" bei erfolgreicher Abfrage immer
-  // vorhanden ist — ein fehlendes "data.settings" bedeutet also echten
-  // Abfrage-Fehler (statischer Text bleibt), ein vorhandenes "data.settings"
+  // Nur hier anwendbar, weil "data.pageHome" bei erfolgreicher Abfrage immer
+  // vorhanden ist — ein fehlendes "data.pageHome" bedeutet also echten
+  // Abfrage-Fehler (statischer Text bleibt), ein vorhandenes "data.pageHome"
   // ohne bewertungenText bedeutet: bewusst geleert.
   function applyOptionalTextVisibility(data) {
-    if (!data.settings) return;
-    if (!data.settings.bewertungenText) {
-      var el = document.querySelector('[data-sanity-field="settings.bewertungenText"]');
+    if (!data.pageHome) return;
+    if (!data.pageHome.bewertungenText) {
+      var el = document.querySelector('[data-sanity-field="pageHome.bewertungenText"]');
       if (el) el.hidden = true;
     }
   }
@@ -909,6 +910,7 @@
       }
       applyThemeColors(data.themeSettings);
       applyEffectSettings(data);
+      if (typeof window.__applySectionDesign === "function") window.__applySectionDesign(data);
       applyPageModules(data);
       applyCustomPageNav(data);
       applyNavOrder(data);

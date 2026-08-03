@@ -10,10 +10,7 @@ export const siteSettings = defineType({
     {name: 'general', title: 'Allgemein', default: true},
     {name: 'nav', title: 'Navigation'},
     {name: 'navOrder', title: 'Reihenfolge im Hauptmenü'},
-    {name: 'hero', title: 'Hero'},
     {name: 'forms', title: 'Formular'},
-    {name: 'bewertungen', title: 'Startseite: Bewertungen'},
-    {name: 'gebietTeaser', title: 'Startseite: Einsatzgebiet (Kurzform)'},
     {
       name: 'boilerplate',
       title: 'Website-weit: Wiederkehrende Texte (Menü, Footer, Formular, Popups)',
@@ -28,20 +25,6 @@ export const siteSettings = defineType({
       type: 'image',
       description:
         'Mehrfarbiges Logo funktioniert auf hellem wie dunklem Grund automatisch — kein manuelles Freistellen nötig.',
-      group: 'general',
-    }),
-    defineField({name: 'logoFull', title: 'Logo (vollständig, ungenutzt aktuell)', type: 'image', group: 'general'}),
-    defineField({
-      name: 'serviceAreaTowns',
-      title: 'Einsatzgebiet (Orte)',
-      type: 'array',
-      of: [{type: 'string'}],
-      group: 'general',
-    }),
-    defineField({
-      name: 'serviceAreaRadiusKm',
-      title: 'Einsatzradius (km)',
-      type: 'number',
       group: 'general',
     }),
     defineField({
@@ -117,13 +100,6 @@ export const siteSettings = defineType({
       group: 'navOrder',
     }),
     defineField({
-      name: 'heroEyebrow',
-      title: 'Hero-Unterzeile (über der Überschrift)',
-      type: 'string',
-      initialValue: 'Hausmeisterservice · Objektbetreuung · Allround-Handwerk',
-      group: 'hero',
-    }),
-    defineField({
       name: 'staticFormsApiKey',
       title: 'Static Forms API-Key (Kontaktformular)',
       type: 'string',
@@ -131,15 +107,6 @@ export const siteSettings = defineType({
         'Ohne diesen Key nimmt das Kontaktformular auf kontakt.html keine Anfragen entgegen. Key von staticforms.dev, siehe SETUP.md.',
       group: 'forms',
     }),
-    defineField({name: 'bewertungenEyebrow', title: 'Unterzeile', type: 'string', group: 'bewertungen'}),
-    defineField({name: 'bewertungenHeadline', title: 'Überschrift', type: 'string', group: 'bewertungen'}),
-    defineField({name: 'bewertungenText', title: 'Text', type: 'text', group: 'bewertungen'}),
-    defineField({name: 'bewertungenCtaLabel', title: 'Button-Text (führt zum Kontaktformular)', type: 'string', group: 'bewertungen'}),
-    defineField({name: 'gebietEyebrow', title: 'Unterzeile', type: 'string', group: 'gebietTeaser'}),
-    defineField({name: 'gebietHeadline', title: 'Überschrift', type: 'string', group: 'gebietTeaser'}),
-    defineField({name: 'gebietText', title: 'Text', type: 'text', group: 'gebietTeaser'}),
-    defineField({name: 'gebietCtaLabel', title: 'Link-Text (führt zur Einsatzgebiet-Seite)', type: 'string', group: 'gebietTeaser'}),
-
     // Menü/Mega-Panel
     defineField({name: 'navStartseite', title: 'Menüpunkt „Startseite"', type: 'string', group: 'boilerplate'}),
     defineField({name: 'navCtaLabel', title: 'Menü-Button ("Anfrage stellen")', type: 'string', group: 'boilerplate'}),

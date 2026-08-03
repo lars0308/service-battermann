@@ -16,6 +16,7 @@ export const pageKontakt = defineType({
     defineField({name: 'heroEyebrow', title: 'Unterzeile', type: 'string', group: 'hero'}),
     defineField({name: 'heroHeadline', title: 'Überschrift', type: 'string', group: 'hero'}),
     defineField({name: 'heroLead', title: 'Einleitungssatz', type: 'text', group: 'hero'}),
+    defineField({name: 'heroDesign', title: 'Darstellung', type: 'sectionDesign', group: 'hero'}),
     defineField({name: 'contactEyebrow', title: 'Unterzeile', type: 'string', group: 'direkterDraht'}),
     defineField({name: 'contactHeadline', title: 'Überschrift', type: 'string', group: 'direkterDraht'}),
     defineField({name: 'contactIntro', title: 'Einleitungssatz', type: 'text', group: 'direkterDraht'}),
@@ -32,6 +33,7 @@ export const pageKontakt = defineType({
     }),
     defineField({name: 'portraitName', title: 'Bildunterschrift: Name', type: 'string', group: 'direkterDraht'}),
     defineField({name: 'portraitRole', title: 'Bildunterschrift: Rolle', type: 'string', group: 'direkterDraht'}),
+    defineField({name: 'direkterDrahtDesign', title: 'Darstellung', type: 'sectionDesign', group: 'direkterDraht'}),
   ],
   preview: {
     prepare() {

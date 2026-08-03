@@ -13,6 +13,7 @@ import {pageImpressum} from './pageImpressum'
 import {pageDatenschutz} from './pageDatenschutz'
 import {themeSettings} from './themeSettings'
 import {effectSettings} from './effectSettings'
+import {sectionDesign} from './sectionDesign'
 import {
   pageHome,
   heroBlock,
@@ -44,6 +45,7 @@ export const schemaTypes = [
   pageDatenschutz,
   themeSettings,
   effectSettings,
+  sectionDesign,
   pageHome,
   heroBlock,
   vorteileBlock,

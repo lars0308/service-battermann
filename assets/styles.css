@@ -1702,6 +1702,49 @@ footer.site .footer-bottom a{ display:inline; margin-bottom:0; }
 .reveal-delay-2.is-visible{ transition-delay:0.16s; }
 .reveal-delay-3.is-visible{ transition-delay:0.24s; }
 
+/* ---------- Kuratierte Sektions-Design-Overrides (sectionDesign) ----------
+   Nur gesetzt, wenn im Studio aktiv ein Wert gewählt wurde (siehe
+   design-controls.js) — sonst keine Klasse, keine Änderung. Alle Werte
+   bleiben innerhalb der bestehenden rem-/CSS-Variablen-Skala, keine neuen
+   Schriften, keine Verläufe, kein zusätzliches starres Raster. */
+
+/* Textgröße: multipliziert die vorhandenen rem-Basiswerte um kuratierte
+   Faktoren — dieselbe Größenordnung wie effectSettings.bentoTileScale (1.22). */
+[data-design-section].dsize-klein h2{ font-size:calc(1.35rem * 0.85); }
+[data-design-section].dsize-klein .eyebrow{ font-size:calc(0.74rem * 0.85); }
+[data-design-section].dsize-klein .lead, [data-design-section].dsize-klein .about-lead{ font-size:calc(1.1rem * 0.85); }
+[data-design-section].dsize-gross h2{ font-size:calc(1.35rem * 1.15); }
+[data-design-section].dsize-gross .eyebrow{ font-size:calc(0.74rem * 1.15); }
+[data-design-section].dsize-gross .lead, [data-design-section].dsize-gross .about-lead{ font-size:calc(1.1rem * 1.15); }
+[data-design-section].dsize-sehr-gross h2{ font-size:calc(1.35rem * 1.3); }
+[data-design-section].dsize-sehr-gross .eyebrow{ font-size:calc(0.74rem * 1.3); }
+[data-design-section].dsize-sehr-gross .lead, [data-design-section].dsize-sehr-gross .about-lead{ font-size:calc(1.1rem * 1.3); }
+
+/* Akzentfarbe: nur Dachzeile + Überschrift, nicht der komplette Fließtext
+   (Kontrast/Lesbarkeit bleibt gewahrt). */
+[data-design-section].daccent-gold .eyebrow, [data-design-section].daccent-gold h2{ color:var(--accent); }
+[data-design-section].daccent-gruen .eyebrow, [data-design-section].daccent-gruen h2{ color:var(--brand-green); }
+
+/* Glas: überschreibt lokal (nur für Nachfahren dieser Sektion) dieselben
+   --glass-blur/--glass-opacity-Variablen, die themeSettings global auf :root
+   setzt — exakt dasselbe Vererbungs-Prinzip wie bei --hero-desktop-pos/
+   --intro-blur. Ohne Glas-Fläche in der Sektion: kein sichtbarer Effekt. */
+[data-design-section].dglas-kein{ --glass-blur:0px; --glass-opacity:0; }
+[data-design-section].dglas-leicht{ --glass-blur:10px; --glass-opacity:0.4; }
+[data-design-section].dglas-stark{ --glass-blur:36px; --glass-opacity:0.85; }
+
+/* Fade-Timing: überschreibt lokal --reveal-duration/--reveal-distance, die
+   .reveal (siehe oben) ohnehin schon per var() mit Fallback konsumiert. */
+[data-design-section].dfade-schnell{ --reveal-duration:0.4s; --reveal-distance:20px; }
+[data-design-section].dfade-sanft{ --reveal-duration:1.3s; --reveal-distance:60px; }
+[data-design-section].dfade-aus{ --reveal-duration:0s; --reveal-distance:0px; }
+
+/* Layout-Variante "Wer hier anpackt": .split.reverse existiert für die
+   anfang-Sektion (ueber-mich.html) bereits — hier das Pendant für
+   .about-layout (Startseite). */
+.about-layout.layout-flip .about-content{ order:1; }
+.about-layout.layout-flip .about-card{ order:2; }
+
 /* ---------- Utility ---------- */
 .mt-0{ margin-top:0; }
 .center-narrow{ max-width:640px; }

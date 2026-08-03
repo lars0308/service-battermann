@@ -134,7 +134,7 @@
      bewusst AUSSERHALB dieser Zone und bleiben fest an ihrem Platz. -->
 <div id="page-builder-zone">
 
-<section class="hero hero-slider is-first-reveal" id="hero-split" data-page-block="heroBlock">
+<section class="hero hero-slider is-first-reveal" id="hero-split" data-page-block="heroBlock" data-design-section="pageHome.hero">
   <!-- Hintergrundbilder (heroSettings.heroSlides): bis zu 4 aktive Bilder aus
        dem Baukasten-Array werden hier eingepatcht (siehe assets/main.js). -->
   <div class="hero-slides" aria-hidden="true">
@@ -158,7 +158,7 @@
   <div class="hero-scrim" aria-hidden="true"></div>
   <div class="hero-glass-intro" data-hero-glass-intro aria-hidden="true"></div>
 
-  <span class="eyebrow hero-eyebrow-top" data-sanity-field="settings.heroEyebrow">Hausmeisterservice · Objektbetreuung · Allround-Handwerk</span>
+  <span class="eyebrow hero-eyebrow-top" data-sanity-field="pageHome.heroEyebrow">Hausmeisterservice · Objektbetreuung · Allround-Handwerk</span>
 
   <div class="wrap hero-slider-content">
     <div class="hero-slide-heading-wrap">
@@ -235,7 +235,7 @@
   </div>
 </section>
 
-<section id="wer-ich-bin" data-page-block="aboutMeBlock">
+<section id="wer-ich-bin" data-page-block="aboutMeBlock" data-design-section="pageHome.werHierAnpackt">
   <div class="wrap about-layout">
     <div class="about-content">
       <span class="eyebrow reveal" data-sanity-field="pageHome.aboutEyebrow">Wer hier anpackt</span>
@@ -271,7 +271,7 @@
   </div>
 </section>
 
-<section id="leistungen-list-section" data-page-block="bentoGridBlock">
+<section id="leistungen-list-section" data-page-block="bentoGridBlock" data-design-section="pageHome.leistungenExtra">
   <div class="wrap">
     <span class="eyebrow reveal" data-sanity-field="pageHome.bentoEyebrow">Was ich mache</span>
     <h2 class="reveal" data-sanity-field="pageHome.bentoHeadline">Fünf Bereiche, ein Ansprechpartner</h2>
@@ -330,7 +330,7 @@
      das hidden-Attribut; die komplette Widget-Logik (Karte/Formular) ist
      bereits fertig verdrahtet und identisch zu einsatzgebiet-faq.html/
      kontakt.html, nur eben zusätzlich hier eingebettet. -->
-<section id="home-map-block" data-page-block="mapBlock" hidden>
+<section id="home-map-block" data-page-block="mapBlock" data-design-section="pageHome.mapBlock" hidden>
   <div class="wrap">
     <span class="eyebrow reveal" data-sanity-field="pageHome.mapEyebrow">Einsatzgebiet</span>
     <h2 class="reveal" data-sanity-field="pageHome.mapHeadline">Wo ich für Sie da bin</h2>
@@ -358,7 +358,7 @@
   </div>
 </section>
 
-<section id="home-form-block" data-page-block="formBlock" hidden>
+<section id="home-form-block" data-page-block="formBlock" data-design-section="pageHome.formBlock" hidden>
   <div class="wrap" style="max-width:640px">
     <span class="eyebrow reveal" data-sanity-field="pageHome.formEyebrow">Kontakt</span>
     <h2 class="reveal" data-sanity-field="pageHome.formHeadline">Kurz schildern, abschicken, fertig</h2>
@@ -410,25 +410,25 @@
 
 </div><!-- /#page-builder-zone -->
 
-<section id="bewertungen-section">
+<section id="bewertungen-section" data-design-section="pageHome.bewertungen">
   <div class="wrap">
-    <span class="eyebrow reveal" data-sanity-field="settings.bewertungenEyebrow">Bewertungen</span>
-    <h2 class="reveal" data-sanity-field="settings.bewertungenHeadline">5 von 5 Sternen auf Google. Weil Qualität für mich der einzige Maßstab ist.</h2>
+    <span class="eyebrow reveal" data-sanity-field="pageHome.bewertungenEyebrow">Bewertungen</span>
+    <h2 class="reveal" data-sanity-field="pageHome.bewertungenHeadline">5 von 5 Sternen auf Google. Weil Qualität für mich der einzige Maßstab ist.</h2>
 
     <div data-google-reviews data-api-key="AIzaSyD5il03P8Tc9pRX9lM5UFAcMBptN_cp35o" data-place-id="ChIJZatb6ptId0QRjuzL9gBAVdk" style="margin-top:28px"></div>
 
-    <p class="reveal" style="max-width:60ch;margin-top:24px" data-sanity-field="settings.bewertungenText">Echte Bewertungen von Kunden finden Sie direkt auf Google: aktuell und ungefiltert, statt nachträglich auf dieser Seite zusammengestellt.</p>
+    <p class="reveal" style="max-width:60ch;margin-top:24px" data-sanity-field="pageHome.bewertungenText">Echte Bewertungen von Kunden finden Sie direkt auf Google: aktuell und ungefiltert, statt nachträglich auf dieser Seite zusammengestellt.</p>
 
-    <p class="reveal" style="margin-top:20px"><a href="kontakt.html" class="btn btn-primary"><span data-sanity-field="settings.bewertungenCtaLabel">Jetzt selbst überzeugen</span> →</a></p>
+    <p class="reveal" style="margin-top:20px"><a href="kontakt.html" class="btn btn-primary"><span data-sanity-field="pageHome.bewertungenCtaLabel">Jetzt selbst überzeugen</span> →</a></p>
   </div>
 </section>
 
-<section>
+<section id="gebiet-teaser-section" data-design-section="pageHome.gebietTeaser">
   <div class="wrap">
-    <span class="eyebrow reveal" data-sanity-field="settings.gebietEyebrow">Einsatzgebiet</span>
-    <h2 class="reveal" data-sanity-field="settings.gebietHeadline">Lindhorst, Stadthagen, Bückeburg und rund 30 km drumherum</h2>
-    <p class="reveal" data-sanity-field="settings.gebietText">Bad Nenndorf, Beckedorf, Barsinghausen und die Orte dazwischen gehören ebenfalls zum üblichen Einsatzgebiet. Bei Fragen zur Entfernung einfach kurz nachfragen.</p>
-    <p class="reveal"><a href="einsatzgebiet-faq.html" class="inline-cta"><span data-sanity-field="settings.gebietCtaLabel">Genaues Gebiet &amp; häufige Fragen ansehen</span> →</a></p>
+    <span class="eyebrow reveal" data-sanity-field="pageHome.gebietEyebrow">Einsatzgebiet</span>
+    <h2 class="reveal" data-sanity-field="pageHome.gebietHeadline">Lindhorst, Stadthagen, Bückeburg und rund 30 km drumherum</h2>
+    <p class="reveal" data-sanity-field="pageHome.gebietText">Bad Nenndorf, Beckedorf, Barsinghausen und die Orte dazwischen gehören ebenfalls zum üblichen Einsatzgebiet. Bei Fragen zur Entfernung einfach kurz nachfragen.</p>
+    <p class="reveal"><a href="einsatzgebiet-faq.html" class="inline-cta"><span data-sanity-field="pageHome.gebietCtaLabel">Genaues Gebiet &amp; häufige Fragen ansehen</span> →</a></p>
   </div>
 </section>
 
@@ -494,7 +494,8 @@
 </div>
 
 <script src="assets/main.js?v=26"></script>
-<script src="assets/js/sanity-content.js?v=26"></script>
+<script src="assets/js/design-controls.js?v=1"></script>
+<script src="assets/js/sanity-content.js?v=27"></script>
 <script src="assets/js/google-reviews.js?v=9" defer></script>
 </body>
 </html>
