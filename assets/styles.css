@@ -1412,6 +1412,49 @@ body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
 .review-attribution a{ color:var(--link); }
 @media (max-width:900px){ .review-cards{ grid-template-columns:1fr; gap:12px; } }
 
+/* "mehr…"-Link: kappt lange Bewertungen auf eine feste Länge (siehe
+   TRUNCATE_AT in google-reviews.js), damit eine besonders lange Bewertung
+   die Karte nie aufbläht und den Rest der Seite nach unten schiebt. */
+.review-card-more{
+  all:unset; cursor:pointer; color:var(--link); font-style:normal;
+  font-weight:600; font-size:0.92em;
+}
+.review-card-more:hover{ text-decoration:underline; }
+
+/* Glas-Popup für die volle Bewertung — gleicher dunkler Vollbild-Hintergrund
+   wie die Bild-Lightbox (.lightbox), aber mit einer Frosted-Glass-Karte statt
+   einem Bild. Nutzt dieselben .lightbox-close/-nav-Button-Klassen. */
+.review-lightbox{
+  position:fixed; inset:0; z-index:200;
+  background:rgba(15,14,12,0.94);
+  display:flex; align-items:center; justify-content:center;
+  padding:24px;
+  opacity:0; visibility:hidden;
+  transition:opacity 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.review-lightbox.is-open{ opacity:1; visibility:visible; }
+.review-lightbox-card{
+  width:100%; max-width:560px; max-height:80vh; overflow-y:auto;
+  background:rgba(255,255,255,0.08);
+  -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:var(--radius);
+  box-shadow:0 30px 70px -20px rgba(0,0,0,0.6);
+  padding:36px 32px;
+}
+.review-lightbox-card .review-card-stars{ color:var(--accent); }
+.review-lightbox-card blockquote{
+  margin:0 0 18px; font-style:italic; color:#fff;
+  font-size:1.05rem; line-height:1.6;
+}
+.review-lightbox-card figcaption{
+  display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+  padding-top:16px; border-top:1px solid rgba(255,255,255,0.18);
+}
+.review-lightbox-card .review-card-author{ color:#fff; }
+.review-lightbox-card .review-card-date{ color:rgba(255,255,255,0.65); }
+@media (max-width:600px){ .review-lightbox-card{ padding:26px 22px; } }
+
 /* ---------- Vorher/Nachher ---------- */
 .vn-pair{ display:grid; grid-template-columns:1fr 1fr; gap:2px; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow); }
 .vn-pair figure{ margin:0; position:relative; overflow:hidden; }
