@@ -1144,15 +1144,42 @@ body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
   display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px;
   margin-top:32px;
 }
+/* Abgedunkelter Vollbild-Hintergrund, sichtbar sobald irgendeine Zeile offen
+   ist (.is-open — wird sowohl bei Klick als auch bei Hover per JS gesetzt,
+   siehe main.js). Liegt als erstes Kind IN .service-list, damit der
+   :has()-Selektor unten greift. position:fixed macht die tatsächliche
+   Position irrelevant. */
+.service-row-backdrop{
+  position:fixed; inset:0; z-index:248;
+  background:rgba(10,10,10,0); pointer-events:none;
+  transition:background 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.service-list:has(.service-row.is-open) .service-row-backdrop{
+  background:rgba(10,10,10,0.78); pointer-events:auto;
+}
+/* Ortsfester "Slot": behält die Grid-Zellengröße bei, auch wenn die Zeile
+   darin sich zum zentrierten Spotlight vergrößert. Das Öffnen läuft bewusst
+   über JS (mouseenter/mouseleave mit kurzer Verzögerung, siehe main.js) statt
+   über reines CSS :hover auf der Zeile selbst — sonst würde die Maus beim
+   Aufploppen unter der (zum Bildschirmzentrum springenden) Karte "weggezogen",
+   :hover bräche sofort wieder ab und die Karte würde endlos zwischen
+   offen/zu flackern. */
+.service-row-slot{
+  position:relative; border-radius:var(--radius);
+  aspect-ratio:4/3; scroll-margin-top:90px;
+}
+/* +1 Offset: .service-row-backdrop ist das erste Kind von .service-list,
+   die Slots folgen ab Kindposition 2. */
+.service-row-slot:nth-child(2) .service-row{ transition-delay:0.05s; }
+.service-row-slot:nth-child(3) .service-row{ transition-delay:0.12s; }
+.service-row-slot:nth-child(4) .service-row{ transition-delay:0.19s; }
+.service-row-slot:nth-child(5) .service-row{ transition-delay:0.26s; }
+.service-row-slot:nth-child(6) .service-row{ transition-delay:0.33s; }
 .service-row{
   position:relative; overflow:hidden; border-radius:var(--radius);
-  aspect-ratio:4/3; background:var(--surface-deep); scroll-margin-top:90px;
+  width:100%; height:100%; background:var(--surface-deep);
+  transition:box-shadow 0.5s cubic-bezier(0.16,1,0.3,1);
 }
-.service-row:nth-child(1){ transition-delay:0.05s; }
-.service-row:nth-child(2){ transition-delay:0.12s; }
-.service-row:nth-child(3){ transition-delay:0.19s; }
-.service-row:nth-child(4){ transition-delay:0.26s; }
-.service-row:nth-child(5){ transition-delay:0.33s; }
 
 .service-row-bg{
   display:block; position:absolute; inset:0; width:100%; height:100%;
@@ -1179,57 +1206,79 @@ body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
 .service-row-verb{ color:var(--accent); margin-right:6px; }
 .legal-star{ color:var(--accent); margin-left:2px; }
 
-/* Echter schwebender Glas-Container statt randloser dunkler Fläche — gleiche
-   Machart wie .leistung-glass-panel auf der Startseite (helles Frosted-Glass,
-   Blur, abgerundete Ecken, Schlagschatten), nur mit hellem statt dunklem Text,
-   weil dieser Container über einem wechselnden Foto schwebt statt über
-   Papier-Weiß (weißer Text bleibt über jedem Foto lesbar, dunkler Text nicht
-   garantiert). Titel steht hier im Panel (siehe .service-row-detail-title),
-   der Titel unten in der Kachel blendet dafür aus. */
+/* Glas-Text-Panel — im Ruhezustand nicht im Fluss (die Kachel bleibt normal
+   im Grid). Erscheint erst zusammen mit dem "Spotlight"-Zustand weiter unten,
+   dann als eigenständige rechte Hälfte NEBEN dem Bild (nicht mehr darüber),
+   randlos genug Platz für den kompletten, unabgeschnittenen Text. */
 .service-row-detail{
-  position:absolute; top:14px; right:14px; bottom:14px; z-index:4;
-  width:0; opacity:0; overflow:hidden;
-  display:flex; flex-direction:column; justify-content:flex-start;
+  display:none;
+  flex-direction:column; justify-content:flex-start;
   background:rgba(255,255,255,0.1);
   -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
   border:1px solid rgba(255,255,255,0.18);
-  border-radius:var(--radius);
-  box-shadow:-16px 10px 36px -18px rgba(0,0,0,0.5);
-  transition:width 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease 0.08s;
+  border-radius:0 var(--radius) var(--radius) 0;
+  overflow-y:auto;
 }
 .service-row-detail-title{
-  font-family:'Archivo Black',sans-serif; font-weight:400; font-size:1rem; line-height:1.25;
-  color:#fff; margin:0 0 8px; flex-shrink:0;
+  font-family:'Archivo Black',sans-serif; font-weight:400; font-size:1.3rem; line-height:1.25;
+  color:#fff; margin:0 0 14px; flex-shrink:0;
 }
 .service-row-detail-title .service-row-verb{ color:var(--accent); }
 .service-row-detail p{
-  color:rgba(255,255,255,0.88); font-size:0.82rem; line-height:1.5; margin:0; max-width:none;
-  /* Längere Beschreibungen sauber abschneiden statt sie mitten im Wort/Satz
-     hart durch overflow:hidden zu kappen — bei kompakter Kachelhöhe ist nicht
-     für jeden Text Platz. */
-  display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden;
+  color:rgba(255,255,255,0.88); font-size:0.98rem; line-height:1.6; margin:0; max-width:none;
 }
-.service-row-detail .inline-cta{ color:var(--accent); font-size:0.85rem; }
-/* Bildergalerien/Vorher-Nachher bleiben ungenutzt: im schmalen Glasfenster
-   einer kompakten Bento-Kachel ist kein sauberer Platz für ein Fotoraster. */
+.service-row-detail .inline-cta{ color:var(--accent); font-size:0.95rem; margin-top:auto; padding-top:20px; }
+/* Bildergalerien/Vorher-Nachher bleiben ungenutzt: für ein Fotoraster ist im
+   Zwei-Spalten-Spotlight kein vorgesehener Platz. */
 .service-row-vn, .service-row-gallery{ display:none; }
 
-.service-row.is-open .service-row-bg{ transform:translateX(-10%) scale(1.2); }
-.service-row.is-open .service-row-toggle .service-row-title{ opacity:0; }
-.service-row.is-open .service-row-detail{ width:62%; opacity:1; padding:22px 20px; }
-/* Hover nur für echte Maus-/Trackpad-Geräte — auf Touchscreens sonst Konflikt
-   zwischen anhaltendem :hover-Zustand nach dem Antippen und dem Klick-Toggle
-   in main.js (Kachel reagiert dann erst beim zweiten Tap). */
-@media (hover:hover) and (pointer:fine){
-  .service-row:hover .service-row-bg{ transform:translateX(-10%) scale(1.2); }
-  .service-row:hover .service-row-toggle .service-row-title{ opacity:0; }
-  .service-row:hover .service-row-detail{ width:62%; opacity:1; padding:22px 20px; }
+.service-row-close{
+  display:none; position:absolute; top:14px; right:14px; z-index:6;
+  width:38px; height:38px; border-radius:50%; align-items:center; justify-content:center;
+  border:1px solid rgba(255,255,255,0.35); background:rgba(0,0,0,0.3);
+  color:#fff; font-family:'Archivo Black',sans-serif; font-size:1rem; line-height:1;
+  cursor:pointer;
 }
+.service-row-close:hover{ background:rgba(0,0,0,0.5); }
+
+/* "Spotlight": Zeile bricht komplett aus dem Grid aus, wird fixiert &
+   im Bildschirmzentrum vergrößert dargestellt — bewusst NICHT an der
+   ursprünglichen Grid-Position, damit Karten am Rand (erste/letzte Spalte)
+   nicht über den Viewport-Rand hinaus abgeschnitten werden. Bild nimmt die
+   linke Hälfte ein, das Glas-Textpanel die rechte, nebeneinander statt
+   übereinanderliegend, mit vollständig lesbarem Text.
+   .is-open wird sowohl per Klick (main.js, alle Geräte) als auch per
+   Hover-Intent (main.js, nur Maus/Trackpad — siehe dortige Kommentare) auf
+   .service-row gesetzt. Reines CSS :hover geht hier NICHT, weil die Karte
+   beim Öffnen unter dem unbewegten Mauszeiger wegspringt (fixed+zentriert)
+   — :hover bräche sofort wieder ab und die Karte würde endlos flackern. */
+.service-row.is-open{
+  position:fixed; z-index:250; margin:0;
+  left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(1040px, 92vw); height:min(540px, 82vh);
+  display:flex; align-items:stretch;
+  box-shadow:0 44px 110px -24px rgba(0,0,0,0.65);
+}
+/* .reveal.is-visible setzt transform sonst auf translateY(0) zurück (gleiche
+   Spezifität, aber später in der Kaskade) und würde die Zentrierung hier
+   aufheben — siehe .about-card.reveal.is-visible oben für dasselbe Problem. */
+.service-row.is-open.reveal.is-visible{ transform:translate(-50%,-50%); }
+.service-row.is-open::after{ left:0; right:50%; }
+.service-row.is-open .service-row-bg{ position:relative; inset:auto; width:50%; height:100%; flex-shrink:0; }
+.service-row.is-open .service-row-toggle{ position:absolute; inset:0; z-index:5; opacity:0; pointer-events:none; }
+.service-row.is-open .service-row-detail{ display:flex; position:relative; width:50%; height:100%; flex-shrink:0; padding:32px 30px; }
+.service-row.is-open .service-row-close{ display:flex; }
 @media (prefers-reduced-motion: reduce){
-  .service-row-bg, .service-row-detail, .service-row-title{ transition:none; }
+  .service-row-bg, .service-row-title{ transition:none; }
 }
 @media (max-width:600px){
   .service-list{ grid-template-columns:1fr; }
+}
+@media (max-width:900px){
+  .service-row.is-open{ width:94vw; height:88vh; flex-direction:column; }
+  .service-row.is-open .service-row-bg,
+  .service-row.is-open .service-row-detail{ width:100%; height:50%; }
+  .service-row.is-open .service-row-detail{ border-radius:0 0 var(--radius) var(--radius); padding:22px 20px; }
 }
 
 /* ---------- Lightbox ---------- */

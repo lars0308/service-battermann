@@ -427,25 +427,101 @@
     scheduleNextHeroStep();
   }
 
-  // Leistungen-Akkordeon: Klick öffnet eine Zeile, alle anderen schließen automatisch
+  // Leistungen: Klick (alle Geräte) oder Hovern mit der Maus öffnet eine
+  // Zeile groß im Vordergrund (Bild links, Glas-Text rechts, siehe
+  // .service-row.is-open in styles.css), alle anderen schließen automatisch.
+  // Schließen per erneutem Klick auf den ×-Button, Klick auf den
+  // abgedunkelten Hintergrund, Escape oder (bei Hover) Wegbewegen der Maus —
+  // wie bei der bestehenden Bild-Lightbox.
+  var serviceList = document.querySelector(".service-list");
+  var closeAllServiceRows = function () {
+    if (!serviceList) return;
+    serviceList.querySelectorAll(".service-row.is-open").forEach(function (openRow) {
+      openRow.classList.remove("is-open");
+      var openBtn = openRow.querySelector(".service-row-toggle");
+      if (openBtn) openBtn.setAttribute("aria-expanded", "false");
+    });
+  };
+  var openServiceRow = function (row) {
+    if (!row || row.classList.contains("is-open")) return;
+    closeAllServiceRows();
+    row.classList.add("is-open");
+    var btn = row.querySelector(".service-row-toggle");
+    if (btn) btn.setAttribute("aria-expanded", "true");
+  };
   var serviceToggles = document.querySelectorAll(".service-row-toggle");
   serviceToggles.forEach(function (btn) {
     btn.addEventListener("click", function () {
       var row = btn.closest(".service-row");
       if (!row) return;
       var willOpen = !row.classList.contains("is-open");
-      var list = row.closest(".service-list");
-      if (list) {
-        list.querySelectorAll(".service-row.is-open").forEach(function (openRow) {
-          openRow.classList.remove("is-open");
-          var openBtn = openRow.querySelector(".service-row-toggle");
-          if (openBtn) openBtn.setAttribute("aria-expanded", "false");
-        });
-      }
+      closeAllServiceRows();
       row.classList.toggle("is-open", willOpen);
       btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
     });
   });
+  document.querySelectorAll(".service-row-close").forEach(function (btn) {
+    btn.addEventListener("click", closeAllServiceRows);
+  });
+  var serviceBackdrop = document.querySelector(".service-row-backdrop");
+  if (serviceBackdrop) serviceBackdrop.addEventListener("click", closeAllServiceRows);
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closeAllServiceRows();
+  });
+
+  // Hover-Intent für Maus/Trackpad: Karte öffnet automatisch beim Überfahren.
+  // Bewusst NICHT über mouseenter/mouseleave auf .service-row selbst gelöst:
+  // die Karte springt beim Öffnen ins Bildschirmzentrum (position:fixed) und
+  // "entkommt" damit dem unbewegten Mauszeiger — Browser feuern dabei ein
+  // spurious mouseleave/mouseenter-Paar rein durch die Positionsänderung
+  // (ohne echte Mausbewegung), was die Karte sofort wieder zu- und dann
+  // erneut aufklappen ließ (kurzes Flackern). Stattdessen: Öffnen läuft über
+  // mouseenter auf dem ortsfesten .service-row-slot (bleibt an der
+  // ursprünglichen Grid-Position stehen, daher zuverlässig), das Schließen
+  // wird per mousemove kontinuierlich anhand der TATSÄCHLICHEN Mausposition
+  // gegen die aktuellen Rechtecke von Slot und offener Karte geprüft — robust
+  // gegenüber der Teleportation, da getBoundingClientRect() immer die echte
+  // aktuelle Position liefert.
+  if (window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+    var hoverCloseTimer = null;
+    var cancelHoverClose = function () {
+      if (hoverCloseTimer) {
+        window.clearTimeout(hoverCloseTimer);
+        hoverCloseTimer = null;
+      }
+    };
+    var scheduleHoverClose = function () {
+      if (hoverCloseTimer) return;
+      hoverCloseTimer = window.setTimeout(function () {
+        closeAllServiceRows();
+        hoverCloseTimer = null;
+      }, 300);
+    };
+    var pointInRect = function (x, y, rect) {
+      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    };
+    document.querySelectorAll(".service-row-slot").forEach(function (slot) {
+      var row = slot.querySelector(".service-row");
+      if (!row) return;
+      slot.addEventListener("mouseenter", function () {
+        cancelHoverClose();
+        openServiceRow(row);
+      });
+    });
+    document.addEventListener("mousemove", function (e) {
+      if (!serviceList) return;
+      var openRow = serviceList.querySelector(".service-row.is-open");
+      if (!openRow) return;
+      var slot = openRow.closest(".service-row-slot");
+      var overRow = pointInRect(e.clientX, e.clientY, openRow.getBoundingClientRect());
+      var overSlot = slot && pointInRect(e.clientX, e.clientY, slot.getBoundingClientRect());
+      if (overRow || overSlot) {
+        cancelHoverClose();
+      } else {
+        scheduleHoverClose();
+      }
+    });
+  }
 
   // Direktlink zu einem Leistungsbereich (z. B. leistungen.html#leistung-garten):
   // passende Zeile automatisch öffnen und dorthin scrollen, statt geschlossen liegenzulassen.
