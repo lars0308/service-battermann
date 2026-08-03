@@ -673,14 +673,26 @@ section.dim{ background:var(--paper-dim); }
      weil Desktop- und Mobile-Bild jetzt zwei unterschiedliche Fotos mit
      potenziell unterschiedlichem Fokuspunkt sein können. */
   object-position:var(--hero-desktop-pos, center 30%);
-  /* Tiefen-Reveal beim Erstaufruf (siehe .hero-slider.is-first-reveal unten):
-     Bild startet leicht vergrößert/weichgezeichnet und schärft sich synchron
-     zur auflösenden Glaswand auf volle Größe/Schärfe. */
-  transform:scale(1); filter:blur(0);
+  /* Bewusster Extra-Zoom (25%) ÜBER das reine object-fit:cover hinaus: Sind
+     Container- und Bild-Seitenverhältnis ähnlich breit (typisch bei 16:9-
+     Fotos in einem breiten Hero, erst recht auf Ultrawide-Monitoren), zeigt
+     object-fit:cover bereits die VOLLE Bildbreite ohne jeden horizontalen
+     Beschnitt — der Fokuspunkt (object-position-x) hätte dann keinerlei
+     sichtbaren Effekt, ganz gleich wie er in Sanity gesetzt wird. Der
+     zusätzliche transform:scale() erzwingt immer etwas Beschnitt-Spielraum,
+     damit der Fokuspunkt auf jeder Bildschirmbreite wirklich etwas bewirkt.
+     transform-origin nutzt dieselbe Position wie object-position, damit
+     Zoom und Bildausschnitt exakt auf denselben Punkt einrasten. */
+  transform:scale(1.25);
+  transform-origin:var(--hero-desktop-pos, center 30%);
+  filter:blur(0);
   transition:transform 0.8s cubic-bezier(0.16,1,0.3,1), filter 0.8s cubic-bezier(0.16,1,0.3,1);
 }
 @media (max-width:768px){
-  .hero-slide img{ object-position:var(--hero-mobile-pos, var(--hero-desktop-pos, center 30%)); }
+  .hero-slide img{
+    object-position:var(--hero-mobile-pos, var(--hero-desktop-pos, center 30%));
+    transform-origin:var(--hero-mobile-pos, var(--hero-desktop-pos, center 30%));
+  }
 }
 .hero-scrim{
   position:absolute; inset:0; z-index:1;
@@ -786,7 +798,9 @@ section.dim{ background:var(--paper-dim); }
   opacity:0; pointer-events:none; transition:opacity 0.5s ease;
 }
 .hero-slider.is-first-reveal .hero-slide img{
-  transform:scale(1.06); filter:blur(15px);
+  /* 1.25 (Basis-Zoom) * 1.06 (Reveal-Effekt) — dieselbe relative Aufblend-
+     Bewegung wie zuvor, nur ausgehend vom neuen Basis-Zoom. */
+  transform:scale(1.325); filter:blur(15px);
 }
 @media (prefers-reduced-motion: reduce){
   .hero-glass-intro,
