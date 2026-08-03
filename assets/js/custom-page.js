@@ -1,9 +1,14 @@
 // Universalgerüst für frei angelegte Unterseiten (Sanity: customPage).
-// Header/Mega-Menü/Footer in page.html sind identisch zu jeder anderen Seite
-// und werden bereits von sanity-content.js gepatcht (data-sanity-field).
-// Dieses Skript ist eigenständig und kümmert sich NUR um den mittleren
-// Inhaltsbereich: es liest den Slug aus der aktuellen URL, lädt genau das
-// dazu passende customPage-Dokument und rendert Titel/Einleitung/Rich-Text.
+// Läuft auf page.html (direkter Aufruf/lokale Tests) UND auf 404.html — auf
+// GitHub Pages (aktuelle Deploy-Plattform) liefert GitHub für jeden nicht
+// existierenden Pfad wie /notdienst automatisch 404.html aus, das denselben
+// Inhalt wie page.html hat (siehe dort der <base>-Tag-Trick, damit relative
+// Pfade trotz des "falschen" URL-Pfads richtig auflösen).
+// Header/Mega-Menü/Footer sind identisch zu jeder anderen Seite und werden
+// bereits von sanity-content.js gepatcht (data-sanity-field). Dieses Skript
+// ist eigenständig und kümmert sich NUR um den mittleren Inhaltsbereich: es
+// liest den Slug aus der aktuellen URL, lädt genau das dazu passende
+// customPage-Dokument und rendert Titel/Einleitung/Rich-Text.
 // Kein passendes Dokument (falscher/veralteter Link, Tippfehler) -> sauberer
 // "nicht gefunden"-Hinweis statt leerer Fläche.
 (function () {
