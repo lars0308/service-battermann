@@ -42,7 +42,7 @@ export const pageHome = defineType({
     {name: 'baukasten', title: 'Block-Reihenfolge', default: true},
     {name: 'heroExtra', title: 'Hero: CTA-Buttons'},
     {name: 'werHierAnpackt', title: '"Wer hier anpackt" (Texte + Bild)'},
-    {name: 'leistungenExtra', title: 'Leistungen-Sektion: CTA'},
+    {name: 'leistungenExtra', title: 'Leistungs-Kacheln: Überschrift „Fünf Bereiche, ein Ansprechpartner" + CTA'},
     {name: 'optionaleBloecke', title: 'Optionale Blöcke: Karte & Formular (Überschriften)'},
   ],
   fields: [
@@ -93,6 +93,9 @@ export const pageHome = defineType({
       description: 'Bildausschnitt anpassen: auf das Bild klicken, den Fokuspunkt-Kreis auf den wichtigsten Bereich ziehen, speichern.',
       group: 'werHierAnpackt',
     }),
+    defineField({name: 'bentoEyebrow', title: 'Unterzeile (über der Überschrift)', type: 'string', group: 'leistungenExtra'}),
+    defineField({name: 'bentoHeadline', title: 'Überschrift', type: 'string', group: 'leistungenExtra'}),
+    defineField({name: 'bentoIntro', title: 'Einleitungssatz', type: 'text', group: 'leistungenExtra'}),
     defineField({name: 'servicesAllCtaLabel', title: 'Link-Text „Alle Leistungen im Detail ansehen"', type: 'string', group: 'leistungenExtra'}),
     defineField({name: 'mapEyebrow', title: 'Karte: Unterzeile', type: 'string', group: 'optionaleBloecke'}),
     defineField({name: 'mapHeadline', title: 'Karte: Überschrift', type: 'string', group: 'optionaleBloecke'}),
