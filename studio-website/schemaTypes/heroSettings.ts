@@ -62,6 +62,14 @@ export const heroSettings = defineType({
               type: 'string',
             }),
             defineField({
+              name: 'spruchTextsWeitere',
+              title: 'Weitere Sprüche (wechseln zusätzlich durch, solange dieses Bild steht)',
+              type: 'array',
+              of: [{type: 'string'}],
+              description:
+                'Optional. Zusätzlich zum Spruch oben: weitere kurze Sprüche (z. B. "Ihre Objektbetreuung"), die nacheinander eingeblendet werden, bevor zur nächsten Folie gewechselt wird — bei diesem Bild bleibt es stehen, nur der Text wechselt mehrfach durch.',
+            }),
+            defineField({
               name: 'spruchAktiv',
               title: 'Spruch über dem Bild aktiv schalten?',
               type: 'boolean',

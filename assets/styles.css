@@ -732,24 +732,30 @@ section.dim{ background:var(--paper-dim); }
   border-radius:0;
   -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
   box-shadow:0 6px 20px -10px rgba(0,0,0,0.3);
+  /* Mittig über der vollen Bildbreite statt linksbündig. */
+  text-align:center;
   /* Bleibt während des 1.5s-Glasintros unbeweglich stehen: kein Transform
      hier oder auf .hero-slider.is-first-reveal .hero-eyebrow-top — nur die
      Glaswand selbst (.hero-glass-intro) blendet per Opacity/Blur aus. */
 }
 @media (max-width:768px){
   .hero-eyebrow-top{
-    font-size:11px !important;
-    letter-spacing:0.02em;
-    /* Kein white-space:nowrap: der volle Text ("HAUSMEISTERSERVICE ·
-       OBJEKTBETREUUNG · ALLROUND-HANDWERK") passt bei lesbarer Schriftgröße
-       erst ab ~430px Breite in eine Zeile (getestet). Erzwungenes nowrap
-       darunter hätte die Seite horizontal scrollbar gemacht — exakt der
-       Bug, der zuvor schon einmal separat gefixt wurde (touch-action:pan-y
-       + overflow-x). Auf den meisten aktuellen Phones (ab ~400px) reicht
-       diese Größe für eine Zeile, auf sehr schmalen Geräten bricht sie
-       kontrolliert auf zwei Zeilen um statt zu überlaufen. */
-    padding:10px clamp(16px, 4vw, 24px);
+    font-size:clamp(7.5px, 2.3vw, 9.5px) !important;
+    letter-spacing:0.01em;
+    /* Erzwungenes nowrap: bleibt immer einzeilig. Passt bei dieser Größe auf
+       die meisten aktuellen Phones vollständig hinein. Für sehr schmale
+       Geräte ist overflow-x:auto NUR auf dieses Element beschränkt (nicht
+       auf die ganze Seite) — dadurch kann diese eine Zeile im Zweifel
+       intern seitlich gescrollt werden, ohne den früher schon einmal
+       gefixten Bug (die ganze Seite wird horizontal scrollbar)
+       zurückzuholen. Scrollbar selbst unsichtbar, damit es optisch nicht
+       nach einer kaputten Leiste aussieht. */
+    white-space:nowrap;
+    overflow-x:auto;
+    -ms-overflow-style:none; scrollbar-width:none;
+    padding:10px clamp(10px, 3vw, 20px);
   }
+  .hero-eyebrow-top::-webkit-scrollbar{ display:none; height:0; }
 }
 @media (min-width:901px){
   .hero-eyebrow-top{ font-size:0.85rem; }
@@ -1151,7 +1157,7 @@ body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
 .service-row-bg{
   display:block; position:absolute; inset:0; width:100%; height:100%;
   object-fit:cover; z-index:1;
-  transition:transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  transition:transform 0.55s cubic-bezier(0.16,1,0.3,1);
 }
 .service-row::after{
   content:""; position:absolute; inset:0; z-index:2; pointer-events:none;
@@ -1168,36 +1174,59 @@ body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
 .service-row-title{
   font-family:'Montserrat',sans-serif; font-weight:800; font-size:1.05rem;
   color:#fff;
+  transition:opacity 0.3s ease;
 }
 .service-row-verb{ color:var(--accent); margin-right:6px; }
 .legal-star{ color:var(--accent); margin-left:2px; }
 
+/* Echter schwebender Glas-Container statt randloser dunkler Fläche — gleiche
+   Machart wie .leistung-glass-panel auf der Startseite (helles Frosted-Glass,
+   Blur, abgerundete Ecken, Schlagschatten), nur mit hellem statt dunklem Text,
+   weil dieser Container über einem wechselnden Foto schwebt statt über
+   Papier-Weiß (weißer Text bleibt über jedem Foto lesbar, dunkler Text nicht
+   garantiert). Titel steht hier im Panel (siehe .service-row-detail-title),
+   der Titel unten in der Kachel blendet dafür aus. */
 .service-row-detail{
-  position:absolute; top:0; right:0; bottom:0; z-index:4;
-  width:0; opacity:0; overflow:hidden; padding:0;
-  display:flex; flex-direction:column; justify-content:center;
-  background:rgba(255,255,255,0.03);
-  -webkit-backdrop-filter:blur(var(--glass-blur, 24px)); backdrop-filter:blur(var(--glass-blur, 24px));
-  border-left:1px solid rgba(255,255,255,0.08);
-  transition:width 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.4s ease 0.1s;
+  position:absolute; top:14px; right:14px; bottom:14px; z-index:4;
+  width:0; opacity:0; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:flex-start;
+  background:rgba(255,255,255,0.1);
+  -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.18);
+  border-radius:var(--radius);
+  box-shadow:-16px 10px 36px -18px rgba(0,0,0,0.5);
+  transition:width 0.5s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease 0.08s;
 }
-.service-row-detail p{ color:rgba(244,241,233,0.85); font-size:0.85rem; padding-bottom:10px; margin:0; max-width:none; }
+.service-row-detail-title{
+  font-family:'Archivo Black',sans-serif; font-weight:400; font-size:1rem; line-height:1.25;
+  color:#fff; margin:0 0 8px; flex-shrink:0;
+}
+.service-row-detail-title .service-row-verb{ color:var(--accent); }
+.service-row-detail p{
+  color:rgba(255,255,255,0.88); font-size:0.82rem; line-height:1.5; margin:0; max-width:none;
+  /* Längere Beschreibungen sauber abschneiden statt sie mitten im Wort/Satz
+     hart durch overflow:hidden zu kappen — bei kompakter Kachelhöhe ist nicht
+     für jeden Text Platz. */
+  display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden;
+}
 .service-row-detail .inline-cta{ color:var(--accent); font-size:0.85rem; }
 /* Bildergalerien/Vorher-Nachher bleiben ungenutzt: im schmalen Glasfenster
    einer kompakten Bento-Kachel ist kein sauberer Platz für ein Fotoraster. */
 .service-row-vn, .service-row-gallery{ display:none; }
 
-.service-row.is-open .service-row-bg{ transform:translateX(-16%) scale(1.08); }
-.service-row.is-open .service-row-detail{ width:74%; opacity:1; padding:18px 16px; }
+.service-row.is-open .service-row-bg{ transform:translateX(-10%) scale(1.2); }
+.service-row.is-open .service-row-toggle .service-row-title{ opacity:0; }
+.service-row.is-open .service-row-detail{ width:62%; opacity:1; padding:22px 20px; }
 /* Hover nur für echte Maus-/Trackpad-Geräte — auf Touchscreens sonst Konflikt
    zwischen anhaltendem :hover-Zustand nach dem Antippen und dem Klick-Toggle
    in main.js (Kachel reagiert dann erst beim zweiten Tap). */
 @media (hover:hover) and (pointer:fine){
-  .service-row:hover .service-row-bg{ transform:translateX(-16%) scale(1.08); }
-  .service-row:hover .service-row-detail{ width:74%; opacity:1; padding:18px 16px; }
+  .service-row:hover .service-row-bg{ transform:translateX(-10%) scale(1.2); }
+  .service-row:hover .service-row-toggle .service-row-title{ opacity:0; }
+  .service-row:hover .service-row-detail{ width:62%; opacity:1; padding:22px 20px; }
 }
 @media (prefers-reduced-motion: reduce){
-  .service-row-bg, .service-row-detail{ transition:none; }
+  .service-row-bg, .service-row-detail, .service-row-title{ transition:none; }
 }
 @media (max-width:600px){
   .service-list{ grid-template-columns:1fr; }
@@ -1337,9 +1366,20 @@ body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
   font-size:clamp(1rem, 2vw, 1.25rem); color:var(--ink); letter-spacing:0.01em;
   margin:var(--space-2) 0 0; max-width:none;
 }
-.type-hero-foot{ margin-top:var(--space-4); display:flex; justify-content:space-between; align-items:flex-end; gap:var(--space-3); flex-wrap:wrap; }
-.type-hero-portrait{ width:190px; height:190px; object-fit:cover; border-radius:50%; flex-shrink:0; box-shadow:var(--shadow); }
-@media (max-width:600px){ .type-hero-portrait{ width:120px; height:120px; } }
+.type-hero-foot{ margin-top:var(--space-4); }
+/* Porträtfoto sitzt oben rechts neben dem Namen statt unten neben dem
+   Einleitungssatz — freischwebend über der übergroßen Überschrift positioniert
+   (die Überschrift ist bewusst so breit, dass ein Nebeneinander im normalen
+   Textfluss keinen Platz hätte), .type-hero-foot enthält dadurch nur noch
+   den Absatz. .type-hero braucht dafür einen Positionierungskontext. */
+.type-hero .wrap{ position:relative; }
+.type-hero-portrait{
+  position:absolute; top:0; right:24px;
+  width:150px; height:150px; object-fit:cover; border-radius:50%;
+  box-shadow:var(--shadow); z-index:1;
+}
+@media (max-width:900px){ .type-hero-portrait{ width:110px; height:110px; } }
+@media (max-width:600px){ .type-hero-portrait{ width:84px; height:84px; } }
 @media (prefers-reduced-motion: reduce){
   .type-hero .type-line span{ transform:none; transition:none; }
 }
