@@ -150,7 +150,8 @@
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
     '{"themeSettings":*[_type=="themeSettings"][0]{"primaryGold":primaryGold.hex,"brandGreen":brandGreen.hex,"bgDark":bgDark.hex,"bgLight":bgLight.hex,"textDark":textDark.hex,"textLight":textLight.hex,glassOpacity,glassBlur,borderRadius},' +
-    '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type}},' +
+    '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type},aboutEyebrow,aboutLead,aboutFact1Title,aboutFact1Text,aboutFact2Title,aboutFact2Text,aboutFact3Title,aboutFact3Text,aboutCardCtaLabel,aboutDownloadLabel},' +
+    '"customPages":*[_type=="customPage" && showInNav==true]|order(navOrder asc){title,"slug":slug.current,navOrder},' +
     '"heroSettings":*[_type=="heroSettings"][0]{"heroSlides":heroSlides[]{folieName,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot,bildAktiv,spruchText,spruchAktiv},showCallButton},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text,detail},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,shortDescription,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
@@ -167,7 +168,7 @@
     '"pageLeistungen":*[_type=="pageLeistungen"][0]{heroEyebrow,heroHeadline,heroLead,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
     '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead},' +
     '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
-    '"effects":*[_type=="effectSettings"][0]{heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,introVeilOpacity,kitCardIntervalMs,bentoTileScale,bentoGlassFadeMs,revealDurationMs,revealDistancePx},' +
+    '"effects":*[_type=="effectSettings"][0]{heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,introVeilOpacity,kitCardIntervalMs,bentoTileScale,bentoGlassFadeMs,trustMarqueeSpeedMs,revealDurationMs,revealDistancePx},' +
     '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,staticFormsApiKey,bereichsLink,bewertungenEyebrow,bewertungenHeadline,bewertungenText,bewertungenCtaLabel,gebietEyebrow,gebietHeadline,gebietText,gebietCtaLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
@@ -252,6 +253,30 @@
   // bisher sichtbaren Blöcke bleiben in ihrer ursprünglichen HTML-Reihenfolge
   // sichtbar, mapBlock/formBlock bleiben ausgeblendet (unveränderte
   // Standard-Startseite).
+  // Freie Unterseiten (customPage) mit aktiviertem "In der Hauptnavigation
+  // anzeigen?"-Schalter bekommen automatisch einen eigenen Menüpunkt — auf
+  // JEDER Seite der Website (dieses Skript läuft überall), direkt vor dem
+  // mobilen "Anfrage stellen"-Button. Kein Dropdown nötig: ein einzelner
+  // Link genügt, genau wie "Startseite" links im Menü.
+  function applyCustomPageNav(data) {
+    var pages = data.customPages;
+    if (!pages || !pages.length) return;
+    document.querySelectorAll(".main-nav").forEach(function (nav) {
+      var anchor = nav.querySelector(".nav-mobile-cta") || nav.querySelector(".btn-sharp");
+      pages.forEach(function (p) {
+        if (!p.title || !p.slug) return;
+        var link = document.createElement("a");
+        link.href = "/" + p.slug;
+        link.textContent = p.title;
+        if (anchor) {
+          nav.insertBefore(link, anchor);
+        } else {
+          nav.appendChild(link);
+        }
+      });
+    });
+  }
+
   function applyPageModules(data) {
     var zone = document.getElementById("page-builder-zone");
     if (!zone) return; // nur relevant auf index.html
@@ -388,10 +413,11 @@
     // "<docKey>.<feldName>" in die Map übernehmen, statt jedes Feld einzeln
     // aufzuzählen — neue Felder in einem dieser Schemas brauchen dadurch
     // keine weitere Änderung hier.
-    ["pageUeberMich", "pageLeistungen", "pageKontakt", "pageEinsatzgebiet"].forEach(function (docKey) {
+    ["pageUeberMich", "pageLeistungen", "pageKontakt", "pageEinsatzgebiet", "pageHome"].forEach(function (docKey) {
       var doc = data[docKey];
       if (!doc) return;
       Object.keys(doc).forEach(function (field) {
+        if (field === "pageModules") return; // eigene Struktur, kein Text-Feld
         if (doc[field]) map[docKey + "." + field] = doc[field];
       });
     });
@@ -422,6 +448,7 @@
     }
     if (typeof fx.introVeilOpacity === "number") root.setProperty("--intro-veil-opacity", String(fx.introVeilOpacity));
     if (typeof fx.kitCardIntervalMs === "number") window.__kitCardIntervalMs = fx.kitCardIntervalMs;
+    if (typeof fx.trustMarqueeSpeedMs === "number") root.setProperty("--trust-marquee-speed", fx.trustMarqueeSpeedMs + "ms");
     if (typeof fx.bentoTileScale === "number") root.setProperty("--bento-tile-scale", String(fx.bentoTileScale));
     if (typeof fx.bentoGlassFadeMs === "number") root.setProperty("--bento-glass-fade-ms", fx.bentoGlassFadeMs + "ms");
     if (typeof fx.revealDurationMs === "number") root.setProperty("--reveal-duration", fx.revealDurationMs + "ms");
@@ -850,6 +877,7 @@
       applyThemeColors(data.themeSettings);
       applyEffectSettings(data);
       applyPageModules(data);
+      applyCustomPageNav(data);
       var map = buildFieldMap(data);
       applyPatches(map);
       applyPromiseIcons(map);

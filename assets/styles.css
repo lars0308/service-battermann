@@ -609,7 +609,9 @@ section.dim{ background:var(--paper-dim); }
    die Schleife verschiebt exakt um ein Set (-50%) für einen nahtlosen Übergang. */
 @media (max-width:768px){
   .trust-strip-section{ overflow:hidden; }
-  .trust-track{ width:max-content; animation:trust-marquee 22s linear infinite; }
+  /* --trust-marquee-speed wird von sanity-content.js gesetzt (trustMarqueeSpeedMs
+     aus dem Kinetik-Studio), 22s greift als Standard ohne Sanity-Wert. */
+  .trust-track{ width:max-content; animation:trust-marquee var(--trust-marquee-speed, 22s) linear infinite; }
   .trust-card{ min-width:74vw; max-width:320px; }
 }
 @keyframes trust-marquee{
