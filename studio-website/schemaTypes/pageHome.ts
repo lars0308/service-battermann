@@ -1,5 +1,6 @@
 import {defineType, defineField} from 'sanity'
 import {DocumentIcon} from '@sanity/icons/Document'
+import {layoutVariante} from './lib/layoutVariante'
 
 // Startseiten-Baukasten: pageModules ist KEIN Inhalts-Array (die eigentlichen
 // Texte/Bilder bleiben in heroSettings, trustPoint, service usw.) — jeder
@@ -40,10 +41,12 @@ export const pageHome = defineType({
     'Bestimmt, welche Blöcke auf der Startseite in welcher Reihenfolge erscheinen. Die meisten Inhalte pflegst du weiterhin in den jeweils zuständigen Bereichen (Hero, Vorteile, Leistungen usw.) — die Texte der Sektion "Wer hier anpackt" gehören direkt hierher.',
   groups: [
     {name: 'baukasten', title: 'Block-Reihenfolge', default: true},
-    {name: 'heroExtra', title: 'Hero: CTA-Buttons'},
+    {name: 'hero', title: 'Hero'},
     {name: 'werHierAnpackt', title: '"Wer hier anpackt" (Texte + Bild)'},
     {name: 'leistungenExtra', title: 'Leistungs-Kacheln: Überschrift „Fünf Bereiche, ein Ansprechpartner" + CTA'},
     {name: 'optionaleBloecke', title: 'Optionale Blöcke: Karte & Formular (Überschriften)'},
+    {name: 'bewertungen', title: 'Bewertungen-Sektion'},
+    {name: 'gebietTeaser', title: 'Einsatzgebiet (Kurzform)'},
   ],
   fields: [
     defineField({
@@ -63,9 +66,17 @@ export const pageHome = defineType({
       initialValue: [{_type: 'heroBlock'}, {_type: 'vorteileBlock'}, {_type: 'aboutMeBlock'}, {_type: 'bentoGridBlock'}],
       group: 'baukasten',
     }),
-    defineField({name: 'heroWhatsappLabel', title: 'Button-Text „WhatsApp"', type: 'string', group: 'heroExtra'}),
-    defineField({name: 'heroCallLabel', title: 'Button-Text „Direkt anrufen"', type: 'string', group: 'heroExtra'}),
-    defineField({name: 'heroPrimaryCtaLabel', title: 'Button-Text „Jetzt Anfrage senden"', type: 'string', group: 'heroExtra'}),
+    defineField({
+      name: 'heroEyebrow',
+      title: 'Hero-Unterzeile (über der Überschrift)',
+      type: 'string',
+      initialValue: 'Hausmeisterservice · Objektbetreuung · Allround-Handwerk',
+      group: 'hero',
+    }),
+    defineField({name: 'heroWhatsappLabel', title: 'Button-Text „WhatsApp"', type: 'string', group: 'hero'}),
+    defineField({name: 'heroCallLabel', title: 'Button-Text „Direkt anrufen"', type: 'string', group: 'hero'}),
+    defineField({name: 'heroPrimaryCtaLabel', title: 'Button-Text „Jetzt Anfrage senden"', type: 'string', group: 'hero'}),
+    defineField({name: 'heroDesign', title: 'Darstellung', type: 'sectionDesign', group: 'hero'}),
     defineField({name: 'aboutEyebrow', title: 'Unterzeile', type: 'string', group: 'werHierAnpackt'}),
     defineField({name: 'aboutLead', title: 'Einleitungssatz', type: 'text', group: 'werHierAnpackt'}),
     defineField({name: 'aboutFact1Title', title: 'Punkt 1: Titel', type: 'string', group: 'werHierAnpackt'}),
@@ -93,14 +104,37 @@ export const pageHome = defineType({
       description: 'Bildausschnitt anpassen: auf das Bild klicken, den Fokuspunkt-Kreis auf den wichtigsten Bereich ziehen, speichern.',
       group: 'werHierAnpackt',
     }),
+    defineField({name: 'werHierAnpacktDesign', title: 'Darstellung', type: 'sectionDesign', group: 'werHierAnpackt'}),
+    layoutVariante(
+      'werHierAnpacktLayout',
+      'werHierAnpackt',
+      [
+        {title: 'Bild links, Text rechts (Standard)', value: 'standard'},
+        {title: 'Bild rechts, Text links', value: 'bild-rechts'},
+      ],
+      'standard',
+    ),
     defineField({name: 'bentoEyebrow', title: 'Unterzeile (über der Überschrift)', type: 'string', group: 'leistungenExtra'}),
     defineField({name: 'bentoHeadline', title: 'Überschrift', type: 'string', group: 'leistungenExtra'}),
     defineField({name: 'bentoIntro', title: 'Einleitungssatz', type: 'text', group: 'leistungenExtra'}),
     defineField({name: 'servicesAllCtaLabel', title: 'Link-Text „Alle Leistungen im Detail ansehen"', type: 'string', group: 'leistungenExtra'}),
+    defineField({name: 'leistungenExtraDesign', title: 'Darstellung', type: 'sectionDesign', group: 'leistungenExtra'}),
     defineField({name: 'mapEyebrow', title: 'Karte: Unterzeile', type: 'string', group: 'optionaleBloecke'}),
     defineField({name: 'mapHeadline', title: 'Karte: Überschrift', type: 'string', group: 'optionaleBloecke'}),
+    defineField({name: 'mapBlockDesign', title: 'Darstellung: Karte', type: 'sectionDesign', group: 'optionaleBloecke'}),
     defineField({name: 'formEyebrow', title: 'Formular: Unterzeile', type: 'string', group: 'optionaleBloecke'}),
     defineField({name: 'formHeadline', title: 'Formular: Überschrift', type: 'string', group: 'optionaleBloecke'}),
+    defineField({name: 'formBlockDesign', title: 'Darstellung: Formular', type: 'sectionDesign', group: 'optionaleBloecke'}),
+    defineField({name: 'bewertungenEyebrow', title: 'Unterzeile', type: 'string', group: 'bewertungen'}),
+    defineField({name: 'bewertungenHeadline', title: 'Überschrift', type: 'string', group: 'bewertungen'}),
+    defineField({name: 'bewertungenText', title: 'Text', type: 'text', group: 'bewertungen'}),
+    defineField({name: 'bewertungenCtaLabel', title: 'Button-Text (führt zum Kontaktformular)', type: 'string', group: 'bewertungen'}),
+    defineField({name: 'bewertungenDesign', title: 'Darstellung', type: 'sectionDesign', group: 'bewertungen'}),
+    defineField({name: 'gebietEyebrow', title: 'Unterzeile', type: 'string', group: 'gebietTeaser'}),
+    defineField({name: 'gebietHeadline', title: 'Überschrift', type: 'string', group: 'gebietTeaser'}),
+    defineField({name: 'gebietText', title: 'Text', type: 'text', group: 'gebietTeaser'}),
+    defineField({name: 'gebietCtaLabel', title: 'Link-Text (führt zur Einsatzgebiet-Seite)', type: 'string', group: 'gebietTeaser'}),
+    defineField({name: 'gebietTeaserDesign', title: 'Darstellung', type: 'sectionDesign', group: 'gebietTeaser'}),
   ],
   preview: {
     prepare() {

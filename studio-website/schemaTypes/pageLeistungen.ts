@@ -18,10 +18,12 @@ export const pageLeistungen = defineType({
     defineField({name: 'heroEyebrow', title: 'Unterzeile', type: 'string', group: 'hero'}),
     defineField({name: 'heroHeadline', title: 'Überschrift', type: 'string', group: 'hero'}),
     defineField({name: 'heroLead', title: 'Einleitungssatz', type: 'text', group: 'hero'}),
+    defineField({name: 'heroDesign', title: 'Darstellung', type: 'sectionDesign', group: 'hero'}),
     defineField({name: 'ctaBandHeadline', title: 'Überschrift', type: 'string', group: 'ctaBand'}),
     defineField({name: 'ctaBandText', title: 'Text', type: 'text', group: 'ctaBand'}),
     defineField({name: 'ctaBandPrimaryLabel', title: 'Button 1 (führt zum Kontaktformular)', type: 'string', group: 'ctaBand'}),
     defineField({name: 'ctaBandSecondaryLabel', title: 'Button 2 (führt zu WhatsApp)', type: 'string', group: 'ctaBand'}),
+    defineField({name: 'ctaBandDesign', title: 'Darstellung', type: 'sectionDesign', group: 'ctaBand'}),
   ],
   preview: {
     prepare() {

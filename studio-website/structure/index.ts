@@ -69,38 +69,17 @@ export const structure: StructureResolver = (S) =>
             .title('Startseite (Home)')
             .items([
               S.listItem()
-                .title('Baukasten & „Wer hier anpackt" (Texte + Link)')
+                .title('Seite Startseite: Texte & Darstellung')
                 .child(
-                  S.document().schemaType('pageHome').documentId('pageHome').title('Startseite: Baukasten'),
+                  S.document().schemaType('pageHome').documentId('pageHome').title('Startseite: Baukasten & Texte'),
                 ),
               S.listItem()
-                .title('Hero-Bereich (Bilder + Sprüche)')
+                .title('Hero-Bilder & Sprüche')
                 .child(
                   S.document().schemaType('heroSettings').documentId('heroSettings').title('Hero-Bereich (Startseite)'),
                 ),
               S.documentTypeListItem('trustPoint').title('Vorteile-Karten (4 Stück)'),
-              S.listItem()
-                .title('Leistungs-Kacheln: Überschrift „Fünf Bereiche, ein Ansprechpartner"')
-                .child(
-                  S.document().schemaType('pageHome').documentId('pageHome').title('Startseite: Baukasten'),
-                ),
               S.documentTypeListItem('service').title('Leistungs-Kacheln (die 5 Karten selbst)'),
-              S.listItem()
-                .title('Bewertungen-Sektion')
-                .child(
-                  S.document()
-                    .schemaType('siteSettings')
-                    .documentId('siteSettings')
-                    .title('Website-Einstellungen'),
-                ),
-              S.listItem()
-                .title('Einsatzgebiet (Kurzform)')
-                .child(
-                  S.document()
-                    .schemaType('siteSettings')
-                    .documentId('siteSettings')
-                    .title('Website-Einstellungen'),
-                ),
             ]),
         ),
       S.listItem()

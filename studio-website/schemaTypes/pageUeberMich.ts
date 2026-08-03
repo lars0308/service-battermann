@@ -1,5 +1,6 @@
 import {defineType, defineField} from 'sanity'
 import {UserIcon} from '@sanity/icons/User'
+import {layoutVariante} from './lib/layoutVariante'
 
 // Alle Überschriften/Texte auf ueber-mich.html, die NICHT bereits über ein
 // eigenes Dokument gepflegt werden (die 3 "Wie ich arbeite"-Karten bleiben
@@ -33,6 +34,7 @@ export const pageUeberMich = defineType({
       description: 'Kein eigenes Foto hochgeladen: das im Code hinterlegte Standardporträt bleibt stehen. Bildausschnitt anpassen: auf das Bild klicken, den Fokuspunkt-Kreis auf den wichtigsten Bereich ziehen, speichern.',
       group: 'hero',
     }),
+    defineField({name: 'heroDesign', title: 'Darstellung', type: 'sectionDesign', group: 'hero'}),
     defineField({name: 'anfangEyebrow', title: 'Unterzeile', type: 'string', group: 'anfang'}),
     defineField({name: 'anfangHeadline', title: 'Überschrift', type: 'string', group: 'anfang'}),
     defineField({name: 'anfangText1', title: 'Erster Absatz', type: 'text', group: 'anfang'}),
@@ -45,16 +47,29 @@ export const pageUeberMich = defineType({
       description: 'Bildausschnitt anpassen: auf das Bild klicken, den Fokuspunkt-Kreis auf den wichtigsten Bereich ziehen, speichern.',
       group: 'anfang',
     }),
+    defineField({name: 'anfangDesign', title: 'Darstellung', type: 'sectionDesign', group: 'anfang'}),
+    layoutVariante(
+      'anfangLayout',
+      'anfang',
+      [
+        {title: 'Bild links, Text rechts (Standard)', value: 'standard'},
+        {title: 'Bild rechts, Text links', value: 'bild-rechts'},
+      ],
+      'standard',
+    ),
     defineField({name: 'arbeitsweiseEyebrow', title: 'Unterzeile', type: 'string', group: 'arbeitsweise'}),
     defineField({name: 'arbeitsweiseHeadline', title: 'Überschrift', type: 'string', group: 'arbeitsweise'}),
+    defineField({name: 'arbeitsweiseDesign', title: 'Darstellung', type: 'sectionDesign', group: 'arbeitsweise'}),
     defineField({name: 'kundenEyebrow', title: 'Unterzeile', type: 'string', group: 'kunden'}),
     defineField({name: 'kundenHeadline', title: 'Überschrift', type: 'string', group: 'kunden'}),
     defineField({name: 'kundenText', title: 'Text', type: 'text', group: 'kunden'}),
     defineField({name: 'kundenCtaLabel', title: 'Link-Text (führt zu WhatsApp)', type: 'string', group: 'kunden'}),
+    defineField({name: 'kundenDesign', title: 'Darstellung', type: 'sectionDesign', group: 'kunden'}),
     defineField({name: 'ctaBandHeadline', title: 'Überschrift', type: 'string', group: 'ctaBand'}),
     defineField({name: 'ctaBandText', title: 'Text', type: 'string', group: 'ctaBand'}),
     defineField({name: 'ctaBandPrimaryLabel', title: 'Button 1 (führt zum Kontaktformular)', type: 'string', group: 'ctaBand'}),
     defineField({name: 'ctaBandSecondaryLabel', title: 'Button 2 (führt zum Anruf)', type: 'string', group: 'ctaBand'}),
+    defineField({name: 'ctaBandDesign', title: 'Darstellung', type: 'sectionDesign', group: 'ctaBand'}),
   ],
   preview: {
     prepare() {

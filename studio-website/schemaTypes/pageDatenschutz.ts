@@ -44,6 +44,7 @@ export const pageDatenschutz = defineType({
         },
       ],
     }),
+    defineField({name: 'design', title: 'Darstellung', type: 'sectionDesign'}),
   ],
   preview: {
     prepare() {
