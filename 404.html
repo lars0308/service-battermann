@@ -42,8 +42,8 @@
       <span class="txt"><strong>Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
     </a>
     <nav class="main-nav" id="main-nav" aria-label="Hauptnavigation">
-      <a href="index.html">Startseite</a>
-      <div class="nav-item has-mega">
+      <a href="index.html" data-nav-page="home" data-sanity-field="settings.navStartseite">Startseite</a>
+      <div class="nav-item has-mega" data-nav-page="leistungen">
         <a href="leistungen.html" data-sanity-field="settings.navLeistungen">Leistungen</a>
         <div class="mega-panel">
           <div class="mega-panel-inner">
@@ -67,11 +67,11 @@
               <span class="mega-col-title"><span data-sanity-field="megaCol.leistungen.4.title">Elektro-Kleinreparaturen</span><span class="legal-star" aria-label="Nur im gesetzlich zulässigen Rahmen">*</span></span>
               <span class="mega-col-desc" data-sanity-field="megaCol.leistungen.4.description">Lampen, Schalter, Steckdosen, Fehlersuche.</span>
             </a>
-            <a class="mega-col mega-col-all" href="leistungen.html">Alle Leistungen im Detail →</a>
+            <a class="mega-col mega-col-all" href="leistungen.html" data-sanity-field="settings.megaAllLeistungen">Alle Leistungen im Detail →</a>
           </div>
         </div>
       </div>
-      <div class="nav-item has-mega">
+      <div class="nav-item has-mega" data-nav-page="ueberMich">
         <a href="ueber-mich.html" data-sanity-field="settings.navUeberMich">Über mich</a>
         <div class="mega-panel">
           <div class="mega-panel-inner">
@@ -87,11 +87,11 @@
               <span class="mega-col-title"><span data-sanity-field="megaCol.ueberMich.2.title">Für wen ich da bin</span></span>
               <span class="mega-col-desc" data-sanity-field="megaCol.ueberMich.2.description">Privatkunden genauso wie Hausverwaltungen.</span>
             </a>
-            <a class="mega-col mega-col-all" href="ueber-mich.html">Mehr über mich →</a>
+            <a class="mega-col mega-col-all" href="ueber-mich.html" data-sanity-field="settings.megaAllUeberMich">Mehr über mich →</a>
           </div>
         </div>
       </div>
-      <div class="nav-item has-mega">
+      <div class="nav-item has-mega" data-nav-page="einsatzgebiet">
         <a href="einsatzgebiet-faq.html" data-sanity-field="settings.navEinsatzgebiet">Einsatzgebiet &amp; FAQ</a>
         <div class="mega-panel">
           <div class="mega-panel-inner">
@@ -107,34 +107,34 @@
               <span class="mega-col-title"><span data-sanity-field="megaCol.einsatzgebiet.2.title">Auch kleine Aufträge?</span></span>
               <span class="mega-col-desc" data-sanity-field="megaCol.einsatzgebiet.2.description">Ausdrücklich ja, ohne Mindestauftragswert.</span>
             </a>
-            <a class="mega-col mega-col-all" href="einsatzgebiet-faq.html">Gebiet &amp; alle Fragen ansehen →</a>
+            <a class="mega-col mega-col-all" href="einsatzgebiet-faq.html" data-sanity-field="settings.megaAllEinsatzgebiet">Gebiet &amp; alle Fragen ansehen →</a>
           </div>
         </div>
       </div>
-      <div class="nav-item has-mega">
+      <div class="nav-item has-mega" data-nav-page="kontakt">
         <a href="kontakt.html" data-sanity-field="settings.navKontakt">Kontakt</a>
         <div class="mega-panel">
           <div class="mega-panel-inner">
             <a class="mega-col" href="tel:+4915567467763">
-              <span class="mega-col-title">Anrufen</span>
+              <span class="mega-col-title" data-sanity-field="settings.megaKontaktAnrufenLabel">Anrufen</span>
               <span class="mega-col-desc" data-sanity-field="contact.phone">+49 155 / 674 677 63</span>
             </a>
             <a class="mega-col" href="https://wa.me/4915567467763" data-sanity-field="contact.whatsapp" data-sanity-attr="href">
-              <span class="mega-col-title">WhatsApp schreiben</span>
-              <span class="mega-col-desc">Foto schicken, kurz schildern.</span>
+              <span class="mega-col-title" data-sanity-field="settings.megaKontaktWhatsappLabel">WhatsApp schreiben</span>
+              <span class="mega-col-desc" data-sanity-field="settings.megaKontaktWhatsappDesc">Foto schicken, kurz schildern.</span>
             </a>
             <a class="mega-col" href="mailto:service.battermann@gmx.de" data-sanity-field="contact.email" data-sanity-attr="href" data-sanity-prefix="mailto:">
-              <span class="mega-col-title">E-Mail</span>
+              <span class="mega-col-title" data-sanity-field="settings.megaKontaktEmailLabel">E-Mail</span>
               <span class="mega-col-desc" data-sanity-field="contact.email">service.battermann@gmx.de</span>
             </a>
-            <a class="mega-col mega-col-all" href="kontakt.html">Zum Kontaktformular →</a>
+            <a class="mega-col mega-col-all" href="kontakt.html" data-sanity-field="settings.megaAllKontakt">Zum Kontaktformular →</a>
           </div>
         </div>
       </div>
-      <a href="kontakt.html" class="btn btn-sharp nav-mobile-cta">Anfrage stellen</a>
+      <a href="kontakt.html" class="btn btn-sharp nav-mobile-cta" data-sanity-field="settings.navCtaLabel">Anfrage stellen</a>
     </nav>
     <div class="nav-cta">
-      <a href="kontakt.html" class="btn btn-sharp">Anfrage stellen</a>
+      <a href="kontakt.html" class="btn btn-sharp" data-sanity-field="settings.navCtaLabel">Anfrage stellen</a>
       <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false" aria-controls="main-nav"><span></span><span></span><span></span></button>
     </div>
   </div>
@@ -168,17 +168,17 @@
         <img src="images/logo-icon.png" alt="" class="logo-on-dark" data-sanity-field="settings.logoIconUrl" data-sanity-attr="src">
         <span class="txt"><strong style="color:var(--on-dark)">Objekt- &amp; Reparaturservice</strong><span>Battermann</span></span>
       </a>
-      <p>Handwerker &amp; Hausmeisterservice für Privatkunden, Hausverwaltungen und Firmen in Lindhorst, Stadthagen, Bückeburg und Umgebung.</p>
+      <p data-sanity-field="settings.footerIntro">Handwerker &amp; Hausmeisterservice für Privatkunden, Hausverwaltungen und Firmen in Lindhorst, Stadthagen, Bückeburg und Umgebung.</p>
     </div>
     <div>
-      <h4>Navigation</h4>
+      <h4 data-sanity-field="settings.footerNavHeading">Navigation</h4>
       <a href="leistungen.html">Leistungen</a>
       <a href="ueber-mich.html">Über mich</a>
       <a href="einsatzgebiet-faq.html">Einsatzgebiet &amp; FAQ</a>
       <a href="kontakt.html">Kontakt</a>
     </div>
     <div>
-      <h4>Direkter Kontakt</h4>
+      <h4 data-sanity-field="settings.footerContactHeading">Direkter Kontakt</h4>
       <a href="tel:+4915567467763" data-sanity-field="contact.phoneHref" data-sanity-attr="href" data-sanity-prefix="tel:"><span data-sanity-field="contact.phone">+49 155 / 674 677 63</span></a>
       <a href="https://wa.me/4915567467763" data-sanity-field="contact.whatsapp" data-sanity-attr="href">WhatsApp schreiben</a>
       <a href="mailto:service.battermann@gmx.de" data-sanity-field="contact.email" data-sanity-attr="href" data-sanity-prefix="mailto:"><span data-sanity-field="contact.email">service.battermann@gmx.de</span></a>
@@ -186,19 +186,19 @@
     </div>
   </div>
   <div class="wrap footer-bottom">
-    <span>© 2026 Objekt- und Reparaturservice Battermann · Lars Battermann</span>
-    <span><a href="impressum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></span>
+    <span data-sanity-field="settings.copyrightText">© 2026 Objekt- und Reparaturservice Battermann · Lars Battermann</span>
+    <span><a href="impressum.html" data-sanity-field="settings.footerImpressumLabel">Impressum</a> · <a href="datenschutz.html" data-sanity-field="settings.footerDatenschutzLabel">Datenschutz</a></span>
   </div>
   <p class="wrap footer-legal" data-sanity-field="settings.legalNotice">Ausführung ausschließlich im gesetzlich zulässigen Rahmen für meisterfreie Instandsetzungsarbeiten.</p>
 </footer>
 
 <div class="cookie-banner" data-cookie-banner hidden>
-  <p>Diese Website verzichtet auf Tracking-Cookies. Optionale Inhalte wie die Anfahrtskarte werden erst nach Ihrer Zustimmung geladen. <a href="datenschutz.html">Details in der Datenschutzerklärung</a></p>
-  <button data-cookie-accept class="btn btn-primary">Verstanden</button>
+  <p><span data-sanity-field="settings.cookieText">Diese Website verzichtet auf Tracking-Cookies. Optionale Inhalte wie die Anfahrtskarte werden erst nach Ihrer Zustimmung geladen.</span> <a href="datenschutz.html" data-sanity-field="settings.cookieLinkLabel">Details in der Datenschutzerklärung</a></p>
+  <button data-cookie-accept class="btn btn-primary" data-sanity-field="settings.cookieAcceptLabel">Verstanden</button>
 </div>
 
 <div class="fab-group">
-  <a href="kontakt.html" class="fab-cta"><span class="fab-cta-long">Jetzt Anfrage senden</span><span class="fab-cta-short" aria-hidden="true">Anfrage</span><span aria-hidden="true">→</span></a>
+  <a href="kontakt.html" class="fab-cta"><span class="fab-cta-long" data-sanity-field="settings.fabLongLabel">Jetzt Anfrage senden</span><span class="fab-cta-short" aria-hidden="true" data-sanity-field="settings.fabShortLabel">Anfrage</span><span aria-hidden="true">→</span></a>
   <a href="https://wa.me/4915567467763" class="whatsapp-fab" aria-label="Nachricht per WhatsApp senden" target="_blank" rel="noopener">
     <svg viewBox="0 0 32 32" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M16.001 3C9.373 3 4 8.373 4 15c0 2.362.687 4.564 1.872 6.418L4 29l7.79-1.845A11.94 11.94 0 0 0 16.001 27C22.628 27 28 21.627 28 15S22.628 3 16.001 3zm0 21.818a9.77 9.77 0 0 1-4.983-1.363l-.357-.212-4.622 1.095 1.13-4.505-.233-.371A9.77 9.77 0 0 1 5.727 15c0-5.673 4.6-10.273 10.274-10.273S26.273 9.327 26.273 15 21.674 24.818 16.001 24.818zm5.634-7.646c-.309-.155-1.827-.902-2.11-1.005-.283-.103-.489-.155-.695.155-.206.31-.798 1.005-.978 1.212-.18.206-.36.232-.669.077-.309-.155-1.305-.481-2.486-1.535-.919-.82-1.539-1.833-1.719-2.142-.18-.31-.019-.477.136-.63.14-.14.309-.361.463-.542.155-.18.206-.31.309-.516.103-.206.052-.387-.026-.542-.077-.155-.695-1.674-.953-2.293-.251-.603-.506-.521-.695-.53-.18-.008-.386-.01-.592-.01-.206 0-.542.077-.826.387-.283.31-1.082 1.057-1.082 2.577s1.108 2.99 1.262 3.196c.155.206 2.181 3.33 5.284 4.67.738.319 1.314.51 1.763.652.741.236 1.415.203 1.948.123.594-.089 1.827-.747 2.085-1.469.257-.723.257-1.341.18-1.469-.077-.129-.283-.206-.592-.361z"/></svg>
   </a>

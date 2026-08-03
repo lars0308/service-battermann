@@ -9,6 +9,8 @@ export const pageDatenschutz = defineType({
   description:
     'Kompletter Fließtext der Seite datenschutz.html, editierbar als Rich Text (Überschriften, Absätze, Aufzählungen, Links).',
   fields: [
+    defineField({name: 'eyebrow', title: 'Unterzeile (über der Überschrift)', type: 'string', initialValue: 'Rechtliches'}),
+    defineField({name: 'heading', title: 'Überschrift', type: 'string', initialValue: 'Datenschutzerklärung'}),
     defineField({
       name: 'intro',
       title: 'Einleitungssatz (unter der Überschrift, z. B. "Stand: ...")',

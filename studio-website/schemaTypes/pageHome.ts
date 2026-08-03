@@ -40,7 +40,10 @@ export const pageHome = defineType({
     'Bestimmt, welche Blöcke auf der Startseite in welcher Reihenfolge erscheinen. Die meisten Inhalte pflegst du weiterhin in den jeweils zuständigen Bereichen (Hero, Vorteile, Leistungen usw.) — die Texte der Sektion "Wer hier anpackt" gehören direkt hierher.',
   groups: [
     {name: 'baukasten', title: 'Block-Reihenfolge', default: true},
-    {name: 'werHierAnpackt', title: '"Wer hier anpackt" (Texte)'},
+    {name: 'heroExtra', title: 'Hero: CTA-Buttons'},
+    {name: 'werHierAnpackt', title: '"Wer hier anpackt" (Texte + Bild)'},
+    {name: 'leistungenExtra', title: 'Leistungen-Sektion: CTA'},
+    {name: 'optionaleBloecke', title: 'Optionale Blöcke: Karte & Formular (Überschriften)'},
   ],
   fields: [
     defineField({
@@ -60,6 +63,9 @@ export const pageHome = defineType({
       initialValue: [{_type: 'heroBlock'}, {_type: 'vorteileBlock'}, {_type: 'aboutMeBlock'}, {_type: 'bentoGridBlock'}],
       group: 'baukasten',
     }),
+    defineField({name: 'heroWhatsappLabel', title: 'Button-Text „WhatsApp"', type: 'string', group: 'heroExtra'}),
+    defineField({name: 'heroCallLabel', title: 'Button-Text „Direkt anrufen"', type: 'string', group: 'heroExtra'}),
+    defineField({name: 'heroPrimaryCtaLabel', title: 'Button-Text „Jetzt Anfrage senden"', type: 'string', group: 'heroExtra'}),
     defineField({name: 'aboutEyebrow', title: 'Unterzeile', type: 'string', group: 'werHierAnpackt'}),
     defineField({name: 'aboutLead', title: 'Einleitungssatz', type: 'text', group: 'werHierAnpackt'}),
     defineField({name: 'aboutFact1Title', title: 'Punkt 1: Titel', type: 'string', group: 'werHierAnpackt'}),
@@ -79,6 +85,18 @@ export const pageHome = defineType({
       initialValue: 'ueber-mich.html',
       group: 'werHierAnpackt',
     }),
+    defineField({
+      name: 'aboutPortrait',
+      title: 'Porträtfoto',
+      type: 'image',
+      options: {hotspot: true},
+      group: 'werHierAnpackt',
+    }),
+    defineField({name: 'servicesAllCtaLabel', title: 'Link-Text „Alle Leistungen im Detail ansehen"', type: 'string', group: 'leistungenExtra'}),
+    defineField({name: 'mapEyebrow', title: 'Karte: Unterzeile', type: 'string', group: 'optionaleBloecke'}),
+    defineField({name: 'mapHeadline', title: 'Karte: Überschrift', type: 'string', group: 'optionaleBloecke'}),
+    defineField({name: 'formEyebrow', title: 'Formular: Unterzeile', type: 'string', group: 'optionaleBloecke'}),
+    defineField({name: 'formHeadline', title: 'Formular: Überschrift', type: 'string', group: 'optionaleBloecke'}),
   ],
   preview: {
     prepare() {
