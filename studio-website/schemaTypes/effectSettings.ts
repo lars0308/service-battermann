@@ -64,6 +64,13 @@ export const effectSettings = defineType({
       group: 'bento',
     }),
     defineField({
+      name: 'trustMarqueeSpeedMs',
+      title: 'Vorteile-Laufband-Geschwindigkeit auf dem Handy (ms für einen Durchlauf)',
+      type: 'number',
+      description: 'Wie lange die 4 Vorteile-Karten auf dem Smartphone brauchen, um einmal komplett durchzulaufen. Kleinere Zahl = schneller. Standard-Fallback: 22000.',
+      group: 'bento',
+    }),
+    defineField({
       name: 'bentoTileScale',
       title: 'Kachel-Vergrößerung (Skalierung)',
       type: 'number',

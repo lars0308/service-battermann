@@ -37,7 +37,11 @@ export const pageHome = defineType({
   type: 'document',
   icon: DocumentIcon,
   description:
-    'Bestimmt, welche Blöcke auf der Startseite in welcher Reihenfolge erscheinen. Die Inhalte selbst pflegst du weiterhin in den jeweils zuständigen Bereichen (Hero, Vorteile, Leistungen, Über mich usw.) — hier steuerst du nur Reihenfolge und Sichtbarkeit.',
+    'Bestimmt, welche Blöcke auf der Startseite in welcher Reihenfolge erscheinen. Die meisten Inhalte pflegst du weiterhin in den jeweils zuständigen Bereichen (Hero, Vorteile, Leistungen usw.) — die Texte der Sektion "Wer hier anpackt" gehören direkt hierher.',
+  groups: [
+    {name: 'baukasten', title: 'Block-Reihenfolge', default: true},
+    {name: 'werHierAnpackt', title: '"Wer hier anpackt" (Texte)'},
+  ],
   fields: [
     defineField({
       name: 'pageModules',
@@ -54,7 +58,18 @@ export const pageHome = defineType({
         {type: 'formBlock'},
       ],
       initialValue: [{_type: 'heroBlock'}, {_type: 'vorteileBlock'}, {_type: 'aboutMeBlock'}, {_type: 'bentoGridBlock'}],
+      group: 'baukasten',
     }),
+    defineField({name: 'aboutEyebrow', title: 'Unterzeile', type: 'string', group: 'werHierAnpackt'}),
+    defineField({name: 'aboutLead', title: 'Einleitungssatz', type: 'text', group: 'werHierAnpackt'}),
+    defineField({name: 'aboutFact1Title', title: 'Punkt 1: Titel', type: 'string', group: 'werHierAnpackt'}),
+    defineField({name: 'aboutFact1Text', title: 'Punkt 1: Text', type: 'text', group: 'werHierAnpackt'}),
+    defineField({name: 'aboutFact2Title', title: 'Punkt 2: Titel', type: 'string', group: 'werHierAnpackt'}),
+    defineField({name: 'aboutFact2Text', title: 'Punkt 2: Text', type: 'text', group: 'werHierAnpackt'}),
+    defineField({name: 'aboutFact3Title', title: 'Punkt 3: Titel', type: 'string', group: 'werHierAnpackt'}),
+    defineField({name: 'aboutFact3Text', title: 'Punkt 3: Text', type: 'text', group: 'werHierAnpackt'}),
+    defineField({name: 'aboutCardCtaLabel', title: 'Text auf dem Porträtfoto ("Mehr über mich erfahren →")', type: 'string', group: 'werHierAnpackt'}),
+    defineField({name: 'aboutDownloadLabel', title: 'Link-Text "Kontaktdaten herunterladen"', type: 'string', group: 'werHierAnpackt'}),
   ],
   preview: {
     prepare() {

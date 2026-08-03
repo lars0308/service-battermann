@@ -36,6 +36,21 @@ export const customPage = defineType({
       type: 'string',
     }),
     defineField({
+      name: 'showInNav',
+      title: 'In der Hauptnavigation anzeigen?',
+      type: 'boolean',
+      description:
+        'Aktiviert: die Seite bekommt automatisch einen eigenen Menüpunkt neben "Leistungen", "Über mich" usw. — auf jeder Seite der Website, ohne weiteren Handgriff.',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'navOrder',
+      title: 'Reihenfolge im Menü (bei mehreren Seiten im Menü)',
+      type: 'number',
+      description: 'Kleinere Zahl steht weiter links. Ohne Angabe: Reihenfolge nach Erstellungsdatum.',
+      hidden: ({parent}) => !parent?.showInNav,
+    }),
+    defineField({
       name: 'content',
       title: 'Seiteninhalt',
       type: 'array',
