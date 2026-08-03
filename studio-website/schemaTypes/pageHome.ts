@@ -90,6 +90,7 @@ export const pageHome = defineType({
       title: 'Porträtfoto',
       type: 'image',
       options: {hotspot: true},
+      description: 'Bildausschnitt anpassen: auf das Bild klicken, den Fokuspunkt-Kreis auf den wichtigsten Bereich ziehen, speichern.',
       group: 'werHierAnpackt',
     }),
     defineField({name: 'servicesAllCtaLabel', title: 'Link-Text „Alle Leistungen im Detail ansehen"', type: 'string', group: 'leistungenExtra'}),
