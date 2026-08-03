@@ -152,7 +152,7 @@
     '{"themeSettings":*[_type=="themeSettings"][0]{"primaryGold":primaryGold.hex,"brandGreen":brandGreen.hex,"bgDark":bgDark.hex,"bgLight":bgLight.hex,"textDark":textDark.hex,"textLight":textLight.hex,glassOpacity,glassBlur,borderRadius},' +
     '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type},aboutEyebrow,aboutLead,aboutFact1Title,aboutFact1Text,aboutFact2Title,aboutFact2Text,aboutFact3Title,aboutFact3Text,aboutCardCtaLabel,aboutDownloadLabel,bereichsLink,heroWhatsappLabel,heroCallLabel,heroPrimaryCtaLabel,bentoEyebrow,bentoHeadline,bentoIntro,servicesAllCtaLabel,mapEyebrow,mapHeadline,formEyebrow,formHeadline,"aboutPortraitUrl":aboutPortrait.asset->url' + IMG_SUFFIX + '},' +
     '"customPages":*[_type=="customPage" && showInNav==true]|order(navOrder asc){title,"slug":slug.current,navOrder},' +
-    '"heroSettings":*[_type=="heroSettings"][0]{"heroSlides":heroSlides[]{folieName,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot,bildAktiv,spruchText,spruchAktiv},showCallButton},' +
+    '"heroSettings":*[_type=="heroSettings"][0]{"heroSlides":heroSlides[]{folieName,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot,bildAktiv,spruchText,spruchTextsWeitere,spruchAktiv},showCallButton},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text,detail},' +
     '"services":*[_type=="service"]|order(order asc){order,"anchor":anchorId.current,verb,title,requiresLegalNote,shortDescription,description,ctaLabel,ctaUrl,"cardImageBaseUrl":cardImage.asset->url,"cardImageHotspot":cardImage.hotspot,"gallery":gallery[]{"url":asset->url,hotspot}},' +
     '"faq":*[_type=="faqEntry"]|order(order asc){order,question,answer},' +
@@ -862,6 +862,15 @@
         spruchText: slide.spruchText || "",
         spruchAktiv: slide.spruchAktiv,
         domIndex: domIndex,
+      });
+
+      // Weitere Sprüche (spruchTextsWeitere): laufen direkt im Anschluss mit
+      // domIndex:null durch, sodass das gerade gezeigte Bild einfach stehen
+      // bleibt und nur der Text mehrfach wechselt, bevor zur nächsten Folie
+      // (mit eigenem Bild) übergegangen wird.
+      (slide.spruchTextsWeitere || []).forEach(function (extra) {
+        if (!extra) return;
+        combined.push({ spruchText: extra, spruchAktiv: slide.spruchAktiv, domIndex: null });
       });
     });
 
