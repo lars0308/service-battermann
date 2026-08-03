@@ -70,6 +70,15 @@ export const pageHome = defineType({
     defineField({name: 'aboutFact3Text', title: 'Punkt 3: Text', type: 'text', group: 'werHierAnpackt'}),
     defineField({name: 'aboutCardCtaLabel', title: 'Text auf dem Porträtfoto ("Mehr über mich erfahren →")', type: 'string', group: 'werHierAnpackt'}),
     defineField({name: 'aboutDownloadLabel', title: 'Link-Text "Kontaktdaten herunterladen"', type: 'string', group: 'werHierAnpackt'}),
+    defineField({
+      name: 'bereichsLink',
+      title: 'Linkziel des Portrait-Buttons ("Mehr über mich erfahren →")',
+      type: 'string',
+      description:
+        'Wohin der Klick auf das Porträtfoto in dieser Sektion führt. Standard: ueber-mich.html.',
+      initialValue: 'ueber-mich.html',
+      group: 'werHierAnpackt',
+    }),
   ],
   preview: {
     prepare() {

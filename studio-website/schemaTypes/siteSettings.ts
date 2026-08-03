@@ -12,7 +12,6 @@ export const siteSettings = defineType({
     {name: 'hero', title: 'Hero'},
     {name: 'bento', title: 'Startseite: Leistungs-Kacheln (Überschrift)'},
     {name: 'forms', title: 'Formular'},
-    {name: 'werHierAnpackt', title: 'Startseite: „Wer hier anpackt"'},
     {name: 'bewertungen', title: 'Startseite: Bewertungen'},
     {name: 'gebietTeaser', title: 'Startseite: Einsatzgebiet (Kurzform)'},
   ],
@@ -112,15 +111,6 @@ export const siteSettings = defineType({
       description:
         'Ohne diesen Key nimmt das Kontaktformular auf kontakt.html keine Anfragen entgegen. Key von staticforms.dev, siehe SETUP.md.',
       group: 'forms',
-    }),
-    defineField({
-      name: 'bereichsLink',
-      title: 'Linkziel des Portrait-Buttons ("Mehr über mich erfahren →")',
-      type: 'string',
-      description:
-        'Wohin der Klick auf das Porträtfoto in der Sektion "Wer hier anpackt" auf der Startseite führt. Standard: ueber-mich.html.',
-      initialValue: 'ueber-mich.html',
-      group: 'werHierAnpackt',
     }),
     defineField({name: 'bewertungenEyebrow', title: 'Unterzeile', type: 'string', group: 'bewertungen'}),
     defineField({name: 'bewertungenHeadline', title: 'Überschrift', type: 'string', group: 'bewertungen'}),
