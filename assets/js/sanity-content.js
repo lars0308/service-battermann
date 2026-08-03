@@ -265,8 +265,13 @@
       var anchor = nav.querySelector(".nav-mobile-cta") || nav.querySelector(".btn-sharp");
       pages.forEach(function (p) {
         if (!p.title || !p.slug) return;
+        // Relativer Pfad (kein führender "/"): GitHub Pages liefert das
+        // Projekt unter einem Unterordner (z. B. /service-battermann/) statt
+        // an der Domain-Wurzel — ein absoluter "/notdienst"-Link würde dort
+        // ins Leere zeigen. Alle Seiten liegen flach im selben Verzeichnis,
+        // daher reicht der reine Slug als relativer Link.
         var link = document.createElement("a");
-        link.href = "/" + p.slug;
+        link.href = p.slug;
         link.textContent = p.title;
         if (anchor) {
           nav.insertBefore(link, anchor);

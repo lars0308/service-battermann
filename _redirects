@@ -1,3 +1,6 @@
+# Nur relevant, falls die Website irgendwann zusätzlich/statt GitHub Pages
+# über Netlify läuft (aktuell läuft sie über GitHub Pages, siehe 404.html —
+# GitHub Pages liest diese Datei nicht, sie ist wirkungslos, aber harmlos).
 # Netlify prüft echte Dateien immer zuerst (index.html, leistungen.html, ...).
 # Nur Pfade, die zu keiner Datei passen, fallen auf diese Zeile durch — z. B.
 # eine im Sanity-Studio frei angelegte Unterseite wie /notdienst. page.html
