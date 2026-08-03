@@ -150,7 +150,7 @@
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
     '{"themeSettings":*[_type=="themeSettings"][0]{"primaryGold":primaryGold.hex,"brandGreen":brandGreen.hex,"bgDark":bgDark.hex,"bgLight":bgLight.hex,"textDark":textDark.hex,"textLight":textLight.hex,glassOpacity,glassBlur,borderRadius},' +
-    '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type},aboutEyebrow,aboutLead,aboutFact1Title,aboutFact1Text,aboutFact2Title,aboutFact2Text,aboutFact3Title,aboutFact3Text,aboutCardCtaLabel,aboutDownloadLabel},' +
+    '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type},aboutEyebrow,aboutLead,aboutFact1Title,aboutFact1Text,aboutFact2Title,aboutFact2Text,aboutFact3Title,aboutFact3Text,aboutCardCtaLabel,aboutDownloadLabel,bereichsLink},' +
     '"customPages":*[_type=="customPage" && showInNav==true]|order(navOrder asc){title,"slug":slug.current,navOrder},' +
     '"heroSettings":*[_type=="heroSettings"][0]{"heroSlides":heroSlides[]{folieName,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot,bildAktiv,spruchText,spruchAktiv},showCallButton},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text,detail},' +
@@ -169,7 +169,7 @@
     '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead},' +
     '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
     '"effects":*[_type=="effectSettings"][0]{heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,introVeilOpacity,kitCardIntervalMs,bentoTileScale,bentoGlassFadeMs,trustMarqueeSpeedMs,revealDurationMs,revealDistancePx},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,staticFormsApiKey,bereichsLink,bewertungenEyebrow,bewertungenHeadline,bewertungenText,bewertungenCtaLabel,gebietEyebrow,gebietHeadline,gebietText,gebietCtaLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,staticFormsApiKey,bewertungenEyebrow,bewertungenHeadline,bewertungenText,bewertungenCtaLabel,gebietEyebrow,gebietHeadline,gebietText,gebietCtaLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -394,7 +394,6 @@
         "bentoIntro",
         "staticFormsApiKey",
         "logoIconUrl",
-        "bereichsLink",
         "bewertungenEyebrow",
         "bewertungenHeadline",
         "bewertungenText",
@@ -568,6 +567,23 @@
     };
     preload.onerror = function () {}; // defekte/gelöschte Sanity-Bild-URL -> statisches Bild bleibt stehen
     preload.src = newSrc;
+  }
+
+  // Für die meisten Felder gilt sitewide: "leer/fehlt in Sanity" -> statischer
+  // HTML-Text bleibt stehen (Sicherheitsnetz, falls die Sanity-Abfrage
+  // fehlschlägt — die Seite soll nie leer/kaputt aussehen). Bei bewusst
+  // optionalen Absätzen wie dem Bewertungen-Text will Lars aber, dass ein
+  // Löschen im Studio den Absatz auf der Website wirklich verschwinden lässt.
+  // Nur hier anwendbar, weil "data.settings" bei erfolgreicher Abfrage immer
+  // vorhanden ist — ein fehlendes "data.settings" bedeutet also echten
+  // Abfrage-Fehler (statischer Text bleibt), ein vorhandenes "data.settings"
+  // ohne bewertungenText bedeutet: bewusst geleert.
+  function applyOptionalTextVisibility(data) {
+    if (!data.settings) return;
+    if (!data.settings.bewertungenText) {
+      var el = document.querySelector('[data-sanity-field="settings.bewertungenText"]');
+      if (el) el.hidden = true;
+    }
   }
 
   function applyPatches(map) {
@@ -885,6 +901,7 @@
       applyCustomPageNav(data);
       var map = buildFieldMap(data);
       applyPatches(map);
+      applyOptionalTextVisibility(data);
       applyPromiseIcons(map);
       if (map["settings.staticFormsApiKey"]) {
         cacheStaticFormsKey(map["settings.staticFormsApiKey"]);

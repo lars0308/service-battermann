@@ -69,7 +69,7 @@ export const structure: StructureResolver = (S) =>
             .title('Startseite (Home)')
             .items([
               S.listItem()
-                .title('Block-Reihenfolge (Baukasten)')
+                .title('Baukasten & „Wer hier anpackt" (Texte + Link)')
                 .child(
                   S.document().schemaType('pageHome').documentId('pageHome').title('Startseite: Baukasten'),
                 ),
@@ -80,18 +80,6 @@ export const structure: StructureResolver = (S) =>
                 ),
               S.documentTypeListItem('trustPoint').title('Vorteile-Karten (4 Stück)'),
               S.documentTypeListItem('service').title('Leistungs-Kacheln (Bento-Grid „Was ich mache")'),
-              // Dasselbe siteSettings-Singleton wie unter "Website-weit" — hier
-              // zusätzlich verlinkt, weil das Feld "Linkziel Portrait-Button" nur
-              // die Startseiten-Sektion "Wer hier anpackt" betrifft (gleiches
-              // Prinzip wie beim doppelt gelisteten service-Dokument oben).
-              S.listItem()
-                .title('Wer hier anpackt: Link-Ziel')
-                .child(
-                  S.document()
-                    .schemaType('siteSettings')
-                    .documentId('siteSettings')
-                    .title('Website-Einstellungen'),
-                ),
               S.listItem()
                 .title('Bewertungen-Sektion')
                 .child(
