@@ -39,7 +39,7 @@ export const heroSettings = defineType({
               type: 'image',
               options: {hotspot: true},
               description:
-                'Leer gelassen: NICHT "kein Bild", sondern das aktuell auf der Website fest hinterlegte Foto für genau diese Folie bleibt stehen (siehe interner Titel oben, dort steht der Dateiname). Erst ein hier hochgeladenes Bild ersetzt es.',
+                'Leer gelassen: NICHT "kein Bild", sondern das aktuell auf der Website fest hinterlegte Foto für genau diese Folie bleibt stehen (siehe interner Titel oben, dort steht der Dateiname). Erst ein hier hochgeladenes Bild ersetzt es. Bildausschnitt anpassen (z. B. wenn der Kopf zu weit oben/unten abgeschnitten wird): auf das Bild klicken, im Editor den kleinen Kreis (Fokuspunkt) auf den wichtigsten Bereich ziehen (z. B. das Gesicht) und speichern — dieser Bereich bleibt dann auf jedem Bildschirm sichtbar.',
             }),
             defineField({
               name: 'bildMobile',
@@ -47,7 +47,7 @@ export const heroSettings = defineType({
               type: 'image',
               options: {hotspot: true},
               description:
-                'Eigenes, hochkant fotografiertes Bild fürs Handy. Bleibt dieses Feld leer, verwendet das Handy weiterhin das Desktop-Bild.',
+                'Eigenes, hochkant fotografiertes Bild fürs Handy. Bleibt dieses Feld leer, verwendet das Handy weiterhin das Desktop-Bild. Bildausschnitt anpassen: auf das Bild klicken, den Fokuspunkt-Kreis auf den wichtigsten Bereich ziehen, speichern.',
             }),
             defineField({
               name: 'bildAktiv',

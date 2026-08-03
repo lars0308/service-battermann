@@ -67,7 +67,7 @@ export const service = defineType({
       type: 'image',
       options: {hotspot: true},
       description:
-        'Einzelnes Bild, randlos als Kachel-Hintergrund auf Startseite UND Leistungsseite (dunkles Overlay wird per CSS gelegt).',
+        'Einzelnes Bild, randlos als Kachel-Hintergrund auf Startseite UND Leistungsseite (dunkles Overlay wird per CSS gelegt). Bildausschnitt anpassen: auf das Bild klicken, im Editor den kleinen Kreis (Fokuspunkt) auf den wichtigsten Bereich ziehen und speichern — dieser Bereich bleibt dann bei jeder Bildschirmgröße sichtbar, egal wie schmal/breit die Kachel gerade ist.',
       group: 'startseite',
     }),
     defineField({
@@ -75,6 +75,7 @@ export const service = defineType({
       title: 'Echte Projektbilder (ungenutzt im kompakten Kachel-Design)',
       type: 'array',
       of: [{type: 'image', options: {hotspot: true}}],
+      description: 'Bildausschnitt pro Bild: auf das Bild klicken, den Fokuspunkt-Kreis auf den wichtigsten Bereich ziehen, speichern.',
       group: 'leistungenSeite',
     }),
     defineField({

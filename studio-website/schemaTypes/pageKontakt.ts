@@ -27,6 +27,7 @@ export const pageKontakt = defineType({
       title: 'Porträtfoto',
       type: 'image',
       options: {hotspot: true},
+      description: 'Bildausschnitt anpassen: auf das Bild klicken, den Fokuspunkt-Kreis auf den wichtigsten Bereich ziehen, speichern.',
       group: 'direkterDraht',
     }),
     defineField({name: 'portraitName', title: 'Bildunterschrift: Name', type: 'string', group: 'direkterDraht'}),
