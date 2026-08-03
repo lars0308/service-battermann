@@ -9,6 +9,8 @@ export const pageImpressum = defineType({
   description:
     'Kompletter Fließtext der Seite impressum.html, editierbar als Rich Text (Überschriften, Absätze, Aufzählungen, Links). Name/Anschrift/Telefon/E-Mail werden weiterhin zentral unter "Website-Einstellungen" bzw. "Kontaktdaten" gepflegt, damit nichts doppelt gepflegt werden muss.',
   fields: [
+    defineField({name: 'eyebrow', title: 'Unterzeile (über der Überschrift)', type: 'string', initialValue: 'Rechtliches'}),
+    defineField({name: 'heading', title: 'Überschrift', type: 'string', initialValue: 'Impressum'}),
     defineField({
       name: 'intro',
       title: 'Einleitungssatz (unter der Überschrift)',

@@ -325,6 +325,18 @@ header.site .brand{ margin-right:auto; }
 .brand .txt span{ display:block; font-size:0.72rem; color:var(--ink-soft); }
 
 nav.main-nav{ display:flex; align-items:center; gap:26px; }
+/* Statische Standard-Reihenfolge (bevor Sanity-Werte per JS greifen), damit
+   vor dem Laden kein Flackern/Umspringen entsteht. sanity-content.js kann
+   diese Werte per data-nav-page-Zuordnung überschreiben (Seiten-Reihenfolge
+   in Sanity einstellbar). Freie Unterseiten (customPage) landen per Default
+   dahinter (siehe assets/js/sanity-content.js, Fallback 60), der CTA-Button
+   bleibt immer ganz hinten. */
+nav.main-nav [data-nav-page="home"]{ order:10; }
+nav.main-nav [data-nav-page="leistungen"]{ order:20; }
+nav.main-nav [data-nav-page="ueberMich"]{ order:30; }
+nav.main-nav [data-nav-page="einsatzgebiet"]{ order:40; }
+nav.main-nav [data-nav-page="kontakt"]{ order:50; }
+nav.main-nav .nav-mobile-cta{ order:999; }
 nav.main-nav a{
   font-family:'Montserrat', sans-serif;
   font-weight:600; font-size:0.85rem;
@@ -1070,6 +1082,32 @@ body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
   .leistung-card-1, .leistung-card-2, .leistung-card-3, .leistung-card-4, .leistung-card-5{
     grid-column:auto; grid-row:auto; aspect-ratio:16/10; padding:20px;
   }
+}
+
+/* Eigenständige Variante von .leistung-card für eingebettete Leistungs-Kacheln
+   auf freien Unterseiten (customPage) — gleiche Optik, aber ohne Grid-Position
+   und ohne die Mosaik-Hover-Gruppenlogik der Startseite, da hier immer nur
+   eine einzelne Karte im Fließtext steht. */
+.embed-service-card{
+  position:relative; display:flex; flex-direction:column; justify-content:flex-end;
+  aspect-ratio:16/9; border-radius:var(--radius); overflow:hidden; padding:20px;
+  text-decoration:none; color:var(--on-dark); box-shadow:var(--shadow);
+  margin:var(--space-4) 0;
+}
+.embed-service-card img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.embed-service-card-scrim{
+  position:absolute; inset:0;
+  background:linear-gradient(0deg, rgba(15,14,12,0.88) 0%, rgba(15,14,12,0.5) 55%, rgba(15,14,12,0.05) 100%);
+}
+.embed-service-card-title{
+  position:relative; z-index:1;
+  font-family:'Montserrat', sans-serif; font-weight:800; font-size:1.25rem; line-height:1.2;
+}
+.embed-service-card-desc{ position:relative; z-index:1; font-size:0.95rem; margin-top:6px; max-width:48ch; }
+.embed-service-card-arrow{
+  position:relative; z-index:1;
+  font-family:'Archivo Black', sans-serif; font-size:1.3rem; color:var(--accent);
+  margin-top:10px;
 }
 
 /* ---------- Leistungen: Bento-Kachel-Grid (identisch auf Mobile & Desktop) ----------

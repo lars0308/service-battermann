@@ -150,7 +150,7 @@
   var IMG_SUFFIX = '+"?auto=format&q=90"';
   var QUERY =
     '{"themeSettings":*[_type=="themeSettings"][0]{"primaryGold":primaryGold.hex,"brandGreen":brandGreen.hex,"bgDark":bgDark.hex,"bgLight":bgLight.hex,"textDark":textDark.hex,"textLight":textLight.hex,glassOpacity,glassBlur,borderRadius},' +
-    '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type},aboutEyebrow,aboutLead,aboutFact1Title,aboutFact1Text,aboutFact2Title,aboutFact2Text,aboutFact3Title,aboutFact3Text,aboutCardCtaLabel,aboutDownloadLabel,bereichsLink},' +
+    '"pageHome":*[_type=="pageHome"][0]{"pageModules":pageModules[]{_type},aboutEyebrow,aboutLead,aboutFact1Title,aboutFact1Text,aboutFact2Title,aboutFact2Text,aboutFact3Title,aboutFact3Text,aboutCardCtaLabel,aboutDownloadLabel,bereichsLink,heroWhatsappLabel,heroCallLabel,heroPrimaryCtaLabel,servicesAllCtaLabel,mapEyebrow,mapHeadline,formEyebrow,formHeadline,"aboutPortraitUrl":aboutPortrait.asset->url' + IMG_SUFFIX + '},' +
     '"customPages":*[_type=="customPage" && showInNav==true]|order(navOrder asc){title,"slug":slug.current,navOrder},' +
     '"heroSettings":*[_type=="heroSettings"][0]{"heroSlides":heroSlides[]{folieName,"desktopBaseUrl":bildDesktop.asset->url,"desktopHotspot":bildDesktop.hotspot,"mobileBaseUrl":bildMobile.asset->url,"mobileHotspot":bildMobile.hotspot,bildAktiv,spruchText,spruchAktiv},showCallButton},' +
     '"trust":*[_type=="trustPoint"]|order(order asc){order,text,detail},' +
@@ -162,14 +162,14 @@
     '"contact":*[_type=="contactInfo"][0]{phone,phoneHref,whatsapp,email,openingHours},' +
     '"einsatzgebiet":*[_type=="einsatzgebietOrt"]|order(order asc){order,name,anfahrtskosten},' +
     '"promise":*[_type=="promiseCard"]|order(order asc){order,icon,title,text},' +
-    '"pageImpressum":*[_type=="pageImpressum"][0]{intro,body},' +
-    '"pageDatenschutz":*[_type=="pageDatenschutz"][0]{intro,body},' +
+    '"pageImpressum":*[_type=="pageImpressum"][0]{eyebrow,heading,intro,body},' +
+    '"pageDatenschutz":*[_type=="pageDatenschutz"][0]{eyebrow,heading,intro,body},' +
     '"pageUeberMich":*[_type=="pageUeberMich"][0]{heroEyebrow,heroName,heroSubline,heroLead,"heroPortraitUrl":heroPortrait.asset->url' + IMG_SUFFIX + ',anfangEyebrow,anfangHeadline,anfangText1,anfangText2,"anfangImageUrl":anfangImage.asset->url' + IMG_SUFFIX + ',arbeitsweiseEyebrow,arbeitsweiseHeadline,kundenEyebrow,kundenHeadline,kundenText,kundenCtaLabel,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
     '"pageLeistungen":*[_type=="pageLeistungen"][0]{heroEyebrow,heroHeadline,heroLead,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
-    '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead},' +
-    '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
+    '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead,contactEyebrow,contactHeadline,contactIntro,emailLabelPrefix,erreichbarkeitLabelPrefix,contactNote,"portraitUrl":portrait.asset->url' + IMG_SUFFIX + ',portraitName,portraitRole},' +
+    '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead,faqEyebrow,faqHeadline,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel},' +
     '"effects":*[_type=="effectSettings"][0]{heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,introVeilOpacity,kitCardIntervalMs,bentoTileScale,bentoGlassFadeMs,trustMarqueeSpeedMs,revealDurationMs,revealDistancePx},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,staticFormsApiKey,bewertungenEyebrow,bewertungenHeadline,bewertungenText,bewertungenCtaLabel,gebietEyebrow,gebietHeadline,gebietText,gebietCtaLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,navOrderHome,navOrderLeistungen,navOrderUeberMich,navOrderEinsatzgebiet,navOrderKontakt,heroEyebrow,bentoEyebrow,bentoHeadline,bentoIntro,staticFormsApiKey,bewertungenEyebrow,bewertungenHeadline,bewertungenText,bewertungenCtaLabel,gebietEyebrow,gebietHeadline,gebietText,gebietCtaLabel,navStartseite,navCtaLabel,megaAllLeistungen,megaAllUeberMich,megaAllEinsatzgebiet,megaAllKontakt,megaKontaktAnrufenLabel,megaKontaktWhatsappLabel,megaKontaktWhatsappDesc,megaKontaktEmailLabel,footerIntro,footerNavHeading,footerContactHeading,copyrightText,footerImpressumLabel,footerDatenschutzLabel,footerBackHomeLabel,cookieText,cookieLinkLabel,cookieAcceptLabel,fabLongLabel,fabShortLabel,dankeHeadline,dankeText,dankeVcardLabel,dankeCloseLabel,formNameLabel,formOrtLabel,formOrtPlaceholder,formKontaktwegLabel,formKontaktPlaceholder,formAnliegenLabel,formAnliegenPlaceholder,formFotoLabel,formSubmitLabel,formErrorText,formDisclaimerPre,formDisclaimerPost,mapConsentTitle,mapConsentText,mapConsentLinkLabel,mapConsentButtonLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -273,12 +273,38 @@
         var link = document.createElement("a");
         link.href = p.slug;
         link.textContent = p.title;
+        // Reihenfolge im Menü: eigenes "navOrder"-Feld der Unterseite, sonst
+        // Standard 60 (nach dem letzten festen Menüpunkt "Kontakt"=50, vor
+        // dem CTA-Button=999) — siehe applyNavOrder() für die festen Punkte.
+        link.style.order = typeof p.navOrder === "number" ? String(p.navOrder) : "60";
         if (anchor) {
           nav.insertBefore(link, anchor);
         } else {
           nav.appendChild(link);
         }
       });
+    });
+  }
+
+  // Reihenfolge der 5 festen Hauptmenüpunkte: siteSettings.navOrder* (Zahl,
+  // kleiner = weiter links) wird per CSS "order" auf die per data-nav-page
+  // markierten Menü-Elemente übertragen (nav.main-nav ist display:flex, "order"
+  // wirkt direkt). Ohne Sanity-Werte gilt die statische CSS-Reihenfolge in
+  // styles.css (10/20/30/40/50) unverändert — kein Layout-Sprung vor dem Laden.
+  function applyNavOrder(data) {
+    var s = data.settings;
+    if (!s) return;
+    var orderByPage = {
+      home: s.navOrderHome,
+      leistungen: s.navOrderLeistungen,
+      ueberMich: s.navOrderUeberMich,
+      einsatzgebiet: s.navOrderEinsatzgebiet,
+      kontakt: s.navOrderKontakt,
+    };
+    document.querySelectorAll(".main-nav [data-nav-page]").forEach(function (el) {
+      var key = el.getAttribute("data-nav-page");
+      var value = orderByPage[key];
+      if (typeof value === "number") el.style.order = String(value);
     });
   }
 
@@ -381,47 +407,24 @@
         if (data.contact[key]) map["contact." + key] = data.contact[key];
       });
     }
-    if (data.settings) {
-      [
-        "legalNotice",
-        "navLeistungen",
-        "navUeberMich",
-        "navEinsatzgebiet",
-        "navKontakt",
-        "heroEyebrow",
-        "bentoEyebrow",
-        "bentoHeadline",
-        "bentoIntro",
-        "staticFormsApiKey",
-        "logoIconUrl",
-        "bewertungenEyebrow",
-        "bewertungenHeadline",
-        "bewertungenText",
-        "bewertungenCtaLabel",
-        "gebietEyebrow",
-        "gebietHeadline",
-        "gebietText",
-        "gebietCtaLabel",
-      ].forEach(function (key) {
-        if (data.settings[key]) map["settings." + key] = data.settings[key];
-      });
-    }
-    if (data.pageImpressum && data.pageImpressum.intro) {
-      map["pageImpressum.intro"] = data.pageImpressum.intro;
-    }
-    if (data.pageDatenschutz && data.pageDatenschutz.intro) {
-      map["pageDatenschutz.intro"] = data.pageDatenschutz.intro;
-    }
-    // Seiten-Kopfbereiche/-Texte (pageUeberMich, pageLeistungen, pageKontakt,
-    // pageEinsatzgebiet): jedes einfache String-/Text-/Bild-Feld 1:1 unter
-    // "<docKey>.<feldName>" in die Map übernehmen, statt jedes Feld einzeln
-    // aufzuzählen — neue Felder in einem dieser Schemas brauchen dadurch
-    // keine weitere Änderung hier.
-    ["pageUeberMich", "pageLeistungen", "pageKontakt", "pageEinsatzgebiet", "pageHome"].forEach(function (docKey) {
+    // "settings" (siteSettings) plus alle Seiten-Kopfbereiche/-Texte: jedes
+    // einfache String-/Text-/Bild-Feld 1:1 unter "<docKey>.<feldName>" in die
+    // Map übernehmen, statt jedes Feld einzeln aufzuzählen — neue Felder in
+    // einem dieser Schemas brauchen dadurch keine weitere Änderung hier.
+    [
+      "settings",
+      "pageUeberMich",
+      "pageLeistungen",
+      "pageKontakt",
+      "pageEinsatzgebiet",
+      "pageHome",
+      "pageImpressum",
+      "pageDatenschutz",
+    ].forEach(function (docKey) {
       var doc = data[docKey];
       if (!doc) return;
       Object.keys(doc).forEach(function (field) {
-        if (field === "pageModules") return; // eigene Struktur, kein Text-Feld
+        if (field === "pageModules" || field === "body") return; // eigene Struktur, kein Text-Feld
         if (doc[field]) map[docKey + "." + field] = doc[field];
       });
     });
@@ -899,6 +902,7 @@
       applyEffectSettings(data);
       applyPageModules(data);
       applyCustomPageNav(data);
+      applyNavOrder(data);
       var map = buildFieldMap(data);
       applyPatches(map);
       applyOptionalTextVisibility(data);

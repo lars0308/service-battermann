@@ -22,7 +22,7 @@ import {
   mapBlock,
   formBlock,
 } from './pageHome'
-import {customPage} from './customPage'
+import {customPage, embedService, embedTrustStrip} from './customPage'
 import {pageUeberMich} from './pageUeberMich'
 import {pageLeistungen} from './pageLeistungen'
 import {pageKontakt} from './pageKontakt'
@@ -52,6 +52,8 @@ export const schemaTypes = [
   mapBlock,
   formBlock,
   customPage,
+  embedService,
+  embedTrustStrip,
   pageUeberMich,
   pageLeistungen,
   pageKontakt,
