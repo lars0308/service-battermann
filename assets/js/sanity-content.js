@@ -82,20 +82,49 @@
       var submitBtn = contactForm.querySelector('button[type="submit"]');
       var submitBtnLabel = submitBtn ? submitBtn.textContent : "";
 
+      // Foto-Uploads reißen den Multipart-Request in der Praxis deutlich
+      // öfter ab als reine Textfelder (kostenloser Static-Forms-Tarif +
+      // instabile Mobilfunkverbindungen beim eigentlichen Datei-Transfer,
+      // siehe SETUP.md) — ein Kunde soll deswegen nie seine ganze Anfrage
+      // verlieren. Schlägt das Senden MIT Anhang fehl, wird automatisch
+      // einmal ohne den Foto-Anhang erneut versucht, bevor die Fehlermeldung
+      // erscheint.
+      var submitFormData = function (formData) {
+        return fetch(contactForm.action, { method: "POST", body: formData })
+          .then(function (res) {
+            return res.json();
+          })
+          .then(function (data) {
+            if (!data || !data.success) throw new Error("Static Forms meldete keinen Erfolg.");
+          });
+      };
+
       var doSubmit = function () {
         if (formError) formError.hidden = true;
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.textContent = "Wird gesendet …";
         }
-        fetch(contactForm.action, { method: "POST", body: new FormData(contactForm) })
-          .then(function (res) {
-            return res.json();
-          })
-          .then(function (data) {
-            if (!data || !data.success) throw new Error("Static Forms meldete keinen Erfolg.");
+
+        var fotosInput = contactForm.querySelector('input[name="Fotos"]');
+        var hasPhoto = !!(fotosInput && fotosInput.files && fotosInput.files.length);
+
+        submitFormData(new FormData(contactForm))
+          .then(function () {
             contactForm.reset();
             openDankePopUp();
+          })
+          .catch(function (err) {
+            if (!hasPhoto) throw err; // ohne Anhang gibt es nichts, was ein erneuter Versuch ändern würde
+            if (window.console && console.warn) {
+              console.warn("[Kontaktformular] Senden mit Foto fehlgeschlagen, versuche erneut ohne Anhang:", err);
+            }
+            var formDataNoPhoto = new FormData(contactForm);
+            formDataNoPhoto.delete("Fotos");
+            return submitFormData(formDataNoPhoto).then(function () {
+              contactForm.reset();
+              openDankePopUp();
+            });
           })
           .catch(function (err) {
             if (formError) formError.hidden = false;
@@ -940,8 +969,11 @@
     })
     .catch(function (err) {
       if (timeoutId) window.clearTimeout(timeoutId);
-      // Sanity nicht erreichbar: Es gibt kein "finales" Bild abzuwarten außer
-      // dem längst geladenen lokalen Fallback — Reveal darf sofort weiter.
+      // Sanity nicht erreichbar: Es gibt kein Bild mehr, auf das gewartet
+      // werden könnte (die erste Hero-Folie hat bewusst kein hartkodiertes
+      // Fallback-Bild mehr, siehe index.html) — Reveal darf trotzdem sofort
+      // weiter, damit die Seite nicht hängen bleibt; der dunkle Scrim-
+      // Verlauf hinter dem Text bleibt auch ohne Foto ansehnlich.
       window.dispatchEvent(new Event("hero-image-ready"));
       if (window.console && console.warn) {
         console.warn("[sanity-content] Live-Inhalte nicht geladen, zeige statischen Stand. Grund:", err && err.message);

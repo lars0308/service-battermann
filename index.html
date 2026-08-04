@@ -139,8 +139,12 @@
        dem Baukasten-Array werden hier eingepatcht (siehe assets/main.js). -->
   <div class="hero-slides" aria-hidden="true">
     <picture class="hero-slide is-active" data-hero-slide-index="0">
-      <source media="(max-width:768px)" srcset="images/portrait-lars-hero.jpg">
-      <img src="images/portrait-lars-hero.jpg" alt="" style="--hero-desktop-pos:center 15%">
+      <!-- Bewusst ohne festen src/srcset: die Glaswand (.hero-glass-intro,
+           siehe main.js) bleibt ohnehin bis zum geladenen Sanity-Bild oben —
+           ein hartkodiertes Startbild würde nur kurz aufblitzen und dann
+           sichtbar zum echten Bild wechseln (das war der gemeldete Glitch). -->
+      <source media="(max-width:768px)">
+      <img alt="" style="--hero-desktop-pos:center 15%">
     </picture>
     <picture class="hero-slide" data-hero-slide-index="1">
       <source media="(max-width:768px)" srcset="images/arbeit-garten.jpg">
