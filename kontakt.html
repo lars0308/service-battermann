@@ -160,7 +160,7 @@
 
     <div class="reveal">
       <div class="form-card">
-        <form id="contactForm" name="kontakt" method="POST" action="https://api.staticforms.dev/submit" enctype="multipart/form-data" aria-label="Kontaktformular">
+        <form id="contactForm" name="kontakt" method="POST" action="https://api.staticforms.dev/submit" enctype="multipart/form-data" target="contactFormTarget" aria-label="Kontaktformular">
           <input type="hidden" name="accessKey" value="sf_89104441b13716ed87199b14" data-sanity-field="settings.staticFormsApiKey" data-sanity-attr="value">
           <input type="hidden" name="subject" value="Neue Anfrage über service-battermann.de">
           <p class="bot-field" style="position:absolute;left:-9999px" aria-hidden="true">
@@ -201,6 +201,14 @@
           <p id="formError" class="form-error" role="alert" hidden data-sanity-field="settings.formErrorText">Beim Senden ist etwas schiefgelaufen. Bitte versuchen Sie es noch einmal oder schreiben Sie mir direkt per WhatsApp/Telefon.</p>
           <p class="form-disclaimer"><span data-sanity-field="settings.formDisclaimerPre">Mit dem Absenden stimmen Sie unserer</span> <a href="datenschutz.html">Datenschutzerklärung</a> <span data-sanity-field="settings.formDisclaimerPost">zu.</span></p>
         </form>
+        <!-- Echte, native Formular-Übermittlung statt fetch()/XMLHttpRequest
+             (siehe assets/js/sanity-content.js): läuft in dieses unsichtbare
+             iFrame statt die ganze Seite wegzunavigieren. Eine normale
+             Formular-Navigation wird von Werbeblockern/Firewalls praktisch
+             nie blockiert — anders als eine per Skript ausgelöste
+             Hintergrund-Anfrage (fetch/XHR), die genau solche Tools gezielt
+             als "Tracking/Drittanbieter-API" filtern. -->
+        <iframe name="contactFormTarget" title="Formular-Übermittlung" style="display:none" tabindex="-1" aria-hidden="true"></iframe>
       </div>
     </div>
 
