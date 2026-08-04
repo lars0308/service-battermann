@@ -1589,11 +1589,6 @@ body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
 @media (prefers-color-scheme: dark){
   .form-error{ color:#e88a76; }
 }
-.form-error-mailto{
-  display:block; margin-top:10px; font-size:0.85rem; font-weight:700;
-  text-align:center; color:var(--accent); text-decoration:underline;
-}
-.form-error-mailto[hidden]{ display:none; }
 
 /* ---------- Danke-Popup (Kontaktformular, nach erfolgreichem Absenden) ----------
    Immer-dunkler Glas-Look wie Lightbox/Mega-Menü/Hero — bewusst unabhängig vom

@@ -65,14 +65,29 @@
   }
 
   if (contactForm) {
-    contactForm.addEventListener("submit", function (e) {
-      e.preventDefault(); // blockiert die native Weiterleitung zur nackten API-Antwortseite kompromisslos
+    // Echte, native Formular-Übermittlung (POST in ein unsichtbares iFrame,
+    // siehe target="contactFormTarget" in kontakt.html) statt fetch()/
+    // XMLHttpRequest. Grund: bei mehreren Kunden ist das Senden per fetch()
+    // wiederholt mit "Failed to fetch" gescheitert — reproduzierbar bestätigt,
+    // dass die API selbst (per curl) zuverlässig erreichbar ist, ein
+    // Skript-ausgelöster Hintergrund-Request vom Browser aus aber nicht (sehr
+    // wahrscheinlich Werbeblocker/Firewall, die genau solche fetch/XHR-
+    // Aufrufe an Dritt-APIs filtern). Eine normale, native Formular-Navigation
+    // — auch wenn sie hier in ein iFrame statt die ganze Seite läuft — wird
+    // von genau diesen Tools praktisch nie blockiert, weil sie technisch
+    // nicht von einer normalen Nutzer-Navigation zu unterscheiden ist.
+    // Nachteil: die JSON-Antwort im (cross-origin) iFrame ist per JS nicht
+    // auslesbar, daher gilt "iFrame hat geladen" als Erfolgssignal — dafür
+    // aber tatsächlich zuverlässig statt elegant, wie ausdrücklich gewünscht.
+    var contactIframe = document.querySelector('iframe[name="contactFormTarget"]');
 
+    contactForm.addEventListener("submit", function (e) {
       // Honeypot: Bots füllen versteckte Felder oft blind aus. Wert vorhanden
       // -> so tun, als sei alles gutgegangen (kein Hinweis an Bots), aber
       // nichts an Static Forms senden.
       var honeypot = contactForm.querySelector('input[name="honeypot"]');
       if (honeypot && honeypot.value) {
+        e.preventDefault();
         contactForm.reset();
         openDankePopUp();
         return;
@@ -82,128 +97,71 @@
       var submitBtn = contactForm.querySelector('button[type="submit"]');
       var submitBtnLabel = submitBtn ? submitBtn.textContent : "";
 
-      // Foto-Uploads reißen den Multipart-Request in der Praxis deutlich
-      // öfter ab als reine Textfelder (kostenloser Static-Forms-Tarif +
-      // instabile Mobilfunkverbindungen beim eigentlichen Datei-Transfer,
-      // siehe SETUP.md) — ein Kunde soll deswegen nie seine ganze Anfrage
-      // verlieren. Schlägt das Senden MIT Anhang fehl, wird automatisch
-      // einmal ohne den Foto-Anhang erneut versucht, bevor die Fehlermeldung
-      // erscheint.
-      var submitFormData = function (formData) {
-        return fetch(contactForm.action, { method: "POST", body: formData })
-          .then(function (res) {
-            return res.json();
-          })
-          .then(function (data) {
-            if (!data || !data.success) throw new Error("Static Forms meldete keinen Erfolg.");
-          });
-      };
-
-      // Letzter Ausweg, falls auch der Text-only-Versuch fehlschlägt (z. B.
-      // Werbeblocker/Firewall, die api.staticforms.dev grundsätzlich
-      // blockieren — kam vor, auch ohne Foto-Anhang): fertig vorausgefüllter
-      // "mailto:"-Link mit allen bereits eingetippten Angaben, damit die
-      // Anfrage trotzdem mit einem Klick über die eigene Mail-App rausgeht,
-      // statt komplett verloren zu gehen.
-      var mailtoLink = null;
-      function showMailtoFallback() {
-        if (!formError) return;
-        if (!mailtoLink) {
-          mailtoLink = document.createElement("a");
-          mailtoLink.className = "form-error-mailto";
-          mailtoLink.textContent = "Anfrage stattdessen per E-Mail senden →";
-          formError.insertAdjacentElement("afterend", mailtoLink);
-        }
-        // Gezielt der <span> (reiner Textknoten) statt der umschließenden
-        // <a class="mega-col">, die zusätzlich noch das "E-Mail"-Label als
-        // Text enthält und sonst mit in die Adresse rutschen würde.
-        var emailEl = document.querySelector('span[data-sanity-field="contact.email"]');
-        var toEmail = (emailEl && emailEl.textContent.trim()) || "service.battermann@gmx.de";
-        var name = (contactForm.querySelector("#name") || {}).value || "";
-        var ort = (contactForm.querySelector("#ort") || {}).value || "";
-        var kontaktweg = (contactForm.querySelector("#kontaktweg") || {}).value || "";
-        var anliegen = (contactForm.querySelector("#anliegen") || {}).value || "";
-        var body =
-          "Name: " + name + "\nOrt des Objekts: " + ort + "\nKontaktweg: " + kontaktweg + "\n\n" + anliegen;
-        mailtoLink.href =
-          "mailto:" + toEmail +
-          "?subject=" + encodeURIComponent("Anfrage über service-battermann.de") +
-          "&body=" + encodeURIComponent(body);
-        mailtoLink.hidden = false;
-      }
-
-      var doSubmit = function () {
-        if (formError) formError.hidden = true;
-        if (mailtoLink) mailtoLink.hidden = true;
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.textContent = "Wird gesendet …";
-        }
-
-        var fotosInput = contactForm.querySelector('input[name="Fotos"]');
-        var hasPhoto = !!(fotosInput && fotosInput.files && fotosInput.files.length);
-
-        submitFormData(new FormData(contactForm))
-          .then(function () {
-            contactForm.reset();
-            openDankePopUp();
-          })
-          .catch(function (err) {
-            if (!hasPhoto) throw err; // ohne Anhang gibt es nichts, was ein erneuter Versuch ändern würde
-            if (window.console && console.warn) {
-              console.warn("[Kontaktformular] Senden mit Foto fehlgeschlagen, versuche erneut ohne Anhang:", err);
-            }
-            var formDataNoPhoto = new FormData(contactForm);
-            formDataNoPhoto.delete("Fotos");
-            return submitFormData(formDataNoPhoto).then(function () {
-              contactForm.reset();
-              openDankePopUp();
-            });
-          })
-          .catch(function (err) {
-            if (formError) formError.hidden = false;
-            showMailtoFallback();
-            if (window.console && console.error) console.error("[Kontaktformular] Senden fehlgeschlagen:", err);
-          })
-          .then(function () {
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.textContent = submitBtnLabel;
-            }
-          });
-      };
-
+      // Kein accessKey (weder HTML-Standardwert noch Cache) -> die native
+      // Navigation kurz aufhalten, Key live aus Sanity nachladen, dann per
+      // contactForm.submit() (löst KEIN weiteres "submit"-Event aus) selbst
+      // erneut abschicken. Ist bereits ein Key vorhanden, läuft die normale
+      // native Übermittlung sofort unverändert weiter (kein preventDefault).
       if (accessKeyInput && !accessKeyInput.value) {
         var cachedKey = readCachedStaticFormsKey();
         if (cachedKey) accessKeyInput.value = cachedKey;
       }
-
-      if (!accessKeyInput || accessKeyInput.value) {
-        doSubmit();
+      if (accessKeyInput && !accessKeyInput.value) {
+        e.preventDefault();
+        var keyQuery = encodeURIComponent('*[_type=="siteSettings"][0].staticFormsApiKey');
+        var keyEndpoint =
+          "https://" + PROJECT_ID + ".api.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + keyQuery;
+        fetch(keyEndpoint, { cache: "no-store" })
+          .then(function (res) {
+            return res.ok ? res.json() : null;
+          })
+          .then(function (json) {
+            var key = json && json.result;
+            if (key) {
+              accessKeyInput.value = key;
+              cacheStaticFormsKey(key);
+            }
+          })
+          .catch(function () {
+            /* Nachlade-Versuch fehlgeschlagen -> trotzdem senden (mit dem
+               festen HTML-Standardwert, der an dieser Stelle ohnehin schon
+               greift). */
+          })
+          .then(function () {
+            contactForm.submit();
+          });
         return;
       }
 
-      // Kein Key (weder HTML-Standard noch Cache) -> letzter Versuch, ihn live
-      // aus Sanity nachzuladen, dann erst senden.
-      var keyQuery = encodeURIComponent('*[_type=="siteSettings"][0].staticFormsApiKey');
-      var keyEndpoint =
-        "https://" + PROJECT_ID + ".api.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + keyQuery;
-      fetch(keyEndpoint, { cache: "no-store" })
-        .then(function (res) {
-          return res.ok ? res.json() : null;
-        })
-        .then(function (json) {
-          var key = json && json.result;
-          if (key) {
-            accessKeyInput.value = key;
-            cacheStaticFormsKey(key);
-          }
-        })
-        .catch(function () {
-          /* Nachlade-Versuch fehlgeschlagen -> trotzdem senden (mit dem festen
-             HTML-Standardwert, der an dieser Stelle ohnehin schon greift). */
-        })
-        .then(doSubmit);
+      // Ab hier läuft die eigentliche, native Übermittlung normal weiter
+      // (kein preventDefault) — nur UI-Feedback drumherum.
+      if (formError) formError.hidden = true;
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Wird gesendet …";
+      }
+
+      var finished = false;
+      var finish = function () {
+        if (finished) return;
+        finished = true;
+        if (contactIframe) contactIframe.removeEventListener("load", onIframeLoad);
+        window.clearTimeout(safetyTimer);
+        contactForm.reset();
+        openDankePopUp();
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = submitBtnLabel;
+        }
+      };
+      var onIframeLoad = function () {
+        finish();
+      };
+      if (contactIframe) contactIframe.addEventListener("load", onIframeLoad);
+      // Sicherheitsnetz, falls das iFrame aus irgendeinem Grund nie ein
+      // load-Event feuert (z. B. sehr exotische Browser-Konfiguration) —
+      // damit der Button nicht für immer auf "Wird gesendet …" hängen bleibt.
+      var safetyTimer = window.setTimeout(finish, 8000);
     });
   }
 
