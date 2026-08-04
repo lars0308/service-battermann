@@ -99,8 +99,42 @@
           });
       };
 
+      // Letzter Ausweg, falls auch der Text-only-Versuch fehlschlägt (z. B.
+      // Werbeblocker/Firewall, die api.staticforms.dev grundsätzlich
+      // blockieren — kam vor, auch ohne Foto-Anhang): fertig vorausgefüllter
+      // "mailto:"-Link mit allen bereits eingetippten Angaben, damit die
+      // Anfrage trotzdem mit einem Klick über die eigene Mail-App rausgeht,
+      // statt komplett verloren zu gehen.
+      var mailtoLink = null;
+      function showMailtoFallback() {
+        if (!formError) return;
+        if (!mailtoLink) {
+          mailtoLink = document.createElement("a");
+          mailtoLink.className = "form-error-mailto";
+          mailtoLink.textContent = "Anfrage stattdessen per E-Mail senden →";
+          formError.insertAdjacentElement("afterend", mailtoLink);
+        }
+        // Gezielt der <span> (reiner Textknoten) statt der umschließenden
+        // <a class="mega-col">, die zusätzlich noch das "E-Mail"-Label als
+        // Text enthält und sonst mit in die Adresse rutschen würde.
+        var emailEl = document.querySelector('span[data-sanity-field="contact.email"]');
+        var toEmail = (emailEl && emailEl.textContent.trim()) || "service.battermann@gmx.de";
+        var name = (contactForm.querySelector("#name") || {}).value || "";
+        var ort = (contactForm.querySelector("#ort") || {}).value || "";
+        var kontaktweg = (contactForm.querySelector("#kontaktweg") || {}).value || "";
+        var anliegen = (contactForm.querySelector("#anliegen") || {}).value || "";
+        var body =
+          "Name: " + name + "\nOrt des Objekts: " + ort + "\nKontaktweg: " + kontaktweg + "\n\n" + anliegen;
+        mailtoLink.href =
+          "mailto:" + toEmail +
+          "?subject=" + encodeURIComponent("Anfrage über service-battermann.de") +
+          "&body=" + encodeURIComponent(body);
+        mailtoLink.hidden = false;
+      }
+
       var doSubmit = function () {
         if (formError) formError.hidden = true;
+        if (mailtoLink) mailtoLink.hidden = true;
         if (submitBtn) {
           submitBtn.disabled = true;
           submitBtn.textContent = "Wird gesendet …";
@@ -128,6 +162,7 @@
           })
           .catch(function (err) {
             if (formError) formError.hidden = false;
+            showMailtoFallback();
             if (window.console && console.error) console.error("[Kontaktformular] Senden fehlgeschlagen:", err);
           })
           .then(function () {
