@@ -137,6 +137,9 @@ a:focus-visible, button:focus-visible, .btn:focus-visible, input:focus-visible, 
 }
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior:auto; }
+  /* .trust-track (Vorteile-Marquee) ist bewusst ausgenommen — siehe dortige
+     !important-Regel — rein dekoratives, langsames Durchlaufen soll auch bei
+     aktivierter "Bewegung reduzieren"-Einstellung weiterlaufen. */
   *, *::before, *::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
 }
 
@@ -622,19 +625,25 @@ section.dim{ background:var(--paper-dim); }
 @media (max-width:768px){
   .trust-strip-section{ overflow:hidden; }
   /* --trust-marquee-speed wird von sanity-content.js gesetzt (trustMarqueeSpeedMs
-     aus dem Kinetik-Studio), 22s greift als Standard ohne Sanity-Wert. */
-  .trust-track{ width:max-content; animation:trust-marquee var(--trust-marquee-speed, 22s) linear infinite; }
+     aus dem Kinetik-Studio), 22s greift als Standard ohne Sanity-Wert.
+     !important bewusst: die globale "Bewegung reduzieren"-Regel weiter oben
+     (*, *::before, *::after{ animation-duration:0.001ms !important; ... })
+     würde diesen rein dekorativen, langsamen Marquee sonst sitewide mit
+     abschalten — hier bewusst ausgenommen (siehe Kommentar dort). */
+  .trust-track{
+    width:max-content;
+    animation:trust-marquee var(--trust-marquee-speed, 22s) linear infinite !important;
+    will-change:transform; transform:translateZ(0); -webkit-transform:translateZ(0);
+  }
   .trust-card{ min-width:74vw; max-width:320px; }
 }
 @keyframes trust-marquee{
   from{ transform:translateX(0); }
   to{ transform:translateX(-50%); }
 }
-@media (max-width:768px) and (prefers-reduced-motion: reduce){
-  .trust-track{ animation:none; width:auto; flex-wrap:wrap; }
-  .trust-set:last-of-type{ display:none; }
-  .trust-card{ min-width:0; flex:1 1 45%; }
-}
+/* Läuft bewusst auch bei "Bewegung reduzieren" weiter (anders als die
+   übrigen Animationen der Seite) — rein dekoratives, langsames Durchlaufen
+   ohne Blitzen/Ruckeln, kein Auslöser für Bewegungsunverträglichkeit. */
 
 /* ---------- Hero-Slider (Startseite, 100vh) ---------- */
 .hero-slider{
