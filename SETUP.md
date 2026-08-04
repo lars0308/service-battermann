@@ -57,25 +57,30 @@ sondern über den externen Dienst Static Forms — Einrichtung siehe Abschnitt
 ## 1a. Kontaktformular über Static Forms freischalten
 
 Das Formular auf `/kontakt.html` sendet seine Daten an Static Forms
-(staticforms.dev). Der API-Key steht bereits fest im HTML-Quellcode
-(`<input type="hidden" name="accessKey" value="sf_...">`) — das Formular
-funktioniert damit sofort, ohne weitere Einrichtung. Ändert sich der Key
-(z. B. bei einem neuen Static-Forms-Konto), gibt es zwei Wege, ihn
-auszutauschen:
+(staticforms.dev). Der API-Key steht fest im HTML-Quellcode
+(`<input type="hidden" name="accessKey" value="sf_...">`, in `kontakt.html`
+und `index.html`) — das Formular funktioniert damit sofort, ohne weitere
+Einrichtung.
 
-1. **Über Sanity** (empfohlen, kein Code-Zugriff nötig): Neuen Key unter
-   Website-Einstellungen → Static Forms API-Key eintragen — überschreibt
-   automatisch den festen HTML-Wert beim Laden der Seite.
-2. **Direkt im Code:** In `kontakt.html` das Feld
-   `<input type="hidden" name="accessKey" value="...">` suchen und den neuen
-   Key zwischen die Anführungszeichen eintragen.
-3. **Wichtig für den Foto-Upload:** Der kostenlose Tarif von Static Forms
-   unterstützt keine Datei-Anhänge. Der "Foto anhängen"-Button im Formular
-   funktioniert nur zuverlässig mit einem Pro- oder Agency-Tarif. Ohne
-   Bezahltarif kommen Textnachrichten trotzdem an, angehängte Fotos werden
-   aber nicht mitgeschickt.
-4. Benachrichtigungen (E-Mail bei neuer Anfrage) richtest du im
-   Static-Forms-Dashboard unter den Formular-Einstellungen ein.
+Ändert sich der Key (z. B. bei einem neuen Static-Forms-Konto): In
+`kontakt.html` und `index.html` jeweils das Feld
+`<input type="hidden" name="accessKey" value="...">` suchen und den neuen
+Key zwischen die Anführungszeichen eintragen. **Bewusst nicht** über Sanity
+änderbar — dieser Key gehört zu den Formular-Zugangsdaten (technisch, kein
+Website-Inhalt) und wurde früher versehentlich mit dem falschen Wert aus
+dem Static-Forms-Konto überschrieben, wodurch Anfragen wochenlang unbemerkt
+ins Leere liefen. Der Key ist auf staticforms.dev unter dem Formular unter
+"API Key" zu finden (beginnt mit `sf_`) — **nicht** die Account-/Workspace-ID
+(beginnt mit `sfacct.`), die an anderer Stelle im Dashboard angezeigt wird.
+
+**Wichtig für den Foto-Upload:** Der kostenlose Tarif von Static Forms
+unterstützt keine Datei-Anhänge. Der "Foto anhängen"-Button im Formular
+funktioniert nur zuverlässig mit einem Pro- oder Agency-Tarif. Ohne
+Bezahltarif kommen Textnachrichten trotzdem an, angehängte Fotos werden
+aber nicht mitgeschickt.
+
+Benachrichtigungen (E-Mail bei neuer Anfrage) richtest du im
+Static-Forms-Dashboard unter den Formular-Einstellungen ("Form email") ein.
 
 ## 2. Vorher/Nachher-Bilder pflegen
 
@@ -231,21 +236,12 @@ separates, kostenloses CMS-Tool.
        zurück zur Startseite von einer Unterseite aus erscheint es kein
        zweites Mal.
      - Rechtlicher Footer-Hinweis (der Sternchen-Text im Footer aller Seiten).
-     - Static Forms API-Key — siehe Hinweis unten.
 4. Nach dem Speichern in Sanity ist die Änderung **beim nächsten Laden der
    Seite sofort sichtbar** — kein Netlify-Rebuild nötig, anders als beim
    Vorher/Nachher-Bereich (Abschnitt 3).
 
-**Static-Forms-Key jetzt auch über Sanity pflegbar:** Trägst du den Key
-unter Website-Einstellungen ein, überschreibt er automatisch den festen
-HTML-Standardwert in `kontakt.html` beim Laden der Seite — der manuelle Weg
-aus Abschnitt 1a (direkt im Code eintragen) funktioniert weiterhin genauso,
-falls du Sanity dafür nicht nutzen willst. Trägst du an beiden Stellen
-etwas ein, gewinnt der Sanity-Wert. Der Key wird außerdem im Browser
-zwischengespeichert (localStorage), sobald er einmal geladen wurde — ruft
-ein Besucher `kontakt.html` direkt auf und sendet sofort ab, bevor der
-Sanity-Abruf fertig ist, greift zuerst dieser Zwischenspeicher, bevor
-überhaupt ein Nachlade-Request nötig wird.
+**Der Static-Forms-Key ist absichtlich NICHT über Sanity pflegbar** — siehe
+Abschnitt 1a. Er wird ausschließlich direkt im Code geändert.
 
 **Wie das technisch funktioniert, kurz erklärt:** Die Seite lädt weiterhin
 zuerst ganz normal als statisches HTML (wichtig für Google & schnelles

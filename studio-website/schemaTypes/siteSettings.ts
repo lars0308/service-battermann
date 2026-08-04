@@ -10,7 +10,6 @@ export const siteSettings = defineType({
     {name: 'general', title: 'Allgemein', default: true},
     {name: 'nav', title: 'Navigation'},
     {name: 'navOrder', title: 'Reihenfolge im Hauptmenü'},
-    {name: 'forms', title: 'Formular'},
     {
       name: 'boilerplate',
       title: 'Website-weit: Wiederkehrende Texte (Menü, Footer, Formular, Popups)',
@@ -98,14 +97,6 @@ export const siteSettings = defineType({
       type: 'number',
       initialValue: 50,
       group: 'navOrder',
-    }),
-    defineField({
-      name: 'staticFormsApiKey',
-      title: 'Static Forms API-Key (Kontaktformular)',
-      type: 'string',
-      description:
-        'Ohne diesen Key nimmt das Kontaktformular auf kontakt.html keine Anfragen entgegen. Key von staticforms.dev, siehe SETUP.md.',
-      group: 'forms',
     }),
     // Menü/Mega-Panel
     defineField({name: 'navStartseite', title: 'Menüpunkt „Startseite"', type: 'string', group: 'boilerplate'}),

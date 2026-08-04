@@ -15,29 +15,6 @@
   var PROJECT_ID = "9bz9h1mi";
   var DATASET = "production";
 
-  // Kontaktformular: echte AJAX-Submission per fetch() statt normaler
-  // Formular-Navigation. Vorher landete jeder Absende-Klick zwangsläufig auf
-  // der nackten JSON-Antwortseite von Static Forms (auch der bisherige Code
-  // rief am Ende IMMER contactForm.submit() auf, also eine echte Navigation —
-  // "AJAX" war nie implementiert, nur das accessKey-Feld wurde vorab
-  // abgesichert). Jetzt: preventDefault() greift IMMER, die Daten gehen per
-  // fetch() raus, bei Erfolg öffnet sich das Danke-Popup mit vCard-Download.
-  //
-  // WICHTIG: als FormData (nicht JSON.stringify) senden und KEINEN eigenen
-  // Content-Type-Header setzen — der Browser setzt die korrekte
-  // "multipart/form-data; boundary=..."-Kopfzeile automatisch. Das ist nötig,
-  // damit der optionale Foto-Upload (<input type="file" multiple>) weiterhin
-  // funktioniert; ein JSON.stringify(new FormData(...)) würde angehängte
-  // Dateien stillschweigend verwerfen.
-  var STATIC_FORMS_KEY_STORAGE = "staticFormsKey";
-  function cacheStaticFormsKey(key) {
-    if (!key) return;
-    try { window.localStorage.setItem(STATIC_FORMS_KEY_STORAGE, key); } catch (e) {}
-  }
-  function readCachedStaticFormsKey() {
-    try { return window.localStorage.getItem(STATIC_FORMS_KEY_STORAGE); } catch (e) { return null; }
-  }
-
   var contactForm = document.getElementById("contactForm");
   var dankePopUp = document.getElementById("dankePopUp");
   var formError = document.getElementById("formError");
@@ -93,45 +70,8 @@
         return;
       }
 
-      var accessKeyInput = contactForm.querySelector('input[name="accessKey"]');
       var submitBtn = contactForm.querySelector('button[type="submit"]');
       var submitBtnLabel = submitBtn ? submitBtn.textContent : "";
-
-      // Kein accessKey (weder HTML-Standardwert noch Cache) -> die native
-      // Navigation kurz aufhalten, Key live aus Sanity nachladen, dann per
-      // contactForm.submit() (löst KEIN weiteres "submit"-Event aus) selbst
-      // erneut abschicken. Ist bereits ein Key vorhanden, läuft die normale
-      // native Übermittlung sofort unverändert weiter (kein preventDefault).
-      if (accessKeyInput && !accessKeyInput.value) {
-        var cachedKey = readCachedStaticFormsKey();
-        if (cachedKey) accessKeyInput.value = cachedKey;
-      }
-      if (accessKeyInput && !accessKeyInput.value) {
-        e.preventDefault();
-        var keyQuery = encodeURIComponent('*[_type=="siteSettings"][0].staticFormsApiKey');
-        var keyEndpoint =
-          "https://" + PROJECT_ID + ".api.sanity.io/v2024-01-01/data/query/" + DATASET + "?query=" + keyQuery;
-        fetch(keyEndpoint, { cache: "no-store" })
-          .then(function (res) {
-            return res.ok ? res.json() : null;
-          })
-          .then(function (json) {
-            var key = json && json.result;
-            if (key) {
-              accessKeyInput.value = key;
-              cacheStaticFormsKey(key);
-            }
-          })
-          .catch(function () {
-            /* Nachlade-Versuch fehlgeschlagen -> trotzdem senden (mit dem
-               festen HTML-Standardwert, der an dieser Stelle ohnehin schon
-               greift). */
-          })
-          .then(function () {
-            contactForm.submit();
-          });
-        return;
-      }
 
       // Ab hier läuft die eigentliche, native Übermittlung normal weiter
       // (kein preventDefault) — nur UI-Feedback drumherum.
@@ -191,7 +131,7 @@
     '"pageKontakt":*[_type=="pageKontakt"][0]{heroEyebrow,heroHeadline,heroLead,contactEyebrow,contactHeadline,contactIntro,emailLabelPrefix,erreichbarkeitLabelPrefix,contactNote,"portraitUrl":portrait.asset->url' + IMG_SUFFIX + ',portraitName,portraitRole,heroDesign,direkterDrahtDesign},' +
     '"pageEinsatzgebiet":*[_type=="pageEinsatzgebiet"][0]{heroEyebrow,heroHeadline,heroLead,faqEyebrow,faqHeadline,ctaBandHeadline,ctaBandText,ctaBandPrimaryLabel,ctaBandSecondaryLabel,heroDesign,faqDesign,ctaBandDesign},' +
     '"effects":*[_type=="effectSettings"][0]{heroAutoplayMs,heroTransitionMs,introDurationMs,introBlurStrength,introVeilOpacity,kitCardIntervalMs,bentoTileScale,bentoGlassFadeMs,trustMarqueeSpeedMs,revealDurationMs,revealDistancePx},' +
-    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,navOrderHome,navOrderLeistungen,navOrderUeberMich,navOrderEinsatzgebiet,navOrderKontakt,staticFormsApiKey,navStartseite,navCtaLabel,megaAllLeistungen,megaAllUeberMich,megaAllEinsatzgebiet,megaAllKontakt,megaKontaktAnrufenLabel,megaKontaktWhatsappLabel,megaKontaktWhatsappDesc,megaKontaktEmailLabel,footerIntro,footerNavHeading,footerContactHeading,copyrightText,footerImpressumLabel,footerDatenschutzLabel,footerBackHomeLabel,cookieText,cookieLinkLabel,cookieAcceptLabel,fabLongLabel,fabShortLabel,dankeHeadline,dankeText,dankeVcardLabel,dankeCloseLabel,formNameLabel,formOrtLabel,formOrtPlaceholder,formKontaktwegLabel,formKontaktPlaceholder,formAnliegenLabel,formAnliegenPlaceholder,formFotoLabel,formSubmitLabel,formErrorText,formDisclaimerPre,formDisclaimerPost,mapConsentTitle,mapConsentText,mapConsentLinkLabel,mapConsentButtonLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
+    '"settings":*[_type=="siteSettings"][0]{companyName,ownerName,legalNotice,navLeistungen,navUeberMich,navEinsatzgebiet,navKontakt,navOrderHome,navOrderLeistungen,navOrderUeberMich,navOrderEinsatzgebiet,navOrderKontakt,navStartseite,navCtaLabel,megaAllLeistungen,megaAllUeberMich,megaAllEinsatzgebiet,megaAllKontakt,megaKontaktAnrufenLabel,megaKontaktWhatsappLabel,megaKontaktWhatsappDesc,megaKontaktEmailLabel,footerIntro,footerNavHeading,footerContactHeading,copyrightText,footerImpressumLabel,footerDatenschutzLabel,footerBackHomeLabel,cookieText,cookieLinkLabel,cookieAcceptLabel,fabLongLabel,fabShortLabel,dankeHeadline,dankeText,dankeVcardLabel,dankeCloseLabel,formNameLabel,formOrtLabel,formOrtPlaceholder,formKontaktwegLabel,formKontaktPlaceholder,formAnliegenLabel,formAnliegenPlaceholder,formFotoLabel,formSubmitLabel,formErrorText,formDisclaimerPre,formDisclaimerPost,mapConsentTitle,mapConsentText,mapConsentLinkLabel,mapConsentButtonLabel,"logoIconUrl":logoIcon.asset->url' + IMG_SUFFIX + '}}';
   // api.sanity.io statt apicdn.sanity.io: kein CDN-Zwischenspeicher, dadurch
   // immer der aktuellste Stand direkt aus dem Dataset (das APICDN-Äquivalent
   // zu useCdn:false bei der Sanity-SDK — hier per direktem fetch() ohne SDK).
@@ -940,9 +880,6 @@
       applyPatches(map);
       applyOptionalTextVisibility(data);
       applyPromiseIcons(map);
-      if (map["settings.staticFormsApiKey"]) {
-        cacheStaticFormsKey(map["settings.staticFormsApiKey"]);
-      }
       // Lade-Reveal (main.js) wartet auf dieses Event, um erst dann vom
       // zentrierten Ladezustand zum normalen Layout zu gleiten, wenn das
       // finale (ggf. Sanity-)Hero-Bild wirklich fertig geladen ist.
