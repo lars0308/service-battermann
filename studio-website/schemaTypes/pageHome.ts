@@ -129,6 +129,14 @@ export const pageHome = defineType({
     defineField({name: 'bewertungenHeadline', title: 'Überschrift', type: 'string', group: 'bewertungen'}),
     defineField({name: 'bewertungenText', title: 'Text', type: 'text', group: 'bewertungen'}),
     defineField({name: 'bewertungenCtaLabel', title: 'Button-Text (führt zum Kontaktformular)', type: 'string', group: 'bewertungen'}),
+    defineField({
+      name: 'bewertungenGoogleCtaLabel',
+      title: 'Button-Text (führt direkt zu "Bewertung auf Google abgeben")',
+      description:
+        'Das Ziel ist fest mit der Google-Bewertungs-ID der Firma verknüpft (dieselbe ID wie bei den eingeblendeten Sternebewertungen) und hier nicht änderbar.',
+      type: 'string',
+      group: 'bewertungen',
+    }),
     defineField({name: 'bewertungenDesign', title: 'Darstellung', type: 'sectionDesign', group: 'bewertungen'}),
     defineField({name: 'gebietEyebrow', title: 'Unterzeile', type: 'string', group: 'gebietTeaser'}),
     defineField({name: 'gebietHeadline', title: 'Überschrift', type: 'string', group: 'gebietTeaser'}),

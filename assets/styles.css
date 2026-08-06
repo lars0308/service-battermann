@@ -967,6 +967,7 @@ body.has-cookie-banner .hero-slide-dots{ bottom:96px; }
    (var(--space-5) oben+unten wären zusammen ~176px reiner Leerraum). */
 #leistungen-list-section{ position:relative; padding-bottom:var(--space-3); }
 #bewertungen-section{ padding-top:var(--space-3); }
+#bewertungen-section .cta-row{ display:flex; flex-wrap:wrap; gap:14px; }
 
 /* ---------- Leistungs-Karten (Startseite) — asymmetrisches Bild-Mosaik ---------- */
 /* Kein festes Nebeneinander-Layout mehr: die Kacheln nehmen die volle Breite ein,
